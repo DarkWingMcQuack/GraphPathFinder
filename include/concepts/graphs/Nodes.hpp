@@ -2,7 +2,7 @@
 
 #include <concepts>
 
-namespace concepts {
+namespace concepts::graphs {
 
 // clang-format off
 template<typename T>
