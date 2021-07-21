@@ -6,14 +6,24 @@
 
 namespace concepts::graphs {
 
+
 // clang-format off
+template<typename T>
+concept Addable = requires(T lhs, T rhs)
+{
+    {lhs + rhs} -> std::convertible_to<T>;
+};
+
 template<typename T>
 concept ReadableEdgeWeights = requires(const T& graph)
 {
     requires Edges<T>;
 
 	typename T::WeightType;
+
+	// edge weights should be addable and totally ordered
 	requires std::totally_ordered<typename T::WeightType>;
+	requires Addable<typename T::WeightType>;
 
 	
 	/**
