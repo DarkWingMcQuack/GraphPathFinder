@@ -47,6 +47,7 @@ target_sources(GraphPathFinderLib
   ${CMAKE_CURRENT_LIST_DIR}/include/concepts/graphs/NodeLevels.hpp
   ${CMAKE_CURRENT_LIST_DIR}/include/concepts/graphs/BackwardGraph.hpp
   ${CMAKE_CURRENT_LIST_DIR}/include/concepts/graphs/ForwardGraph.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/include/concepts/oracles/DistanceOracle.hpp
   )
 
 # add the dependencies of the target to enforce
