@@ -32,7 +32,6 @@ endif()
 find_package(Threads REQUIRED)
 
 include(cmake/flags.cmake)
-# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fconcepts")
 
 #############################################
 ## library with all the logic which
@@ -42,7 +41,12 @@ add_library(GraphPathFinderLib INTERFACE)
 
 target_sources(GraphPathFinderLib
   INTERFACE
-  ${CMAKE_CURRENT_LIST_DIR}/include/concept/Graph.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/include/concepts/graphs/Nodes.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/include/concepts/graphs/Edges.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/include/concepts/graphs/EdgeWeights.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/include/concepts/graphs/NodeLevels.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/include/concepts/graphs/BackwardGraph.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/include/concepts/graphs/ForwardGraph.hpp
   )
 
 # add the dependencies of the target to enforce

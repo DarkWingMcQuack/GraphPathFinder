@@ -1,5 +1,4 @@
-#include <concept/Graph.hpp>
-#include <concept/WeightedGraph.hpp>
+#include <concepts/graphs/EdgeWeights.hpp>
 #include <fmt/core.h>
 
 auto main() -> int
