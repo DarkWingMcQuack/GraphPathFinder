@@ -10,7 +10,6 @@ namespace concepts::graphs {
 template<typename T>
 concept ForwardGraph = requires(const T& graph)
 {
-
     requires Nodes<T>;
     requires Edges<T>;
 
