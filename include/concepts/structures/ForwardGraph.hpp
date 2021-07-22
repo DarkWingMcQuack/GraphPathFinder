@@ -1,10 +1,10 @@
 #pragma once
 
-#include <concepts/graphs/Edges.hpp>
-#include <concepts/graphs/Nodes.hpp>
+#include <concepts/structures/Edges.hpp>
+#include <concepts/structures/Nodes.hpp>
 #include <span>
 
-namespace concepts::graphs {
+namespace concepts::structures {
 
 // clang-format off
 template<typename T>
@@ -42,4 +42,4 @@ concept ForwardGraph = requires(const T& graph, NodeID src, NodeID trg)
 };
 // clang-format on
 
-} // namespace concepts::graphs
+} // namespace concepts::structures

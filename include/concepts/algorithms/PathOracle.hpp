@@ -2,6 +2,7 @@
 
 #include <concepts/structures/EdgeWeights.hpp>
 #include <concepts/structures/Nodes.hpp>
+#include <concepts/structures/Path.hpp>
 #include <optional>
 
 namespace concepts::algorithms {

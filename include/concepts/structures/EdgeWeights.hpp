@@ -1,11 +1,11 @@
 #pragma once
 
 #include <concepts/Utils.hpp>
-#include <concepts/graphs/Edges.hpp>
+#include <concepts/structures/Edges.hpp>
 #include <concepts>
 #include <optional>
 
-namespace concepts::graphs {
+namespace concepts::structures {
 
 
 // clang-format off
@@ -68,4 +68,4 @@ concept WriteableEdgeWeights = requires(T& graph, EdgeID id, typename T::WeightT
 };
 // clang-format on
 
-} // namespace concepts::graphs
+} // namespace concepts::structures

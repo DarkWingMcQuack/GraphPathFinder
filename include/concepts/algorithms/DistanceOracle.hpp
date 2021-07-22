@@ -1,7 +1,7 @@
 #pragma once
 
-#include <concepts/graphs/EdgeWeights.hpp>
-#include <concepts/graphs/Nodes.hpp>
+#include <concepts/structures/EdgeWeights.hpp>
+#include <concepts/structures/Nodes.hpp>
 #include <optional>
 
 namespace concepts::oracles {

@@ -3,7 +3,7 @@
 #include <NamedType/named_type.hpp>
 #include <concepts>
 
-namespace concepts::graphs {
+namespace concepts::structures {
 
 using NodeID = fluent::NamedType<std::size_t, struct NodeIDTag>;
 
@@ -38,4 +38,4 @@ concept Nodes = requires(const T& graph, NodeID id)
 
 // clang-format on
 
-} // namespace concepts::graphs
+} // namespace concepts::structures

@@ -3,7 +3,7 @@
 #include <NamedType/named_type.hpp>
 #include <span>
 
-namespace concepts::graphs {
+namespace concepts::structures {
 
 
 using EdgeID = fluent::NamedType<std::size_t, struct EdgeIDTag>;
@@ -34,4 +34,4 @@ concept Edges = requires(const T& graph, EdgeID id)
 
 // clang-format on
 
-} // namespace concepts::graphs
+} // namespace concepts::structures

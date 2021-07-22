@@ -1,11 +1,11 @@
 #pragma once
 
-#include <concepts/graphs/Nodes.hpp>
+#include <concepts/structures/Nodes.hpp>
 #include <concepts>
 #include <optional>
 #include <span>
 
-namespace concepts::graphs {
+namespace concepts::structures {
 
 // clang-format off
 template<typename T>
@@ -44,4 +44,4 @@ concept WriteableNodeLevels = requires(T& graph, NodeID id, typename T::NodeLeve
 };
 // clang-format on
 
-} // namespace concepts::graphs
+} // namespace concepts::structures

@@ -42,13 +42,17 @@ add_library(GraphPathFinderLib INTERFACE)
 
 target_sources(GraphPathFinderLib
   INTERFACE
-  ${CMAKE_CURRENT_LIST_DIR}/include/concepts/graphs/Nodes.hpp
-  ${CMAKE_CURRENT_LIST_DIR}/include/concepts/graphs/Edges.hpp
-  ${CMAKE_CURRENT_LIST_DIR}/include/concepts/graphs/EdgeWeights.hpp
-  ${CMAKE_CURRENT_LIST_DIR}/include/concepts/graphs/NodeLevels.hpp
-  ${CMAKE_CURRENT_LIST_DIR}/include/concepts/graphs/BackwardGraph.hpp
-  ${CMAKE_CURRENT_LIST_DIR}/include/concepts/graphs/ForwardGraph.hpp
-  ${CMAKE_CURRENT_LIST_DIR}/include/concepts/oracles/DistanceOracle.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/include/concepts/structures/Nodes.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/include/concepts/structures/Edges.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/include/concepts/structures/EdgeWeights.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/include/concepts/structures/NodeLevels.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/include/concepts/structures/BackwardGraph.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/include/concepts/structures/ForwardGraph.hpp
+
+  ${CMAKE_CURRENT_LIST_DIR}/include/concepts/Utils.hpp
+
+  ${CMAKE_CURRENT_LIST_DIR}/include/concepts/algorithms/DistanceOracle.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/include/concepts/algorithms/PathOracle.hpp
   )
 
 # add the dependencies of the target to enforce
