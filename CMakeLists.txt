@@ -21,6 +21,7 @@ include(cmake/tbb.cmake)
 include(cmake/CLI11.cmake)
 include(cmake/progress.cmake)
 include(cmake/nlohmann.cmake)
+include(cmake/namedtype.cmake)
 
 message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 
@@ -57,6 +58,7 @@ add_dependencies(GraphPathFinderLib nlohmann-project)
 add_dependencies(GraphPathFinderLib tbb-project)
 add_dependencies(GraphPathFinderLib CLI11-project)
 add_dependencies(GraphPathFinderLib progress-cpp-project)
+add_dependencies(GraphPathFinderLib namedtype-project)
 
 # make headers available
 target_include_directories(GraphPathFinderLib INTERFACE
@@ -64,6 +66,7 @@ target_include_directories(GraphPathFinderLib INTERFACE
   fmt
   tbb
   ${CLI11_INCLUDE_DIR}
+  ${NAMEDTYPE_INCLUDE_DIR}
   ${PROGRESS_CPP_INCLUDE_DIR}
   ${NLOHMANN_INCLUDE_DIR}
   )
@@ -90,6 +93,7 @@ target_include_directories(GraphPathFinder PUBLIC
   ${CLI11_INCLUDE_DIR}
   ${PROGRESS_CPP_INCLUDE_DIR}
   ${NLOHMANN_INCLUDE_DIR}
+  ${NAMEDTYPE_INCLUDE_DIR}
   )
 
 #link against libarys

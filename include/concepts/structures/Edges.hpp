@@ -1,28 +1,29 @@
 #pragma once
 
+#include <NamedType/named_type.hpp>
 #include <span>
 
 namespace concepts::graphs {
 
+
+using EdgeID = fluent::NamedType<std::size_t, struct EdgeIDTag>;
+
 // clang-format off
 template<typename T>
-concept Edges = requires(const T& graph)
+concept Edges = requires(const T& graph, EdgeID id)
 {
     typename T::EdgeType;   // require edge type
-    typename T::EdgeIDType; // require edge id type
-
-	requires std::totally_ordered<typename T::EdgeIDType>;
 
 	/*
 	 * check if an edge associated with the given edge id exists
 	 * @return true if an edge associated with the given edge id exists, false otherwise
 	 */
-	{graph.edgeExists(T::EdgeIDType)} noexcept -> std::same_as<bool>;
+	{graph.edgeExists(id)} noexcept -> std::same_as<bool>;
 
 	/*
 	 * @return a pointer to the edge object associated with the given edge id, null if no such edge exists
 	 */
-	{graph.getEdge(T::EdgeIDType)} noexcept -> std::same_as<const typename T::EdgeType*>;
+	{graph.getEdge(id)} noexcept -> std::same_as<const typename T::EdgeType*>;
 
 	
 	/*

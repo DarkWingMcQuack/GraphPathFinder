@@ -1,24 +1,25 @@
 #pragma once
 
+#include <NamedType/named_type.hpp>
 #include <concepts>
 
 namespace concepts::graphs {
 
+using NodeID = fluent::NamedType<std::size_t, struct NodeIDTag>;
+
 // clang-format off
 template<typename T>
-concept Nodes = requires(const T& graph)
+concept Nodes = requires(const T& graph, NodeID id)
 {
     typename T::NodeType; // require node type
-    typename T::NodeIDType; // require node id type
 
     requires std::equality_comparable<typename T::NodeType>;
-    requires std::totally_ordered<typename T::NodeIDType>;
 
     /*
 	 * checks if a node with the given ID exists
 	 * @return true if a node with the given ID exists, false otherwise
 	 */
-    {graph.nodeExists(T::NodeIDType)} noexcept -> std::same_as<bool>;
+    {graph.nodeExists(id)} noexcept -> std::same_as<bool>;
 
 	/*
 	 * returns a pointer to the node class associated with the
@@ -26,7 +27,7 @@ concept Nodes = requires(const T& graph)
 	 * @return a non owning pointer to the node object associated with the given id,
 	 * null if no such object exists
 	 */
-	{graph.getNode(T::NodeIDType)} noexcept -> std::same_as<const typename T::NodeType*>;
+	{graph.getNode(id)} noexcept -> std::same_as<const typename T::NodeType*>;
 
 	
 	/*
@@ -37,4 +38,4 @@ concept Nodes = requires(const T& graph)
 
 // clang-format on
 
-} // namespace concepts
+} // namespace concepts::graphs
