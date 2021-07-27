@@ -1,15 +1,25 @@
 #pragma once
 
-#include <NamedType/named_type.hpp>
+#include <common/BasicGraphTypes.hpp>
 #include <concepts>
 
 namespace concepts::structures {
 
-using NodeID = fluent::NamedType<std::size_t, struct NodeIDTag>;
-
 // clang-format off
+template<typename Node>
+concept HasLevel = requires(const Node& node, Node& mut_node, common::NodeLevel level)
+{
+    {node.getLvl()} -> std::convertible_to<common::NodeLevel>;
+    {mut_node.setLvl(level)} -> std::same_as<void>;
+};
+
+template<typename Node>
+concept LineParseable = requires(std::string_view line){
+    {Node::parse(line)} -> std::same_as<Node>;
+}
+
 template<typename T>
-concept Nodes = requires(const T& graph, NodeID id)
+concept HasNodes = requires(const T& graph, common::NodeID id)
 {
     typename T::NodeType; // require node type
 

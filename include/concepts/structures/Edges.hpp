@@ -1,16 +1,35 @@
 #pragma once
 
-#include <NamedType/named_type.hpp>
+#include <common/BasicGraphTypes.hpp>
+#include <concepts/structures/EdgeWeights.hpp>
 #include <span>
 
 namespace concepts::structures {
 
-
-using EdgeID = fluent::NamedType<std::size_t, struct EdgeIDTag>;
-
 // clang-format off
+
+template<typename Edge>
+concept HasSource = requires(const Edge& edge, Edge& mut_node, common::NodeID src)
+{
+    {edge.getSrc()} -> std::same_as<common::NodeID>;
+    {mut_node.setSrc(src)} -> std::same_as<void>;
+};
+
+template<typename Edge>
+concept HasTarget = requires(const Edge& edge, Edge& mut_edge, common::NodeID trg)
+{
+    {edge.getTrg()} -> std::same_as<common::NodeID>;
+    {mut_edge.setTrg(trg)} -> std::same_as<void>;
+};
+
+template<typename Edge>
+concept HasWeight = requires(const Edge& e, Edge& mut_edge, common::EdgeWeight weight){
+    {e.getWeight()} -> std::convertible_to<common::EdgeWeight>;
+    {mut_edge.setWeight(weight)} -> std::same_as<void>;
+};
+
 template<typename T>
-concept Edges = requires(const T& graph, EdgeID id)
+concept HasEdges = requires(const T& graph, common::EdgeID id)
 {
     typename T::EdgeType;   // require edge type
 

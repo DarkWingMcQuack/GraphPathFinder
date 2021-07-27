@@ -1,5 +1,6 @@
 #pragma once
 
+#include <common/BasicGraphTypes.hpp>
 #include <concepts/Utils.hpp>
 #include <concepts/structures/Edges.hpp>
 #include <concepts>
@@ -7,56 +8,30 @@
 
 namespace concepts::structures {
 
-
 // clang-format off
 template<typename T>
-concept EdgeWeight = requires(T lhs, T rhs)
+concept ReadableEdgeWeights = requires(const T& graph, common::EdgeID id)
 {
-    {lhs + rhs} -> std::convertible_to<T>;
-	requires std::totally_ordered<T>;
-};
+    requires HasEdges<T>;
 
-template<typename T>
-concept EdgeWeightOpt = requires
-{
-    typename T::value_type;
-	requires EdgeWeight<typename T::value_type>;
-	requires is_optional<T>;
-};
-
-  
-
-
-template<typename T>
-concept ReadableEdgeWeights = requires(const T& graph, EdgeID id)
-{
-    requires Edges<T>;
-
-	//a graph T which wants to fullfill this concept needs a nested type WeightType
-	//which can be used as weight type and should be addable and totally ordered
-	typename T::WeightType;
-	// edge weights should be addable and totally ordered
-	requires EdgeWeight<typename T::WeightType>;
-
-	
 	/**
 	 * given an edge id, this returns the weight of the edge which is associated by the edge id
 	 * if no such edge exists it returns std::nullopt
 	 */
-	{graph.getEdgeWeight(id)} noexcept -> std::same_as<std::optional<typename T::WeightType>>;
+	{graph.getEdgeWeight(id)} noexcept -> std::convertible_to<std::optional<common::EdgeWeight>>;
 
 	
 	/**
 	 * given an edge id, this returns the weight of the edge which is associated by the edge id
 	 * if no such edge exists the returned value is unspecified and could be anything
 	 */
-	{graph.getEdgeWeightUnsafe(id)} noexcept -> std::same_as<typename T::WeightType>;
+	{graph.getEdgeWeightUnsafe(id)} noexcept -> std::convertible_to<common::EdgeWeight>;
 
 };
 
   
 template<typename T>
-concept WriteableEdgeWeights = requires(T& graph, EdgeID id, typename T::WeightType weight)
+concept WriteableEdgeWeights = requires(T& graph, common::EdgeID id, common::EdgeWeight weight)
 {
     requires ReadableEdgeWeights<T>;
 

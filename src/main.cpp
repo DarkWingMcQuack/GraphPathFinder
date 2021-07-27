@@ -9,6 +9,8 @@
 #include <concepts/structures/Nodes.hpp>
 #include <concepts/structures/Path.hpp>
 #include <fmt/core.h>
+#include <impl/graphs/ForwardOffsetArray.hpp>
+
 
 auto main() -> int
 {

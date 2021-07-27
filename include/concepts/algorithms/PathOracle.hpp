@@ -11,7 +11,7 @@ namespace concepts::algorithms {
 
 //O is a distance oracle for G
 template<typename O>
-concept PathOracle = requires(const O& oracle, structures::NodeID src, structures::NodeID trg)
+concept PathOracle = requires(const O& oracle, common::NodeID src, common::NodeID trg)
 {
 	/**
 	 * @returns an optional contaning the shortest path between src and trg, std::nullopt if no such path exists

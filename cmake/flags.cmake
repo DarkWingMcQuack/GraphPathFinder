@@ -43,5 +43,7 @@ elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
           -Wall\
           -flto\
           -O3\
+          -fipa-pta\
+          -fdevirtualize-at-ltrans\
           -march=native")
 endif()

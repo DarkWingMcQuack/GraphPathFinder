@@ -10,7 +10,7 @@ namespace concepts::oracles {
 
 //O is a distance oracle for G
 template<typename O>
-concept DistanceOracle = requires(const O& oracle, structures::NodeID src, structures::NodeID trg)
+concept DistanceOracle = requires(const O& oracle, common::NodeID src, common::NodeID trg)
 {
 	/**
 	 * @returns the shortest path distance between the nodes represented by the node ids given
@@ -18,9 +18,9 @@ concept DistanceOracle = requires(const O& oracle, structures::NodeID src, struc
 	 * and ending at the target node.
 	 * if no path between src and trg exists std::nullopt musst be returned
 	 */
-    {oracle.distanceBetween(src, trg)} noexcept -> structures::EdgeWeightOpt;
+    {oracle.distanceBetween(src, trg)} noexcept -> std::same_as<std::optional<common::EdgeWeight>>;
 
-    {oracle.distanceBetweenUnsafe(src, trg)} noexcept -> structures::EdgeWeight;
+    {oracle.distanceBetweenUnsafe(src, trg)} noexcept -> std::same_as<common::EdgeWeight>;
 };
 // clang-format on
 

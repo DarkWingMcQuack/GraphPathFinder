@@ -13,7 +13,6 @@ namespace concepts::structures {
 template<typename P>
 concept Path = requires(const P& path)
 {
-
 	/**
 	 * @returns the number of nodes this path represents
 	 */
@@ -28,20 +27,20 @@ concept Path = requires(const P& path)
 	 * @returns the source of the path if available if the path is empty this returns std::nullopt
 	 * if the path has only one node, path.source() and path.target() musst return the same result
 	 */
-	{path.source()} noexcept -> std::same_as<std::optional<NodeID>>;
+	{path.source()} noexcept -> std::same_as<std::optional<common::NodeID>>;
 
 	/**
 	 * @returns the target of the path if available if the path is empty this returns std::nullopt
 	 * if the path has only one node, path.source() and path.target() musst return the same result
 	 */
-	{path.target()} noexcept -> std::same_as<std::optional<NodeID>>;
+	{path.target()} noexcept -> std::same_as<std::optional<common::NodeID>>;
 
 	/**
 	 * this method can be used to access the total cost of the path
 	 * @returns the sum of the weights of the edges of the path. If the path is from a graph which 
 	 * does not have any edgeweights it returns the number of edges @see path.numberOfEdges
 	 */
-	{path.cost()} noexcept -> EdgeWeight;
+	{path.cost()} noexcept -> std::same_as<common::EdgeWeight>;
 
 	//TODO: paths should have the ability to iterate over their edge ids as well as their node ids
 	// {path.nodeIDs().begin()} -> ???
@@ -51,7 +50,7 @@ concept Path = requires(const P& path)
 	// {path.edgeIDs().end()}   -> ???
 };
 
-  
+ 
 template<typename T>
 concept PathOpt = requires
 {

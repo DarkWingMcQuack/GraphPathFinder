@@ -1,7 +1,5 @@
 #pragma once
 
-#include <concepts/structures/EdgeWeights.hpp>
-#include <concepts/structures/Nodes.hpp>
 #include <optional>
 #include <vector>
 
@@ -17,10 +15,5 @@ concept is_vector = is_specialization<T, std::vector>;
 
 template<class T>
 concept is_optional = is_specialization<T, std::optional>;
-
-// clang-format off
-
-
-// clang-format on
 
 } // namespace concepts
