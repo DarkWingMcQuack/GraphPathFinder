@@ -14,11 +14,13 @@ template<class T>
 auto to(const std::string_view& input) noexcept
     -> std::optional<T>
 requires
-  std::is_same_v<T, NodeID>    ||
-  std::is_same_v<T, EdgeID>    ||
-  std::is_same_v<T, Weight>    ||
-  std::is_same_v<T, NodeLevel>
-//clang-format on
+  (std::is_same_v<T, NodeID>    ||
+   std::is_same_v<T, EdgeID>    ||
+   std::is_same_v<T, Weight>    ||
+   std::is_same_v<T, NodeLevel>)
+  && std::is_integral_v<typename T::UnderlyingType>
+
+// clang-format on
 {
     typename T::UnderlyingType out;
     const auto result = std::from_chars(input.data(),
@@ -34,22 +36,35 @@ requires
 }
 
 
+// clang-format off
 template<class T>
 auto to(const std::string_view& input) noexcept
     -> std::optional<T>
-requires std::is_same_v<typename T::UnderlyingType, double>
-//clang-format on
+requires
+  (std::is_same_v<T, Longitude>    ||
+   std::is_same_v<T, Latitude>)
+  && std::is_floating_point_v<typename T::UnderlyingType>
+// clang-format on
 {
     char* end;
+    typename T::UnderlyingType d;
 
-    double d = std::strtod(input.data(), &end);
-
-    if(input.data() == end) {
-	  return std::nullopt;
+    if constexpr(std::is_same_v<typename T::UnderlyingType, double>) {
+        d = std::strtod(input.data(), &end);
+    } else if constexpr(std::is_same_v<typename T::UnderlyingType, float>) {
+        d = std::strtof(input.data(), &end);
+    } else if constexpr(std::is_same_v<typename T::UnderlyingType, long double>) {
+        d = std::strtold(input.data(), &end);
+    } else {
+        static_assert(true, "parsing not supported for the given type");
     }
 
-	return T{d};
+
+    if(input.data() == end) {
+        return std::nullopt;
+    }
+
+    return T{d};
 }
 
-  
 } // namespace common
