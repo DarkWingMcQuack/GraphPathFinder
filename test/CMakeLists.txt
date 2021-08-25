@@ -8,15 +8,18 @@ find_package(Threads REQUIRED)
 
 add_executable(unit_tests
   main.cpp
+  common/TokenizerTest.cpp
   )
 
 target_link_libraries(unit_tests LINK_PRIVATE
   gtest
+  fmt
   ${CMAKE_THREAD_LIBS_INIT})
 
 target_include_directories(
   unit_tests PUBLIC
   gtest
+  fmt
   ${CMAKE_CURRENT_SOURCE_DIR}/../include
   )
 
