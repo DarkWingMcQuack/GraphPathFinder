@@ -33,7 +33,6 @@ class OffsetArrayBackwardGraph : public OffsetArrayNodes<Node>,
     // clang-format on
 
 public:
-    //TODO: make the ctor constexpr once the compiler supports it
     OffsetArrayBackwardGraph(const std::vector<Node> &nodes,
                              const std::vector<Edge> &edges) noexcept
     {
