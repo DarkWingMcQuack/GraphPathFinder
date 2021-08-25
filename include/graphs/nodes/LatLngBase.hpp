@@ -10,25 +10,25 @@ namespace graphs {
 class LatLngBase
 {
 public:
-    constexpr LatLngBase(double lat, double lng) noexcept
+    constexpr LatLngBase(common::Latitude lat, common::Longitude lng) noexcept
         : lat_(lat),
           lng_(lng) {}
 
     constexpr auto getLat() const noexcept
-        -> double
+        -> common::Latitude
     {
         return lat_;
     }
 
     constexpr auto getLng() const noexcept
-        -> double
+        -> common::Longitude
     {
         return lng_;
     }
 
 private:
-    double lat_;
-    double lng_;
+    common::Latitude lat_;
+    common::Longitude lng_;
 };
 
 } // namespace graphs
