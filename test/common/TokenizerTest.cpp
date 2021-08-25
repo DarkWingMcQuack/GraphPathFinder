@@ -1,6 +1,5 @@
 //all the includes you want to use before the gtest include
 #include <common/Tokenizer.hpp>
-#include <fmt/core.h>
 #include <string_view>
 
 #include <gtest/gtest.h>
