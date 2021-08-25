@@ -56,11 +56,12 @@ target_sources(GraphPathFinderLib
   ${CMAKE_CURRENT_LIST_DIR}/include/common/BasicGraphTypes.hpp
   ${CMAKE_CURRENT_LIST_DIR}/include/common/EmptyBase.hpp
 
-  ${CMAKE_CURRENT_LIST_DIR}/include/graphs/nodes/IDBase.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/include/graphs/common/IDBase.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/include/graphs/common/LevelBase.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/include/graphs/common/WeightBase.hpp
+
   ${CMAKE_CURRENT_LIST_DIR}/include/graphs/nodes/LatLngBase.hpp
-  ${CMAKE_CURRENT_LIST_DIR}/include/graphs/nodes/LevelBase.hpp
   ${CMAKE_CURRENT_LIST_DIR}/include/graphs/nodes/SimpleMapNode.hpp
-  ${CMAKE_CURRENT_LIST_DIR}/include/graphs/nodes/WeightBase.hpp
 
   ${CMAKE_CURRENT_LIST_DIR}/include/graphs/offsetarray/OffsetArray.hpp
   ${CMAKE_CURRENT_LIST_DIR}/include/graphs/offsetarray/OffsetArrayBackwardGraph.hpp
