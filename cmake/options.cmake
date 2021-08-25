@@ -8,3 +8,5 @@ if(USE_CLANG)
   SET(CMAKE_OBJDUMP       "llvm-objdump")
   SET(CMAKE_RANLIB        "llvm-ranlib")
 endif(USE_CLANG)
+
+option(BUILD_TESTS "build tests" ON)

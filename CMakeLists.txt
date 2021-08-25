@@ -22,6 +22,7 @@ include(cmake/CLI11.cmake)
 include(cmake/progress.cmake)
 include(cmake/nlohmann.cmake)
 include(cmake/namedtype.cmake)
+include(cmake/gtest.cmake)
 
 message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 
@@ -125,3 +126,8 @@ target_link_libraries(GraphPathFinder LINK_PUBLIC
 # add the dependencies of the target to enforce
 # the right order of compiling
 add_dependencies(GraphPathFinder GraphPathFinderLib)
+
+if (BUILD_TESTS)
+    enable_testing()
+    add_subdirectory(test)
+endif (BUILD_TESTS)
