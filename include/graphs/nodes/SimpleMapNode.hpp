@@ -3,36 +3,31 @@
 #include <common/BasicGraphTypes.hpp>
 #include <common/EmptyBase.hpp>
 #include <common/Tokenizer.hpp>
-#include <graphs/nodes/IDBase.hpp>
+#include <graphs/common/IDBase.hpp>
+#include <graphs/common/LevelBase.hpp>
 #include <graphs/nodes/LatLngBase.hpp>
-#include <graphs/nodes/LevelBase.hpp>
 #include <string_view>
 
 namespace graphs {
 
 
 template<bool HasLevel>
-class SimpleMapNode : public IDBase,
-                      public LatLngBase,
+class SimpleMapNode : public LatLngBase,
                       public std::conditional_t<HasLevel,
                                                 LevelBase,
                                                 common::EmptyBase1>
 {
 public:
-    constexpr SimpleMapNode(common::NodeID id,
-                            common::Latitude lat,
+    constexpr SimpleMapNode(common::Latitude lat,
                             common::Longitude lng) noexcept
         requires(!HasLevel)
-        : IDBase(id),
-          LatLngBase(lat, lng) {}
+        : LatLngBase(lat, lng) {}
 
-    constexpr SimpleMapNode(common::NodeID id,
-                            common::Latitude lat,
+    constexpr SimpleMapNode(common::Latitude lat,
                             common::Longitude lng,
                             common::NodeLevel lvl) noexcept
         requires HasLevel
-        : IDBase(id),
-          LatLngBase(lat, lng),
+        : LatLngBase(lat, lng),
           LevelBase(lvl) {}
 
     // clang-format off
