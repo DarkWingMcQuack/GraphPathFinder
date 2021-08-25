@@ -9,6 +9,7 @@ find_package(Threads REQUIRED)
 add_executable(unit_tests
   main.cpp
   common/TokenizerTest.cpp
+  common/ParsingTest.cpp
   )
 
 target_link_libraries(unit_tests LINK_PRIVATE
@@ -20,6 +21,7 @@ target_include_directories(
   unit_tests PUBLIC
   gtest
   fmt
+  ${NAMEDTYPE_INCLUDE_DIR}
   ${CMAKE_CURRENT_SOURCE_DIR}/../include
   )
 
