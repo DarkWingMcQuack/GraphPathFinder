@@ -1,6 +1,6 @@
 #pragma once
 
-#include <concepts/structures/Nodes.hpp>
+#include <concepts/Nodes.hpp>
 #include <concepts>
 #include <optional>
 #include <span>

@@ -42,17 +42,32 @@ add_library(GraphPathFinderLib INTERFACE)
 
 target_sources(GraphPathFinderLib
   INTERFACE
-  ${CMAKE_CURRENT_LIST_DIR}/include/concepts/structures/Nodes.hpp
-  ${CMAKE_CURRENT_LIST_DIR}/include/concepts/structures/Edges.hpp
-  ${CMAKE_CURRENT_LIST_DIR}/include/concepts/structures/EdgeWeights.hpp
-  ${CMAKE_CURRENT_LIST_DIR}/include/concepts/structures/NodeLevels.hpp
-  ${CMAKE_CURRENT_LIST_DIR}/include/concepts/structures/BackwardGraph.hpp
-  ${CMAKE_CURRENT_LIST_DIR}/include/concepts/structures/ForwardGraph.hpp
-
+  ${CMAKE_CURRENT_LIST_DIR}/include/concepts/Nodes.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/include/concepts/Edges.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/include/concepts/EdgeWeights.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/include/concepts/NodeLevels.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/include/concepts/BackwardGraph.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/include/concepts/ForwardGraph.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/include/concepts/DistanceOracle.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/include/concepts/PathOracle.hpp
   ${CMAKE_CURRENT_LIST_DIR}/include/concepts/Utils.hpp
 
-  ${CMAKE_CURRENT_LIST_DIR}/include/concepts/algorithms/DistanceOracle.hpp
-  ${CMAKE_CURRENT_LIST_DIR}/include/concepts/algorithms/PathOracle.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/include/common/BasicGraphTypes.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/include/common/EmptyBase.hpp
+
+  ${CMAKE_CURRENT_LIST_DIR}/include/graphs/nodes/IDBase.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/include/graphs/nodes/LatLngBase.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/include/graphs/nodes/LevelBase.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/include/graphs/nodes/SimpleMapNode.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/include/graphs/nodes/WeightBase.hpp
+
+  ${CMAKE_CURRENT_LIST_DIR}/include/graphs/offsetarray/OffsetArray.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/include/graphs/offsetarray/OffsetArrayBackwardGraph.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/include/graphs/offsetarray/OffsetArrayForwardGraph.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/include/graphs/offsetarray/OffsetArrayNodes.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/include/graphs/offsetarray/OffsetArrayEdges.hpp
+
+  ${CMAKE_CURRENT_LIST_DIR}/include/parsing/offsetarray/Parser.hpp
   )
 
 # add the dependencies of the target to enforce

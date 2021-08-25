@@ -1,8 +1,8 @@
 #pragma once
 
 #include <common/BasicGraphTypes.hpp>
-#include <concepts/structures/Edges.hpp>
-#include <concepts/structures/Nodes.hpp>
+#include <concepts/Edges.hpp>
+#include <concepts/Nodes.hpp>
 #include <span>
 
 namespace concepts::structures {

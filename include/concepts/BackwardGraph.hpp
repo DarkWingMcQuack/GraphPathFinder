@@ -1,7 +1,8 @@
 #pragma once
 
-#include <concepts/structures/Edges.hpp>
-#include <concepts/structures/Nodes.hpp>
+#include <concepts/BackwardEdgeView.hpp>
+#include <concepts/Edges.hpp>
+#include <concepts/Nodes.hpp>
 #include <span>
 
 namespace concepts::structures {
@@ -18,13 +19,12 @@ concept BackwardGraph = requires(const T& graph, common::NodeID src, common::Nod
 	 * the two nodes associated by the given node ids, null if no such edge exists
 	 * or if one of the two nodes does not exist.
 	 */
-	{graph.getBackwardEdgeIDBetween(src, trg)} noexcept -> std::same_as<const common::EdgeID*>;
+	{graph.getBackwardEdgeIDBetween(src, trg)} noexcept -> std::same_as<std::optional<common::EdgeID>>;
 
 	/**
 	 * like getEdgeIDBetween but returns a pointer to the acutal edge object instead of the id
 	 */
-	{graph.getBackwardEdgeBetween(src, trg)} noexcept -> std::same_as<const typename T::EdgeType*>;
-
+	{graph.getBackwardEdgeBetween(src, trg)} noexcept -> std::same_as<const BackwardEdgeView<typename T::EdgeType>*>;
 
 	/**
 	 * @return an span which contains edge ids which are associated with all outgoing edges of a node associated

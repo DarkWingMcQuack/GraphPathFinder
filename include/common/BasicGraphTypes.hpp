@@ -8,7 +8,7 @@ namespace common {
 // clang-format off
 using NodeID     = fluent::NamedType<std::size_t, struct NodeIDTag>;
 using EdgeID     = fluent::NamedType<std::size_t, struct EdgeIDTag>;
-using EdgeWeight = fluent::NamedType<std::int_fast64_t, struct EdgeWeightTag>;
+using Weight     = fluent::NamedType<std::int_fast64_t, struct WeightTag>;
 using NodeLevel  = fluent::NamedType<std::int_fast64_t, struct NodeLevelTag>;
 // clang-format on
 

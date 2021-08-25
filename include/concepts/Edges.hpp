@@ -1,7 +1,6 @@
 #pragma once
 
 #include <common/BasicGraphTypes.hpp>
-#include <concepts/structures/EdgeWeights.hpp>
 #include <span>
 
 namespace concepts::structures {
@@ -23,8 +22,8 @@ concept HasTarget = requires(const Edge& edge, Edge& mut_edge, common::NodeID tr
 };
 
 template<typename Edge>
-concept HasWeight = requires(const Edge& e, Edge& mut_edge, common::EdgeWeight weight){
-    {e.getWeight()} -> std::convertible_to<common::EdgeWeight>;
+concept HasWeight = requires(const Edge& e, Edge& mut_edge, common::Weight weight){
+    {e.getWeight()} -> std::convertible_to<common::Weight>;
     {mut_edge.setWeight(weight)} -> std::same_as<void>;
 };
 

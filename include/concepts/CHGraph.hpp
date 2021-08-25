@@ -1,9 +1,9 @@
 #pragma once
 
-#include <concepts/structures/BackwardGraph.hpp>
-#include <concepts/structures/EdgeWeights.hpp>
-#include <concepts/structures/ForwardGraph.hpp>
-#include <concepts/structures/NodeLevels.hpp>
+#include <concepts/BackwardGraph.hpp>
+#include <concepts/EdgeWeights.hpp>
+#include <concepts/ForwardGraph.hpp>
+#include <concepts/NodeLevels.hpp>
 #include <span>
 
 namespace concepts::structures {

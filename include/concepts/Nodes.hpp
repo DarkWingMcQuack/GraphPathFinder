@@ -13,11 +13,6 @@ concept HasLevel = requires(const Node& node, Node& mut_node, common::NodeLevel 
     {mut_node.setLvl(level)} -> std::same_as<void>;
 };
 
-template<typename Node>
-concept LineParseable = requires(std::string_view line){
-    {Node::parse(line)} -> std::same_as<Node>;
-}
-
 template<typename T>
 concept HasNodes = requires(const T& graph, common::NodeID id)
 {
