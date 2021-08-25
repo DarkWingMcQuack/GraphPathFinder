@@ -21,18 +21,6 @@ public:
     {
         return static_cast<const Edge&>(*this).getTrg();
     }
-
-    constexpr auto setSrc(common::NodeID new_src) noexcept
-        -> common::NodeID override
-    {
-        return static_cast<const Edge&>(*this).setTrg(new_src);
-    }
-
-    constexpr auto setTrg(common::NodeID new_trg) noexcept
-        -> common::NodeID override
-    {
-        return static_cast<const Edge&>(*this).setSrc(new_trg);
-    }
 };
 
 } // namespace concepts::structures

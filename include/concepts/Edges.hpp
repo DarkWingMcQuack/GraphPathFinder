@@ -8,17 +8,15 @@ namespace concepts::structures {
 // clang-format off
 
 template<typename Edge>
-concept HasSource = requires(const Edge& edge, Edge& mut_node, common::NodeID src)
+concept HasSource = requires(const Edge& edge, common::NodeID src)
 {
     {edge.getSrc()} -> std::same_as<common::NodeID>;
-    {mut_node.setSrc(src)} -> std::same_as<void>;
 };
 
 template<typename Edge>
-concept HasTarget = requires(const Edge& edge, Edge& mut_edge, common::NodeID trg)
+concept HasTarget = requires(const Edge& edge, common::NodeID trg)
 {
     {edge.getTrg()} -> std::same_as<common::NodeID>;
-    {mut_edge.setTrg(trg)} -> std::same_as<void>;
 };
 
 template<typename Edge>
