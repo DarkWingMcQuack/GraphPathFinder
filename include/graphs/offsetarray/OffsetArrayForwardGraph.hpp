@@ -13,24 +13,24 @@ namespace graphs {
 
 template<class Node, class Edge>
 // the edges need to be able to access the target they are pointing to
-requires concepts::structures::HasTarget<Edge>
+requires concepts::HasTarget<Edge>
 class OffsetArrayForwardGraph : public OffsetArrayNodes<Node>,
                                 public OffsetArrayEdges<Edge>
 {
-    static_assert(concepts::structures::ForwardGraph<OffsetArrayForwardGraph<Node, Edge>>);
-    static_assert(concepts::structures::HasNodes<OffsetArrayForwardGraph<Node, Edge>>);
-    static_assert(concepts::structures::HasEdges<OffsetArrayForwardGraph<Node, Edge>>);
+    static_assert(concepts::ForwardGraph<OffsetArrayForwardGraph<Node, Edge>>);
+    static_assert(concepts::HasNodes<OffsetArrayForwardGraph<Node, Edge>>);
+    static_assert(concepts::HasEdges<OffsetArrayForwardGraph<Node, Edge>>);
     // clang-format off
-    static_assert(!concepts::structures::HasWeight<Edge>
-				  || concepts::structures::WriteableEdgeWeights<OffsetArrayForwardGraph<Node, Edge>>);
-    static_assert(!concepts::structures::HasLevel<Node>
-				  || concepts::structures::WriteableNodeLevels<OffsetArrayForwardGraph<Node, Edge>>);
+    static_assert(!concepts::HasWeight<Edge>
+				  || concepts::WriteableEdgeWeights<OffsetArrayForwardGraph<Node, Edge>>);
+    static_assert(!concepts::HasLevel<Node>
+				  || concepts::WriteableNodeLevels<OffsetArrayForwardGraph<Node, Edge>>);
     // clang-format on
 
 public:
     OffsetArrayForwardGraph(const std::vector<Node> &nodes,
                             const std::vector<Edge> &edges) noexcept
-        requires concepts::structures::HasSource<Edge>
+        requires concepts::HasSource<Edge>
     {
         //build an adjacency list which then can be converted to an offset array
         std::vector<std::vector<common::EdgeID>> adjacency_list(nodes.size());

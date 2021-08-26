@@ -1,6 +1,6 @@
 #pragma once
 
-#include <concepts/BackwardEdgeView.hpp>
+#include <common/BackwardEdgeView.hpp>
 #include <concepts/BackwardGraph.hpp>
 #include <concepts/Edges.hpp>
 #include <concepts/ForwardGraph.hpp>
@@ -17,19 +17,19 @@ template<class Node, class Edge>
 // as well as the source from which they are starting from,
 // this is needed to build Backwardedgeviews from Edges which inverts source and targets
 // to get a backward edge
-requires concepts::structures::HasTarget<Edge> && concepts::structures::HasSource<Edge>
+requires concepts::HasTarget<Edge> && concepts::HasSource<Edge>
 class OffsetArrayBackwardGraph : public OffsetArrayNodes<Node>,
                                  public OffsetArrayEdges<Edge>
 {
-    static_assert(concepts::structures::BackwardGraph<OffsetArrayBackwardGraph<Node, Edge>>);
-    static_assert(concepts::structures::HasNodes<OffsetArrayBackwardGraph<Node, Edge>>);
-    static_assert(concepts::structures::HasEdges<OffsetArrayBackwardGraph<Node, Edge>>);
+    static_assert(concepts::BackwardGraph<OffsetArrayBackwardGraph<Node, Edge>>);
+    static_assert(concepts::HasNodes<OffsetArrayBackwardGraph<Node, Edge>>);
+    static_assert(concepts::HasEdges<OffsetArrayBackwardGraph<Node, Edge>>);
 
     // clang-format off
-    static_assert(!concepts::structures::HasWeight<Edge>
-				  || concepts::structures::WriteableEdgeWeights<OffsetArrayBackwardGraph<Node, Edge>>);
-    static_assert(!concepts::structures::HasLevel<Node>
-				  || concepts::structures::WriteableNodeLevels<OffsetArrayBackwardGraph<Node, Edge>>);
+    static_assert(!concepts::HasWeight<Edge>
+				  || concepts::WriteableEdgeWeights<OffsetArrayBackwardGraph<Node, Edge>>);
+    static_assert(!concepts::HasLevel<Node>
+				  || concepts::WriteableNodeLevels<OffsetArrayBackwardGraph<Node, Edge>>);
     // clang-format on
 
 public:
@@ -86,16 +86,16 @@ public:
 
     constexpr auto getBackwardEdgeBetween(common::NodeID from,
                                           common::NodeID to) const noexcept
-        -> concepts::structures::BackwardEdgeView<Edge>
+        -> common::BackwardEdgeView<Edge>
     {
         if(auto id_opt = getBackwardEdgeIDBetween(from, to)) {
             const auto *edge = getEdge(id_opt.value());
 
-            return concepts::structures::BackwardEdgeView<Edge>(edge);
+            return common::BackwardEdgeView<Edge>(edge);
         }
 
         //TODO: think about a way to avoid this
-        return concepts::structures::BackwardEdgeView<Edge>(nullptr);
+        return common::BackwardEdgeView<Edge>(nullptr);
     }
 
     constexpr auto getBackwardEdgeIDsOf(common::NodeID node) const noexcept

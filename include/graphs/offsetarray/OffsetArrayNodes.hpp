@@ -9,9 +9,9 @@ namespace graphs {
 template<class Node>
 class OffsetArrayNodes
 {
-    static_assert(concepts::structures::HasNodes<OffsetArrayNodes<Node>>);
+    static_assert(concepts::HasNodes<OffsetArrayNodes<Node>>);
     // Nodes have levels -> OffsetarrayNodes are node level writeable
-    static_assert(!concepts::structures::HasLevel<Node> || concepts::structures::WriteableNodeLevels<OffsetArrayNodes<Node>>);
+    static_assert(!concepts::HasLevel<Node> || concepts::WriteableNodeLevels<OffsetArrayNodes<Node>>);
 
 public:
     using NodeType = Node;
@@ -42,7 +42,7 @@ public:
     // clang-format off
     constexpr auto getNodeLevel(common::NodeID id) const noexcept
         -> std::optional<common::NodeLevel>
-	    requires concepts::structures::HasLevel<NodeType>
+	    requires concepts::HasLevel<NodeType>
     // clang-format on
     {
         if(const auto *node = getNode(id)) {
@@ -55,7 +55,7 @@ public:
     // clang-format off
     constexpr auto getNodeLevelUnsafe(common::NodeID id) const noexcept
         -> common::NodeLevel
-        requires concepts::structures::HasLevel<NodeType>
+        requires concepts::HasLevel<NodeType>
     //clang-format on
     {
         return getNode(id)->getLevel();
@@ -64,7 +64,7 @@ public:
     // clang-format off
     constexpr auto setNodeLevel(common::NodeID id, common::NodeLevel lvl) noexcept
         -> void
-	    requires concepts::structures::HasLevel<NodeType>
+	    requires concepts::HasLevel<NodeType>
     // clang-format on
     {
         if(const auto *node = getNode(id)) {

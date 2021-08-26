@@ -10,11 +10,11 @@ template<class Edge>
 class OffsetArrayEdges
 {
     // clang-format off
-    static_assert(concepts::structures::HasEdges<OffsetArrayEdges<Edge>>);
+    static_assert(concepts::HasEdges<OffsetArrayEdges<Edge>>);
 
     // Edges have weights -> Offsetarrayedges has writable edgeweights
-    static_assert(!concepts::structures::HasWeight<Edge>
-				  || concepts::structures::WriteableEdgeWeights<OffsetArrayEdges<Edge>>);
+    static_assert(!concepts::HasWeight<Edge>
+				  || concepts::WriteableEdgeWeights<OffsetArrayEdges<Edge>>);
     // clang-format on
 
 public:
@@ -44,7 +44,7 @@ public:
     // clang-format off
     constexpr auto getEdgeWeight(common::EdgeID id) const noexcept
         -> std::optional<common::Weight>
-	    requires concepts::structures::HasWeight<EdgeType>
+	    requires concepts::HasWeight<EdgeType>
     // clang-format on
     {
         if(const auto *edge = getEdge(id)) {
@@ -56,7 +56,7 @@ public:
     // clang-format off
     constexpr auto getEdgeWeightUnsafe(common::EdgeID id) const noexcept
         -> common::Weight
-	    requires concepts::structures::HasWeight<EdgeType>
+	    requires concepts::HasWeight<EdgeType>
     // clang-format on
     {
         return getEdge(id)->getWeight();
@@ -65,7 +65,7 @@ public:
     // clang-format off
     constexpr auto setEdgeWeight(common::EdgeID id, common::Weight weight) const noexcept
         -> void
-	    requires concepts::structures::HasWeight<EdgeType>
+	    requires concepts::HasWeight<EdgeType>
     // clang-format on
     {
         if(const auto *edge = getEdge(id)) {

@@ -15,7 +15,7 @@ template<class Node,
 //currently edges need to have source and target available
 //this can be relaxed in the future such that OffsetArrayForwardGraph do not require the
 //HasSource concept, but currently this is needed in the ctor of OffsetArrayForwardGraph
-requires concepts::structures::HasSource<Edge> && concepts::structures::HasTarget<Edge>
+requires concepts::HasSource<Edge> && concepts::HasTarget<Edge>
 class OffsetArray : public std::conditional_t<HasForwardEdges,
                                               OffsetArrayForwardGraph<Node, Edge>,
                                               common::EmptyBase1>,
@@ -28,24 +28,24 @@ class OffsetArray : public std::conditional_t<HasForwardEdges,
 				  "a graph without forward or backward edges is not allowed");
 
     static_assert(!HasForwardEdges
-				  || concepts::structures::ForwardGraph<OffsetArray<Node, Edge, HasForwardEdges, HasBackwardEdges>>,
+				  || concepts::ForwardGraph<OffsetArray<Node, Edge, HasForwardEdges, HasBackwardEdges>>,
                   "a graph which has forward edges should fullfill the ForwardGraph concept");
 
     static_assert(!HasBackwardEdges
-				  || concepts::structures::BackwardGraph<OffsetArray<Node, Edge, HasForwardEdges, HasBackwardEdges>>,
+				  || concepts::BackwardGraph<OffsetArray<Node, Edge, HasForwardEdges, HasBackwardEdges>>,
                   "a graph which has backward edges should fullfill the BackwardGraph concept");
 
-    static_assert(concepts::structures::HasNodes<OffsetArray<Node, Edge, HasForwardEdges, HasBackwardEdges>>,
+    static_assert(concepts::HasNodes<OffsetArray<Node, Edge, HasForwardEdges, HasBackwardEdges>>,
                   "the graph should fullfill the HasNodes concept");
 
-    static_assert(concepts::structures::HasEdges<OffsetArray<Node, Edge, HasForwardEdges, HasBackwardEdges>>,
+    static_assert(concepts::HasEdges<OffsetArray<Node, Edge, HasForwardEdges, HasBackwardEdges>>,
                   "the graph should fullfill the HasEdges concept");
 
-    static_assert(!concepts::structures::HasWeight<Edge>
-				  || concepts::structures::WriteableEdgeWeights<OffsetArray<Node, Edge, HasForwardEdges, HasBackwardEdges>>,
+    static_assert(!concepts::HasWeight<Edge>
+				  || concepts::WriteableEdgeWeights<OffsetArray<Node, Edge, HasForwardEdges, HasBackwardEdges>>,
                   "a graph with edges which fullfill the HasWeight concept should itself fullfill the WriteableEdgeWeights concept");
-    static_assert(!concepts::structures::HasLevel<Node>
-				  || concepts::structures::WriteableNodeLevels<OffsetArray<Node, Edge, HasForwardEdges, HasBackwardEdges>>,
+    static_assert(!concepts::HasLevel<Node>
+				  || concepts::WriteableNodeLevels<OffsetArray<Node, Edge, HasForwardEdges, HasBackwardEdges>>,
                   "a graph with nodes which fullfill the HasLevel concept should itself fullfill the WriteableNodeLevels concept");
     // clang-format on
 
