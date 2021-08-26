@@ -27,9 +27,9 @@ public:
     {
         const auto [src, trg, weight] = common::extractFirstN<3>(str, ",");
 
-        auto src_opt = common::to<common::NodeID>(src);
-        auto trg_opt = common::to<common::NodeID>(trg);
-        auto weight_opt = common::to<common::Weight>(weight);
+        const auto src_opt = common::to<common::NodeID>(src);
+        const auto trg_opt = common::to<common::NodeID>(trg);
+        const auto weight_opt = common::to<common::Weight>(weight);
 
         if(!src_opt or !trg_opt or !weight_opt) {
             return std::nullopt;
