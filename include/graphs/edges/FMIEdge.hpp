@@ -4,7 +4,7 @@
 #include <common/EmptyBase.hpp>
 #include <common/Parsing.hpp>
 #include <common/Tokenizer.hpp>
-#include <graphs/edges/ShortcurtBase.hpp>
+#include <graphs/edges/ShortcutBase.hpp>
 #include <graphs/edges/WeightedEdge.hpp>
 #include <string_view>
 
