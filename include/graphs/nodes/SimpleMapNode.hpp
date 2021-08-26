@@ -2,6 +2,7 @@
 
 #include <common/BasicGraphTypes.hpp>
 #include <common/EmptyBase.hpp>
+#include <common/Parsing.hpp>
 #include <common/Tokenizer.hpp>
 #include <graphs/common/IDBase.hpp>
 #include <graphs/common/LevelBase.hpp>
@@ -36,6 +37,18 @@ public:
 	    requires HasLevel
     // clang-format on
     {
+        auto [_, lat_sv, lng_sv, lvl_sv] = common::extractFirstN<4>(str, ",");
+        auto lat_opt = common::to<common::Latitude>(lat_sv);
+        auto lng_opt = common::to<common::Longitude>(lng_sv);
+        auto lvl_opt = common::to<common::NodeLevel>(lng_sv);
+
+        if(!lat_opt or !lng_opt or !lvl_opt) {
+            return std::nullopt;
+        }
+
+        return SimpleMapNode<HasLevel>{lat_opt.value(),
+                                       lng_opt.value(),
+                                       lvl_opt.value()};
     }
 
     // clang-format off
@@ -44,6 +57,17 @@ public:
 	    requires (!HasLevel)
     // clang-format on
     {
+        auto [_, lat_sv, lng_sv] = common::extractFirstN<3>(str, ",");
+
+        auto lat_opt = common::to<common::Latitude>(lat_sv);
+        auto lng_opt = common::to<common::Longitude>(lng_sv);
+
+        if(!lat_opt or !lng_opt) {
+            return std::nullopt;
+        }
+
+        return SimpleMapNode<HasLevel>{lat_opt.value(),
+                                       lng_opt.value()};
     }
 };
 
