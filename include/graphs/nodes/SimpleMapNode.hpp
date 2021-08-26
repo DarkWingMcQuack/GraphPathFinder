@@ -37,10 +37,10 @@ public:
 	    requires HasLevel
     // clang-format on
     {
-        auto [_, lat_sv, lng_sv, lvl_sv] = common::extractFirstN<4>(str, ",");
-        auto lat_opt = common::to<common::Latitude>(lat_sv);
-        auto lng_opt = common::to<common::Longitude>(lng_sv);
-        auto lvl_opt = common::to<common::NodeLevel>(lng_sv);
+        const auto [_, lat_sv, lng_sv, lvl_sv] = common::extractFirstN<4>(str, ",");
+        const auto lat_opt = common::to<common::Latitude>(lat_sv);
+        const auto lng_opt = common::to<common::Longitude>(lng_sv);
+        const auto lvl_opt = common::to<common::NodeLevel>(lng_sv);
 
         if(!lat_opt or !lng_opt or !lvl_opt) {
             return std::nullopt;
@@ -57,10 +57,10 @@ public:
 	    requires (!HasLevel)
     // clang-format on
     {
-        auto [_, lat_sv, lng_sv] = common::extractFirstN<3>(str, ",");
+        const auto [_, lat_sv, lng_sv] = common::extractFirstN<3>(str, ",");
 
-        auto lat_opt = common::to<common::Latitude>(lat_sv);
-        auto lng_opt = common::to<common::Longitude>(lng_sv);
+        const auto lat_opt = common::to<common::Latitude>(lat_sv);
+        const auto lng_opt = common::to<common::Longitude>(lng_sv);
 
         if(!lat_opt or !lng_opt) {
             return std::nullopt;

@@ -72,7 +72,9 @@ public:
         const auto edge_ids = getForwardEdgeBetween(from, to);
         const auto iter = std::find(std::begin(edge_ids),
                                     std::end(edge_ids),
-                                    [&](auto id) { return getEdge(id)->getTrg() == to; });
+                                    [&](auto id) {
+                                        return getEdge(id)->getTrg() == to;
+                                    });
 
         if(iter != std::end(edge_ids)) {
             return *iter;

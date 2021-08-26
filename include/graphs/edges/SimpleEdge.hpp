@@ -25,8 +25,8 @@ public:
     {
         const auto [src, trg] = common::extractFirstN<2>(str, ",");
 
-        auto src_opt = common::to<common::NodeID>(src);
-        auto trg_opt = common::to<common::NodeID>(trg);
+        const auto src_opt = common::to<common::NodeID>(src);
+        const auto trg_opt = common::to<common::NodeID>(trg);
 
         if(!src_opt or !trg_opt) {
             return std::nullopt;
