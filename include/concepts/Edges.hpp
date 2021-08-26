@@ -3,7 +3,7 @@
 #include <common/BasicGraphTypes.hpp>
 #include <span>
 
-namespace concepts::structures {
+namespace concepts {
 
 // clang-format off
 
@@ -50,4 +50,4 @@ concept HasEdges = requires(const T& graph, common::EdgeID id)
 
 // clang-format on
 
-} // namespace concepts::structures
+} // namespace concepts

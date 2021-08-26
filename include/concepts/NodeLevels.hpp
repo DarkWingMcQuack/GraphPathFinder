@@ -5,7 +5,7 @@
 #include <optional>
 #include <span>
 
-namespace concepts::structures {
+namespace concepts {
 
 
 // clang-format off
@@ -41,4 +41,4 @@ concept WriteableNodeLevels = requires(T& graph, common::NodeID id, common::Node
 };
 // clang-format on
 
-} // namespace concepts::structures
+} // namespace concepts

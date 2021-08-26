@@ -1,12 +1,12 @@
 #pragma once
 
+#include <concepts/EdgeWeights.hpp>
+#include <concepts/Nodes.hpp>
 #include <concepts/Utils.hpp>
-#include <concepts/structures/EdgeWeights.hpp>
-#include <concepts/structures/Nodes.hpp>
 #include <optional>
 #include <span>
 
-namespace concepts::structures {
+namespace concepts {
 
 // clang-format off
 
@@ -40,7 +40,7 @@ concept Path = requires(const P& path)
 	 * @returns the sum of the weights of the edges of the path. If the path is from a graph which 
 	 * does not have any edgeweights it returns the number of edges @see path.numberOfEdges
 	 */
-	{path.cost()} noexcept -> std::same_as<common::EdgeWeight>;
+	{path.cost()} noexcept -> std::same_as<common::Weight>;
 
 	//TODO: paths should have the ability to iterate over their edge ids as well as their node ids
 	// {path.nodeIDs().begin()} -> ???
@@ -61,4 +61,4 @@ concept PathOpt = requires
 
 // clang-format on
 
-} // namespace concepts::structures
+} // namespace concepts

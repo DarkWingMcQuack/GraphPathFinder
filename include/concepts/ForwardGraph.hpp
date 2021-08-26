@@ -5,7 +5,7 @@
 #include <concepts/Nodes.hpp>
 #include <span>
 
-namespace concepts::structures {
+namespace concepts {
 
 // clang-format off
 template<typename T>
@@ -49,4 +49,4 @@ concept ForwardGraph = requires(const T& graph, T& mut_graph, common::NodeID src
 };
 // clang-format on
 
-} // namespace concepts::structures
+} // namespace concepts

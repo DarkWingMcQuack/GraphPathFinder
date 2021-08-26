@@ -3,7 +3,7 @@
 #include <common/BasicGraphTypes.hpp>
 #include <concepts>
 
-namespace concepts::structures {
+namespace concepts {
 
 // clang-format off
 template<typename Node>
@@ -43,4 +43,4 @@ concept HasNodes = requires(const T& graph, common::NodeID id)
 
 // clang-format on
 
-} // namespace concepts::structures
+} // namespace concepts

@@ -6,7 +6,7 @@
 #include <concepts/NodeLevels.hpp>
 #include <span>
 
-namespace concepts::structures {
+namespace concepts {
 
 template<typename T>
 concept CHGraph = ForwardGraph<T> && BackwardGraph<T> && ReadableEdgeWeights<T> && ReadableNodeLevels<T>;

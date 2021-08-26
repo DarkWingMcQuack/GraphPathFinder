@@ -5,7 +5,7 @@
 #include <concepts/Nodes.hpp>
 #include <span>
 
-namespace concepts::structures {
+namespace concepts {
 
 // clang-format off
 template<typename T>
@@ -34,4 +34,4 @@ concept BackwardGraph = requires(const T& graph, common::NodeID src, common::Nod
 };
 // clang-format on
 
-} // namespace concepts::structures
+} // namespace concepts

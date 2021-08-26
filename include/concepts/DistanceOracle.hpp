@@ -4,7 +4,7 @@
 #include <concepts/structures/Nodes.hpp>
 #include <optional>
 
-namespace concepts::oracles {
+namespace concepts {
 
 // clang-format off
 
@@ -24,4 +24,4 @@ concept DistanceOracle = requires(const O& oracle, common::NodeID src, common::N
 };
 // clang-format on
 
-} // namespace concepts::oracles
+} // namespace concepts

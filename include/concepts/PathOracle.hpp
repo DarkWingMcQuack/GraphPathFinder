@@ -1,11 +1,11 @@
 #pragma once
 
-#include <concepts/structures/EdgeWeights.hpp>
-#include <concepts/structures/Nodes.hpp>
-#include <concepts/structures/Path.hpp>
+#include <concepts/EdgeWeights.hpp>
+#include <concepts/Nodes.hpp>
+#include <concepts/Path.hpp>
 #include <optional>
 
-namespace concepts::algorithms {
+namespace concepts {
 
 // clang-format off
 
@@ -16,8 +16,8 @@ concept PathOracle = requires(const O& oracle, common::NodeID src, common::NodeI
 	/**
 	 * @returns an optional contaning the shortest path between src and trg, std::nullopt if no such path exists
 	 */
-    {oracle.pathBetween(src, trg)} noexcept -> structures::PathOpt;
+    {oracle.pathBetween(src, trg)} noexcept -> PathOpt;
 };
 // clang-format on
 
-} // namespace concepts::algorithms
+} // namespace concepts

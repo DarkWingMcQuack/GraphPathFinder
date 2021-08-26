@@ -6,7 +6,7 @@
 #include <concepts>
 #include <optional>
 
-namespace concepts::structures {
+namespace concepts {
 
 // clang-format off
 template<typename T>
@@ -42,4 +42,4 @@ concept WriteableEdgeWeights = requires(T& graph, common::EdgeID id, common::Wei
 };
 // clang-format on
 
-} // namespace concepts::structures
+} // namespace concepts

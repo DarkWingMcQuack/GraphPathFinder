@@ -2,11 +2,11 @@
 
 #include <concepts/Edges.hpp>
 
-namespace concepts::structures {
+namespace common {
 
 // can be used to get a view of an edge with source and target inversed
 template<class Edge>
-requires HasSource<Edge> && HasTarget<Edge>
+requires concepts::HasSource<Edge> && concepts::HasTarget<Edge>
 class BackwardEdgeView : public Edge
 {
 public:
@@ -23,4 +23,4 @@ public:
     }
 };
 
-} // namespace concepts::structures
+} // namespace common
