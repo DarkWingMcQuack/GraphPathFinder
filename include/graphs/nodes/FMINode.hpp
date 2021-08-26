@@ -39,6 +39,19 @@ public:
           id2_(id2),
           elev_(ele) {}
 
+    constexpr FMINode(const FMINode<HasLevel>&) noexcept = default;
+    constexpr FMINode(FMINode<HasLevel>&&) noexcept = default;
+
+    constexpr auto operator=(const FMINode<HasLevel>&) noexcept
+        -> FMINode<HasLevel>& = default;
+    constexpr auto operator=(FMINode<HasLevel>&&) noexcept
+        -> FMINode<HasLevel>& = default;
+
+    constexpr auto operator==(const FMINode<HasLevel>&) const noexcept
+        -> bool = default;
+    constexpr auto operator!=(const FMINode<HasLevel>&) const noexcept
+        -> bool = default;
+
     constexpr auto getID2() noexcept
         -> common::NodeID
     {
@@ -52,7 +65,7 @@ public:
     }
 
     // clang-format off
-    constexpr static auto parse(std::string_view str) noexcept
+    static auto parse(std::string_view str) noexcept
         -> std::optional<FMINode<HasLevel>>
 	    requires HasLevel
     // clang-format on
@@ -79,7 +92,7 @@ public:
     }
 
     // clang-format off
-    constexpr static auto parse(std::string_view str) noexcept
+    static auto parse(std::string_view str) noexcept
         -> std::optional<FMINode<HasLevel>>
 	    requires (!HasLevel)
     // clang-format on

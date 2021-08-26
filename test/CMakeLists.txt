@@ -13,6 +13,7 @@ add_executable(unit_tests
   common/BackwardEdgeViewTest.cpp
   graphs/nodes/FMINodeTest.cpp
   graphs/edges/FMIEdgeTest.cpp
+  graphs/offsetarray/OffsetArrayTest.cpp
   )
 
 target_link_libraries(unit_tests LINK_PRIVATE
@@ -32,6 +33,7 @@ add_test(
   NAME unit_tests
   COMMAND
   ${CMAKE_BINARY_DIR}/test/unit_tests
+  ${CMAKE_CURRENT_SOURCE_DIR}/data/
   )
 
 

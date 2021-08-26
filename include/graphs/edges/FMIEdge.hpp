@@ -60,7 +60,7 @@ public:
         return type_;
     }
 
-    constexpr static auto parse(std::string_view str) noexcept
+    static auto parse(std::string_view str) noexcept
         -> std::optional<FMIEdge>
     requires(!HasShortcuts)
     // clang-format on
@@ -84,7 +84,7 @@ public:
                                      type_opt.value()};
     }
 
-    constexpr static auto parse(std::string_view str) noexcept
+    static auto parse(std::string_view str) noexcept
         -> std::optional<FMIEdge>
     requires HasShortcuts
     // clang-format on

@@ -3,7 +3,9 @@
 #include <common/EmptyBase.hpp>
 #include <concepts/Parseable.hpp>
 #include <graphs/offsetarray/OffsetArrayBackwardGraph.hpp>
+#include <graphs/offsetarray/OffsetArrayEdges.hpp>
 #include <graphs/offsetarray/OffsetArrayForwardGraph.hpp>
+#include <graphs/offsetarray/OffsetArrayNodes.hpp>
 
 namespace graphs {
 
@@ -12,18 +14,34 @@ template<class Node,
          class Edge,
          bool HasForwardEdges = true,
          bool HasBackwardEdges = true>
-//currently edges need to have source and target available
-//this can be relaxed in the future such that OffsetArrayForwardGraph do not require the
-//HasSource concept, but currently this is needed in the ctor of OffsetArrayForwardGraph
 requires concepts::HasSource<Edge> && concepts::HasTarget<Edge>
-class OffsetArray : public std::conditional_t<HasForwardEdges,
-                                              OffsetArrayForwardGraph<Node, Edge>,
+class OffsetArray : public OffsetArrayNodes<Node>,
+                    public OffsetArrayEdges<Edge>,
+                    public std::conditional_t<HasForwardEdges,
+                                              OffsetArrayForwardGraph<Node,
+                                                                      Edge,
+                                                                      OffsetArray<Node,
+                                                                                  Edge,
+                                                                                  HasForwardEdges,
+                                                                                  HasBackwardEdges>>,
                                               common::EmptyBase1>,
                     public std::conditional_t<HasBackwardEdges,
-                                              OffsetArrayBackwardGraph<Node, Edge>,
+                                              OffsetArrayBackwardGraph<Node,
+                                                                       Edge,
+                                                                       OffsetArray<Node,
+                                                                                   Edge,
+                                                                                   HasForwardEdges,
+                                                                                   HasBackwardEdges>>,
                                               common::EmptyBase2>
 {
-    // clang-format off
+
+    using Self = OffsetArray<Node, Edge, HasForwardEdges, HasBackwardEdges>;
+
+private:
+    constexpr auto checkConcepts() const noexcept
+        -> void requires concepts::ForwardGraph<Self>
+    {
+        // clang-format off
     static_assert(HasForwardEdges || HasBackwardEdges,
 				  "a graph without forward or backward edges is not allowed");
 
@@ -47,34 +65,44 @@ class OffsetArray : public std::conditional_t<HasForwardEdges,
     static_assert(!concepts::HasLevel<Node>
 				  || concepts::WriteableNodeLevels<OffsetArray<Node, Edge, HasForwardEdges, HasBackwardEdges>>,
                   "a graph with nodes which fullfill the HasLevel concept should itself fullfill the WriteableNodeLevels concept");
-    // clang-format on
+        // clang-format on
+    }
 
-public:
-    OffsetArray(std::vector<Node> nodes,
-                std::vector<Edge> edges) noexcept
-        requires HasForwardEdges &&(!HasBackwardEdges)
-        : OffsetArrayNodes<Node>(std::move(nodes)),
-          OffsetArrayEdges<Edge>(std::move(edges)),
-          OffsetArrayForwardGraph<Node, Edge>(this->getNodes(),
-                                              this->getEdges()) {}
+public :
+
+    using NodeType = Node;
+    using EdgeType = Edge;
+
+    // OffsetArray(std::vector<Node> nodes,
+    //             std::vector<Edge> edges) noexcept
+    //     requires HasForwardEdges &&(!HasBackwardEdges)
+
+    //     : OffsetArrayNodes<Node>(std::move(nodes)),
+    //       OffsetArrayEdges<Edge>(std::move(edges)),
+    //       OffsetArrayForwardGraph<Node, Edge, Self>(){}
 
     OffsetArray(std::vector<Node> nodes,
                 std::vector<Edge> edges) noexcept
         requires HasBackwardEdges &&(!HasForwardEdges)
         : OffsetArrayNodes<Node>(std::move(nodes)),
           OffsetArrayEdges<Edge>(std::move(edges)),
-          OffsetArrayBackwardGraph<Node, Edge>(this->getNodes(),
-                                               this->getEdges()) {}
+          OffsetArrayBackwardGraph<Node, Edge, Self>()
+    {}
+
 
     OffsetArray(std::vector<Node> nodes,
                 std::vector<Edge> edges) noexcept
         requires HasBackwardEdges && HasForwardEdges
         : OffsetArrayNodes<Node>(std::move(nodes)),
           OffsetArrayEdges<Edge>(std::move(edges)),
-          OffsetArrayForwardGraph<Node, Edge>(this->getNodes(),
-                                              this->getEdges()),
-          OffsetArrayBackwardGraph<Node, Edge>(this->getNodes(),
-                                               this->getEdges()) {}
+          OffsetArrayForwardGraph<Node, Edge, Self>(),
+          OffsetArrayBackwardGraph<Node, Edge, Self>()
+    {
+        checkConcepts();
+    }
+
+    OffsetArray(Self&&) noexcept = default;
+    OffsetArray(const Self&) noexcept = default;
 };
 
 template<class Node, class Edge>

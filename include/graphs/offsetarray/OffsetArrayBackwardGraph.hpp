@@ -3,45 +3,34 @@
 #include <common/BackwardEdgeView.hpp>
 #include <concepts/BackwardGraph.hpp>
 #include <concepts/Edges.hpp>
-#include <concepts/ForwardGraph.hpp>
-#include <concepts/NodeLevels.hpp>
-#include <graphs/offsetarray/OffsetArrayEdges.hpp>
-#include <graphs/offsetarray/OffsetArrayNodes.hpp>
 #include <vector>
 
 namespace graphs {
 
 
-template<class Node, class Edge>
-// the edges need to be able to access the target they are pointing to
-// as well as the source from which they are starting from,
-// this is needed to build Backwardedgeviews from Edges which inverts source and targets
-// to get a backward edge
+template<class Node, class Edge, class Graph>
 requires concepts::HasTarget<Edge> && concepts::HasSource<Edge>
-class OffsetArrayBackwardGraph : public OffsetArrayNodes<Node>,
-                                 public OffsetArrayEdges<Edge>
+class OffsetArrayBackwardGraph
 {
-    static_assert(concepts::BackwardGraph<OffsetArrayBackwardGraph<Node, Edge>>);
-    static_assert(concepts::HasNodes<OffsetArrayBackwardGraph<Node, Edge>>);
-    static_assert(concepts::HasEdges<OffsetArrayBackwardGraph<Node, Edge>>);
-
-    // clang-format off
-    static_assert(!concepts::HasWeight<Edge>
-				  || concepts::WriteableEdgeWeights<OffsetArrayBackwardGraph<Node, Edge>>);
-    static_assert(!concepts::HasLevel<Node>
-				  || concepts::WriteableNodeLevels<OffsetArrayBackwardGraph<Node, Edge>>);
-    // clang-format on
 
 public:
-    OffsetArrayBackwardGraph(const std::vector<Node> &nodes,
-                             const std::vector<Edge> &edges) noexcept
+    using NodeType = Node;
+    using EdgeType = Edge;
+
+    OffsetArrayBackwardGraph() noexcept
     {
+        static_assert(concepts::BackwardGraph<OffsetArrayBackwardGraph<Node, Edge, Graph>>);
+
+        const auto &nodes = impl().getNodes();
+        const auto &edges = impl().getEdges();
+
+
         //build an adjacency list which then can be converted to an offset array
         std::vector<std::vector<common::EdgeID>> adjacency_list(nodes.size());
         for(std::size_t i = 0; i < edges.size(); i++) {
             const auto &e = edges[i];
             const auto trg = e.getTrg();
-            adjacency_list[trg].emplace_back(i);
+            adjacency_list[trg.get()].emplace_back(i);
         }
 
         //resize the offset array
@@ -62,20 +51,19 @@ public:
         }
     }
 
-    constexpr auto checkIfEdgeExistsBetween(common::NodeID from,
-                                            common::NodeID to) const noexcept
-        -> bool
-    {
-        return getBackwardEdgeIDBetween(from, to).hasValue();
-    }
+    OffsetArrayBackwardGraph(OffsetArrayBackwardGraph &&) noexcept = default;
+    OffsetArrayBackwardGraph(const OffsetArrayBackwardGraph &) noexcept = default;
 
     constexpr auto getBackwardEdgeIDBetween(common::NodeID from,
                                             common::NodeID to) const noexcept
         -> std::optional<common::EdgeID>
     {
         auto edge_ids = getBackwardEdgeIDsOf(from);
-        auto iter = std::find(std::begin(edge_ids), std::end(edge_ids),
-                              [&](auto id) { return getEdge(id).getTrg() == to; });
+        auto iter = std::find(std::begin(edge_ids),
+                              std::end(edge_ids),
+                              [&](auto id) {
+                                  return impl().getEdge(id).getTrg() == to;
+                              });
 
         if(iter != std::end(edge_ids)) {
             return *iter;
@@ -86,23 +74,23 @@ public:
 
     constexpr auto getBackwardEdgeBetween(common::NodeID from,
                                           common::NodeID to) const noexcept
-        -> common::BackwardEdgeView<Edge>
+        -> common::BackwardEdgeView<EdgeType>
     {
         if(auto id_opt = getBackwardEdgeIDBetween(from, to)) {
-            const auto *edge = getEdge(id_opt.value());
+            const auto *edge = impl().getEdge(id_opt.value());
 
-            return common::BackwardEdgeView<Edge>(edge);
+            return common::BackwardEdgeView<EdgeType>(edge);
         }
 
         //TODO: think about a way to avoid this
-        return common::BackwardEdgeView<Edge>(nullptr);
+        return common::BackwardEdgeView<EdgeType>(nullptr);
     }
 
     constexpr auto getBackwardEdgeIDsOf(common::NodeID node) const noexcept
         -> std::span<const common::EdgeID>
     {
         //if the node does not exist, return an empty span
-        if(!this->nodeExists(node)) {
+        if(!impl().nodeExists(node)) {
             return std::span<const common::EdgeID>();
         }
 
@@ -117,7 +105,7 @@ public:
     constexpr auto getBackwardEdgeIDsOf(common::NodeID node) noexcept
         -> std::span<common::EdgeID>
     {
-        if(!this->nodeExists(node)) {
+        if(!impl().nodeExists(node)) {
             return std::span<common::EdgeID>();
         }
 
@@ -150,7 +138,7 @@ public:
     {
         auto order = std::invoke(std::forward<F>(func), *this);
 
-        for(std::size_t n = 0; n < this->numberOfNodes(); n++) {
+        for(std::size_t n = 0; n < impl().numberOfNodes(); n++) {
             auto ids = getBackwardEdgeIDsOf(n);
             std::sort(std::begin(ids), std::end(ids), order);
         }
@@ -159,6 +147,13 @@ public:
 
     // clang-format off
 private:
+
+    auto impl() const noexcept
+        -> const Graph &
+    {
+        return static_cast<const Graph &>(*this);
+    }
+
     std::vector<common::EdgeID> backward_neigbours_;
     std::vector<size_t> backward_offset_;
     // clang-format on

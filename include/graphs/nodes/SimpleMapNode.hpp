@@ -32,7 +32,7 @@ public:
           LevelBase(lvl) {}
 
     // clang-format off
-    constexpr static auto parse(std::string_view str) noexcept
+    static auto parse(std::string_view str) noexcept
         -> std::optional<SimpleMapNode<HasLevel>>
 	    requires HasLevel
     // clang-format on
@@ -52,7 +52,7 @@ public:
     }
 
     // clang-format off
-    constexpr static auto parse(std::string_view str) noexcept
+    static auto parse(std::string_view str) noexcept
         -> std::optional<SimpleMapNode<HasLevel>>
 	    requires (!HasLevel)
     // clang-format on

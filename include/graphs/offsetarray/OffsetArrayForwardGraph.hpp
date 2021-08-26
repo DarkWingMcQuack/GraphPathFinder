@@ -1,43 +1,33 @@
 #pragma once
 
-#include <concepts/BackwardGraph.hpp>
 #include <concepts/Edges.hpp>
 #include <concepts/ForwardGraph.hpp>
-#include <concepts/NodeLevels.hpp>
-#include <graphs/offsetarray/OffsetArrayEdges.hpp>
-#include <graphs/offsetarray/OffsetArrayNodes.hpp>
 #include <vector>
 
 namespace graphs {
 
 
-template<class Node, class Edge>
-// the edges need to be able to access the target they are pointing to
-requires concepts::HasTarget<Edge>
-class OffsetArrayForwardGraph : public OffsetArrayNodes<Node>,
-                                public OffsetArrayEdges<Edge>
+template<class Node, class Edge, class Graph>
+class OffsetArrayForwardGraph
 {
-    static_assert(concepts::ForwardGraph<OffsetArrayForwardGraph<Node, Edge>>);
-    static_assert(concepts::HasNodes<OffsetArrayForwardGraph<Node, Edge>>);
-    static_assert(concepts::HasEdges<OffsetArrayForwardGraph<Node, Edge>>);
-    // clang-format off
-    static_assert(!concepts::HasWeight<Edge>
-				  || concepts::WriteableEdgeWeights<OffsetArrayForwardGraph<Node, Edge>>);
-    static_assert(!concepts::HasLevel<Node>
-				  || concepts::WriteableNodeLevels<OffsetArrayForwardGraph<Node, Edge>>);
-    // clang-format on
-
 public:
-    OffsetArrayForwardGraph(const std::vector<Node> &nodes,
-                            const std::vector<Edge> &edges) noexcept
-        requires concepts::HasSource<Edge>
+    using NodeType = Node;
+    using EdgeType = Edge;
+
+    OffsetArrayForwardGraph() noexcept
+        requires concepts::HasSource<EdgeType> && concepts::HasTarget<EdgeType>
     {
+        static_assert(concepts::ForwardGraph<OffsetArrayForwardGraph<Node, Edge, Graph>>);
+
+        const auto &nodes = impl().getNodes();
+        const auto &edges = impl().getEdges();
+
         //build an adjacency list which then can be converted to an offset array
         std::vector<std::vector<common::EdgeID>> adjacency_list(nodes.size());
         for(std::size_t i = 0; i < edges.size(); i++) {
             const auto &e = edges[i];
             const auto src = e.getSrc();
-            adjacency_list[src].emplace_back(i);
+            adjacency_list[src.get()].emplace_back(i);
         }
 
         //resize the offset array
@@ -58,6 +48,9 @@ public:
         }
     }
 
+    OffsetArrayForwardGraph(OffsetArrayForwardGraph &&) noexcept = default;
+    OffsetArrayForwardGraph(const OffsetArrayForwardGraph &) noexcept = default;
+
     constexpr auto checkIfEdgeExistsBetween(common::NodeID from,
                                             common::NodeID to) const noexcept
         -> bool
@@ -73,7 +66,7 @@ public:
         const auto iter = std::find(std::begin(edge_ids),
                                     std::end(edge_ids),
                                     [&](auto id) {
-                                        return getEdge(id)->getTrg() == to;
+                                        return impl().getEdge(id)->getTrg() == to;
                                     });
 
         if(iter != std::end(edge_ids)) {
@@ -85,10 +78,10 @@ public:
 
     constexpr auto getForwardEdgeBetween(common::NodeID from,
                                          common::NodeID to) const noexcept
-        -> const Edge *
+        -> const EdgeType *
     {
         if(const auto id_opt = getForwardEdgeIDBetween(from, to)) {
-            return getEdge(id_opt.value());
+            return impl().getEdge(id_opt.value());
         }
 
         return nullptr;
@@ -98,7 +91,7 @@ public:
         -> std::span<const common::EdgeID>
     {
         //if the node does not exist, return an empty span
-        if(!this->nodeExists(node)) {
+        if(!impl().nodeExists(node)) {
             return std::span<const common::EdgeID>();
         }
 
@@ -113,7 +106,7 @@ public:
     constexpr auto getForwardEdgeIDsOf(common::NodeID node) noexcept
         -> std::span<common::EdgeID>
     {
-        if(!this->nodeExists(node)) {
+        if(!impl().nodeExists(node)) {
             return std::span<common::EdgeID>();
         }
 
@@ -146,18 +139,24 @@ public:
     {
         const auto order = std::invoke(std::forward<F>(func), *this);
 
-        for(std::size_t n = 0; n < this->numberOfNodes(); n++) {
+        for(std::size_t n = 0; n < impl().numberOfNodes(); n++) {
             auto ids = getForwardEdgeIDsOf(n);
             std::sort(std::begin(ids), std::end(ids), order);
         }
     }
 
 
+private :
     // clang-format off
-private:
+    auto impl() const noexcept
+        -> const Graph &
+    {
+        return static_cast<const Graph &>(*this);
+    }
+
     std::vector<common::EdgeID> forward_neigbours_;
     std::vector<size_t> forward_offset_;
-    // clang-format on
+    // clang-format off
 };
 
 } // namespace graphs

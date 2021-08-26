@@ -9,16 +9,22 @@ namespace graphs {
 template<class Node>
 class OffsetArrayNodes
 {
-    static_assert(concepts::HasNodes<OffsetArrayNodes<Node>>);
-    // Nodes have levels -> OffsetarrayNodes are node level writeable
-    static_assert(!concepts::HasLevel<Node> || concepts::WriteableNodeLevels<OffsetArrayNodes<Node>>);
-
 public:
     using NodeType = Node;
 
-    //TODO: make the ctor constexpr once the compiler supports it
     OffsetArrayNodes(std::vector<Node> nodes) noexcept
-        : nodes_(std::move(nodes)) {}
+        : nodes_(std::move(nodes))
+    {
+        // clang-format off
+        static_assert(concepts::HasNodes<OffsetArrayNodes<Node>>);
+        // Nodes have levels -> OffsetarrayNodes are node level writeable
+        static_assert(!concepts::HasLevel<Node>
+					  || concepts::WriteableNodeLevels<OffsetArrayNodes<Node>>);
+        // clang-format on
+    }
+
+    OffsetArrayNodes(OffsetArrayNodes<Node> &&) noexcept = default;
+    OffsetArrayNodes(const OffsetArrayNodes<Node> &) noexcept = default;
 
     constexpr auto nodeExists(common::NodeID id) const noexcept -> bool
     {

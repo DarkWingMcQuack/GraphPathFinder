@@ -10,6 +10,19 @@ public:
     constexpr LevelBase(common::NodeLevel lvl) noexcept
         : level_(lvl) {}
 
+    constexpr LevelBase(LevelBase&&) noexcept = default;
+    constexpr LevelBase(const LevelBase&) noexcept = default;
+
+    constexpr auto operator=(const LevelBase&) noexcept
+        -> LevelBase& = default;
+    constexpr auto operator=(LevelBase&&) noexcept
+        -> LevelBase& = default;
+
+    constexpr auto operator==(const LevelBase&) const noexcept
+        -> bool = default;
+    constexpr auto operator!=(const LevelBase&) const noexcept
+        -> bool = default;
+
     constexpr auto getLvl() const noexcept
         -> common::NodeLevel
     {

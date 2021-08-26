@@ -19,7 +19,7 @@ public:
         : SrcBase(src),
           TrgBase(trg) {}
 
-    constexpr static auto parse(std::string_view str) noexcept
+    static auto parse(std::string_view str) noexcept
         -> std::optional<SimpleEdge>
     // clang-format on
     {

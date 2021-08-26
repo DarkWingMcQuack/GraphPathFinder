@@ -21,7 +21,7 @@ public:
         : SimpleEdge(src, trg),
           WeightBase(weight) {}
 
-    constexpr static auto parse(std::string_view str) noexcept
+    static auto parse(std::string_view str) noexcept
         -> std::optional<SimpleEdge>
     // clang-format on
     {

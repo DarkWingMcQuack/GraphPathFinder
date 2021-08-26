@@ -13,6 +13,19 @@ public:
         : lat_(lat),
           lng_(lng) {}
 
+    constexpr LatLngBase(LatLngBase&&) noexcept = default;
+    constexpr LatLngBase(const LatLngBase&) noexcept = default;
+
+    constexpr auto operator=(const LatLngBase&) noexcept
+        -> LatLngBase& = default;
+    constexpr auto operator=(LatLngBase&&) noexcept
+        -> LatLngBase& = default;
+
+    constexpr auto operator==(const LatLngBase&) const noexcept
+        -> bool = default;
+    constexpr auto operator!=(const LatLngBase&) const noexcept
+        -> bool = default;
+
     constexpr auto getLat() const noexcept
         -> common::Latitude
     {

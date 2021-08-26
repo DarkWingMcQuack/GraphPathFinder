@@ -11,9 +11,6 @@ namespace concepts {
 template<typename T>
 concept ForwardGraph = requires(const T& graph, T& mut_graph, common::NodeID src, common::NodeID trg)
 {
-    requires HasNodes<T>;
-    requires HasEdges<T>;
-
 	/**
 	 * checks if an edge between to nodes identified by the two given ids exists
 	 * @return true if an edge between the node associated by the first argument 

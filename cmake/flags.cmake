@@ -42,6 +42,7 @@ elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
           -pipe\
           -Wall\
           -flto\
+          -fconcepts-diagnostics-depth=5\
           -O3\
           -fipa-pta\
           -fdevirtualize-at-ltrans\

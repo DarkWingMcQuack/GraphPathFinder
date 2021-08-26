@@ -9,19 +9,23 @@ namespace graphs {
 template<class Edge>
 class OffsetArrayEdges
 {
-    // clang-format off
-    static_assert(concepts::HasEdges<OffsetArrayEdges<Edge>>);
-
-    // Edges have weights -> Offsetarrayedges has writable edgeweights
-    static_assert(!concepts::HasWeight<Edge>
-				  || concepts::WriteableEdgeWeights<OffsetArrayEdges<Edge>>);
-    // clang-format on
-
 public:
     using EdgeType = Edge;
 
     OffsetArrayEdges(std::vector<Edge> edges) noexcept
-        : edges_(std::move(edges)) {}
+        : edges_(std::move(edges))
+    {
+
+        // clang-format off
+        static_assert(concepts::HasEdges<OffsetArrayEdges<Edge>>);
+        // Edges have weights -> Offsetarrayedges has writable edgeweights
+        static_assert(!concepts::HasWeight<Edge>
+					  || concepts::WriteableEdgeWeights<OffsetArrayEdges<Edge>>);
+        // clang-format on
+    }
+
+    OffsetArrayEdges(OffsetArrayEdges<Edge> &&) noexcept = default;
+    OffsetArrayEdges(const OffsetArrayEdges<Edge> &) noexcept = default;
 
     constexpr auto edgeExists(common::EdgeID id) const noexcept -> bool
     {

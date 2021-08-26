@@ -18,9 +18,9 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 ############################
 include(cmake/fmt.cmake)
 include(cmake/tbb.cmake)
-include(cmake/CLI11.cmake)
-include(cmake/progress.cmake)
-include(cmake/nlohmann.cmake)
+# include(cmake/CLI11.cmake)
+# include(cmake/progress.cmake)
+# include(cmake/nlohmann.cmake)
 include(cmake/namedtype.cmake)
 include(cmake/gtest.cmake)
 
@@ -85,10 +85,10 @@ target_sources(GraphPathFinderLib
 # add the dependencies of the target to enforce
 # the right order of compiling
 add_dependencies(GraphPathFinderLib fmt-project)
-add_dependencies(GraphPathFinderLib nlohmann-project)
+# add_dependencies(GraphPathFinderLib nlohmann-project)
 add_dependencies(GraphPathFinderLib tbb-project)
-add_dependencies(GraphPathFinderLib CLI11-project)
-add_dependencies(GraphPathFinderLib progress-cpp-project)
+# add_dependencies(GraphPathFinderLib CLI11-project)
+# add_dependencies(GraphPathFinderLib progress-cpp-project)
 add_dependencies(GraphPathFinderLib namedtype-project)
 
 # make headers available

@@ -2,6 +2,7 @@
 #pragma once
 
 #include <concepts/Parseable.hpp>
+#include <fmt/core.h>
 #include <fstream>
 #include <graphs/offsetarray/OffsetArray.hpp>
 
@@ -37,7 +38,8 @@ auto parseFromFMIFile(std::string_view file_path) noexcept
     std::vector<Node> nodes;
     nodes.reserve(number_of_nodes);
 
-    while(std::getline(input_file, line)) {
+    std::size_t counter = 0;
+    while(std::getline(input_file, line) and counter < number_of_nodes) {
         auto node_opt = Node::parse(line);
 
         if(!node_opt && Edge::parse(line)) {
@@ -48,6 +50,7 @@ auto parseFromFMIFile(std::string_view file_path) noexcept
             continue;
         }
 
+        counter++;
         nodes.emplace_back(std::move(node_opt.value()));
     }
 
@@ -61,16 +64,17 @@ auto parseFromFMIFile(std::string_view file_path) noexcept
             continue;
         }
 
-        nodes.emplace_back(std::move(edge_opt.value()));
+        edges.emplace_back(std::move(edge_opt.value()));
     } while(std::getline(input_file, line));
 
-    return graphs::OffsetArray<
-        Node,
-        Edge,
-        HasForwardEdges,
-        HasBackwardEdges>{
-        std::move(nodes),
-        std::move(edges)};
+    return std::optional{
+        graphs::OffsetArray<
+            Node,
+            Edge,
+            HasForwardEdges,
+            HasBackwardEdges>{
+            std::move(nodes),
+            std::move(edges)}};
 }
 
 } // namespace parsing
