@@ -73,9 +73,9 @@ public:
                                             common::NodeID to) const noexcept
         -> std::optional<common::EdgeID>
     {
-        auto edge_ids = getBackwardEdgeBetween(from, to);
+        auto edge_ids = getBackwardEdgeIDsOf(from);
         auto iter = std::find(std::begin(edge_ids), std::end(edge_ids),
-                              [&](auto id) { return getEdge(id)->getTrg() == to; });
+                              [&](auto id) { return getEdge(id).getTrg() == to; });
 
         if(iter != std::end(edge_ids)) {
             return *iter;
@@ -86,16 +86,16 @@ public:
 
     constexpr auto getBackwardEdgeBetween(common::NodeID from,
                                           common::NodeID to) const noexcept
-        -> const concepts::structures::BackwardEdgeView<Edge> *
+        -> concepts::structures::BackwardEdgeView<Edge>
     {
         if(auto id_opt = getBackwardEdgeIDBetween(from, to)) {
             const auto *edge = getEdge(id_opt.value());
 
-            //TODO: i think this UB maybe consider another type of cast
-            return static_cast<const concepts::structures::BackwardEdgeView<Edge> *>(edge);
+            return concepts::structures::BackwardEdgeView<Edge>(edge);
         }
 
-        return nullptr;
+        //TODO: think about a way to avoid this
+        return concepts::structures::BackwardEdgeView<Edge>(nullptr);
     }
 
     constexpr auto getBackwardEdgeIDsOf(common::NodeID node) const noexcept

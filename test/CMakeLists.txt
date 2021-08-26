@@ -10,6 +10,7 @@ add_executable(unit_tests
   main.cpp
   common/TokenizerTest.cpp
   common/ParsingTest.cpp
+  common/BackwardEdgeViewTest.cpp
   )
 
 target_link_libraries(unit_tests LINK_PRIVATE
