@@ -106,27 +106,13 @@ public:
         : data_(data),
           delimiter_(delimiter) {}
 
-    constexpr auto begin() noexcept
+    constexpr auto begin() const noexcept
         -> StringViewTokenizeIterator
     {
         return StringViewTokenizeIterator{data_, delimiter_};
     }
 
-    constexpr auto end() noexcept
-        -> StringViewTokenizeIterator
-    {
-        return StringViewTokenizeIterator{data_,
-                                          delimiter_,
-                                          std::string_view::npos};
-    }
-
-    constexpr auto cbegin() const noexcept
-        -> StringViewTokenizeIterator
-    {
-        return StringViewTokenizeIterator{data_, delimiter_};
-    }
-
-    constexpr auto cend() const noexcept
+    constexpr auto end() const noexcept
         -> StringViewTokenizeIterator
     {
         return StringViewTokenizeIterator{data_,
@@ -140,8 +126,8 @@ private:
 };
 
 template<auto N>
-constexpr auto extractFirstN(std::string_view data,
-                             std::string_view delimiter) noexcept
+[[nodiscard]] constexpr auto extractFirstN(std::string_view data,
+                                           std::string_view delimiter) noexcept
     -> std::array<std::string_view, N>
 {
     std::array<std::string_view, N> result;
