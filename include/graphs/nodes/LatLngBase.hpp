@@ -1,9 +1,8 @@
 #pragma once
 
+#include <common/BasicGraphTypes.hpp>
 #include <concepts/Parseable.hpp>
 #include <fstream>
-#include <graphs/offsetarray/OffsetArrayBackwardGraph.hpp>
-#include <graphs/offsetarray/OffsetArrayForwardGraph.hpp>
 
 namespace graphs {
 
