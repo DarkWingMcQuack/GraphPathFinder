@@ -12,6 +12,7 @@ add_executable(unit_tests
   common/ParsingTest.cpp
   common/BackwardEdgeViewTest.cpp
   graphs/nodes/FMINodeTest.cpp
+  graphs/edges/FMIEdgeTest.cpp
   )
 
 target_link_libraries(unit_tests LINK_PRIVATE
