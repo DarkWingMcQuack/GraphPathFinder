@@ -15,6 +15,15 @@ TEST(ParsingTest, SimpleParsingNodeIDTest)
     ASSERT_TRUE(!!first);
     EXPECT_EQ(first.value(), common::NodeID{10});
 
+
+    first = common::to<common::NodeID>(" 10 ");
+    ASSERT_TRUE(!!first);
+    EXPECT_EQ(first.value(), common::NodeID{10});
+
+    first = common::to<common::NodeID>("  \t 10 ");
+    ASSERT_TRUE(!!first);
+    EXPECT_EQ(first.value(), common::NodeID{10});
+
     first = common::to<common::NodeID>("10 0");
     ASSERT_TRUE(!!first);
     EXPECT_EQ(first.value(), common::NodeID{10});
@@ -36,6 +45,14 @@ TEST(ParsingTest, SimpleParsingWeightTest)
 
 
     first = common::to<common::Weight>("10 ");
+    ASSERT_TRUE(!!first);
+    EXPECT_EQ(first.value(), common::Weight{10});
+
+    first = common::to<common::Weight>(" 10 ");
+    ASSERT_TRUE(!!first);
+    EXPECT_EQ(first.value(), common::Weight{10});
+
+    first = common::to<common::Weight>("  \t 10 ");
     ASSERT_TRUE(!!first);
     EXPECT_EQ(first.value(), common::Weight{10});
 
@@ -73,6 +90,14 @@ TEST(ParsingTest, SimpleParsingLatLngTest)
     EXPECT_EQ(first.value(), common::Latitude{10.0});
 
     first = common::to<common::Latitude>("10 0");
+    ASSERT_TRUE(!!first);
+    EXPECT_EQ(first.value(), common::Latitude{10.0});
+
+    first = common::to<common::Latitude>(" 10 0");
+    ASSERT_TRUE(!!first);
+    EXPECT_EQ(first.value(), common::Latitude{10.0});
+
+    first = common::to<common::Latitude>(" \t 10 0");
     ASSERT_TRUE(!!first);
     EXPECT_EQ(first.value(), common::Latitude{10.0});
 
