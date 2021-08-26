@@ -62,7 +62,15 @@ target_sources(GraphPathFinderLib
   ${CMAKE_CURRENT_LIST_DIR}/include/graphs/common/WeightBase.hpp
 
   ${CMAKE_CURRENT_LIST_DIR}/include/graphs/nodes/LatLngBase.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/include/graphs/nodes/FMINode.hpp
   ${CMAKE_CURRENT_LIST_DIR}/include/graphs/nodes/SimpleMapNode.hpp
+
+  
+  ${CMAKE_CURRENT_LIST_DIR}/include/graphs/edges/FMIEdge.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/include/graphs/edges/ShortcutBase.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/include/graphs/edges/SrcBase.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/include/graphs/edges/TrgBase.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/include/graphs/edges/WeightedEdge.hpp
 
   ${CMAKE_CURRENT_LIST_DIR}/include/graphs/offsetarray/OffsetArray.hpp
   ${CMAKE_CURRENT_LIST_DIR}/include/graphs/offsetarray/OffsetArrayBackwardGraph.hpp
