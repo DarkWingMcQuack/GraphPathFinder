@@ -16,6 +16,7 @@ TEST(BackwardEdgeViewTest, SimpleBackwardEdgeViewTest)
     auto backedge = common::BackwardEdgeView(&edge_opt.value());
 
     ASSERT_TRUE(!backedge.isNullPtr());
-    EXPECT_EQ(backedge.getSrc(), common::NodeID{20});
-    EXPECT_EQ(backedge.getTrg(), common::NodeID{10});
+    ASSERT_TRUE(backedge);
+    EXPECT_EQ(backedge.getSrc(), edge_opt.value().getTrg());
+    EXPECT_EQ(backedge.getTrg(), edge_opt.value().getSrc());
 }
