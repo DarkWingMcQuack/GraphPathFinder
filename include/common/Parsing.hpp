@@ -17,6 +17,9 @@ requires
   (std::is_same_v<T, NodeID>    ||
    std::is_same_v<T, EdgeID>    ||
    std::is_same_v<T, Weight>    ||
+   std::is_same_v<T, Speed>     ||
+   std::is_same_v<T, Type>      ||
+   std::is_same_v<T, Elevation> ||
    std::is_same_v<T, NodeLevel>)
   && std::is_integral_v<typename T::UnderlyingType>
 
