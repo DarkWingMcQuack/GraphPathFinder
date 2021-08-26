@@ -25,6 +25,7 @@ include(cmake/namedtype.cmake)
 include(cmake/gtest.cmake)
 
 message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
+message(STATUS "Compiler: ${CMAKE_CXX_COMPILER}")
 
 if(CMAKE_BUILD_TYPE STREQUAL "Release")
   set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
