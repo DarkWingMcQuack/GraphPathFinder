@@ -13,6 +13,14 @@ template<typename T>
 concept BackwardGraph = requires(const T& graph, common::NodeID src, common::NodeID trg)
 {
 	/**
+	 * checks if an edge between to nodes identified by the two given ids exists
+	 * @return true if an edge between the node associated by the first argument 
+	 * and the node associated by the second arument exists, false otherwise or if one of the
+	 * nodes does not exists
+	 */
+	{graph.checkIfEdgeExistsBackwardBetween(src, trg)} noexcept -> std::same_as<bool>;
+
+	/**
 	 * @return a pointer to the edge id which is associated with the edge between 
 	 * the two nodes associated by the given node ids, null if no such edge exists
 	 * or if one of the two nodes does not exist.

@@ -72,6 +72,14 @@ public:
         return std::nullopt;
     }
 
+    constexpr auto checkIfEdgeExistsBackwardBetween(common::NodeID from,
+                                                    common::NodeID to) const noexcept
+        -> bool
+    {
+        return getBackwardEdgeIDBetween(from, to).has_value();
+    }
+
+
     constexpr auto getBackwardEdgeBetween(common::NodeID from,
                                           common::NodeID to) const noexcept
         -> common::BackwardEdgeView<EdgeType>
