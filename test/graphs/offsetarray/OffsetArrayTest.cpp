@@ -1,6 +1,7 @@
 //all the includes you want to use before the gtest include
 
 #include "../../globals.hpp"
+#include <fmt/ranges.h>
 #include <graphs/edges/FMIEdge.hpp>
 #include <graphs/nodes/FMINode.hpp>
 #include <graphs/offsetarray/OffsetArray.hpp>
@@ -66,6 +67,42 @@ TEST(OffsetArrayTest, OffsetArrayConnectionTest)
     EXPECT_FALSE(graph.checkIfEdgeExistsBetween(common::NodeID{4}, common::NodeID{0}));
     EXPECT_FALSE(graph.checkIfEdgeExistsBetween(common::NodeID{4}, common::NodeID{2}));
     EXPECT_FALSE(graph.checkIfEdgeExistsBetween(common::NodeID{4}, common::NodeID{4}));
+}
+
+TEST(OffsetArrayTest, OffsetArrayBackConnectionTest)
+{
+    auto example_graph = data_dir + "fmi-example.txt";
+    auto graph_opt = parsing::parseFromFMIFile<graphs::FMINode<false>, graphs::FMIEdge<false>>(example_graph);
+
+    ASSERT_TRUE(graph_opt);
+    auto graph = std::move(graph_opt.value());
+
+    EXPECT_TRUE(graph.checkIfEdgeExistsBackwardBetween(common::NodeID{1}, common::NodeID{0}));
+    EXPECT_TRUE(graph.checkIfEdgeExistsBackwardBetween(common::NodeID{2}, common::NodeID{0}));
+    EXPECT_TRUE(graph.checkIfEdgeExistsBackwardBetween(common::NodeID{4}, common::NodeID{0}));
+    EXPECT_TRUE(graph.checkIfEdgeExistsBackwardBetween(common::NodeID{0}, common::NodeID{2}));
+    EXPECT_TRUE(graph.checkIfEdgeExistsBackwardBetween(common::NodeID{1}, common::NodeID{2}));
+    EXPECT_TRUE(graph.checkIfEdgeExistsBackwardBetween(common::NodeID{4}, common::NodeID{2}));
+    EXPECT_TRUE(graph.checkIfEdgeExistsBackwardBetween(common::NodeID{2}, common::NodeID{3}));
+    EXPECT_TRUE(graph.checkIfEdgeExistsBackwardBetween(common::NodeID{1}, common::NodeID{4}));
+    EXPECT_TRUE(graph.checkIfEdgeExistsBackwardBetween(common::NodeID{3}, common::NodeID{4}));
+
+    EXPECT_FALSE(graph.checkIfEdgeExistsBackwardBetween(common::NodeID{0}, common::NodeID{0}));
+    EXPECT_FALSE(graph.checkIfEdgeExistsBackwardBetween(common::NodeID{3}, common::NodeID{0}));
+    EXPECT_FALSE(graph.checkIfEdgeExistsBackwardBetween(common::NodeID{0}, common::NodeID{1}));
+    EXPECT_FALSE(graph.checkIfEdgeExistsBackwardBetween(common::NodeID{1}, common::NodeID{1}));
+    EXPECT_FALSE(graph.checkIfEdgeExistsBackwardBetween(common::NodeID{2}, common::NodeID{1}));
+    EXPECT_FALSE(graph.checkIfEdgeExistsBackwardBetween(common::NodeID{3}, common::NodeID{1}));
+    EXPECT_FALSE(graph.checkIfEdgeExistsBackwardBetween(common::NodeID{4}, common::NodeID{1}));
+    EXPECT_FALSE(graph.checkIfEdgeExistsBackwardBetween(common::NodeID{2}, common::NodeID{2}));
+    EXPECT_FALSE(graph.checkIfEdgeExistsBackwardBetween(common::NodeID{3}, common::NodeID{2}));
+    EXPECT_FALSE(graph.checkIfEdgeExistsBackwardBetween(common::NodeID{0}, common::NodeID{3}));
+    EXPECT_FALSE(graph.checkIfEdgeExistsBackwardBetween(common::NodeID{1}, common::NodeID{3}));
+    EXPECT_FALSE(graph.checkIfEdgeExistsBackwardBetween(common::NodeID{3}, common::NodeID{3}));
+    EXPECT_FALSE(graph.checkIfEdgeExistsBackwardBetween(common::NodeID{4}, common::NodeID{3}));
+    EXPECT_FALSE(graph.checkIfEdgeExistsBackwardBetween(common::NodeID{0}, common::NodeID{4}));
+    EXPECT_FALSE(graph.checkIfEdgeExistsBackwardBetween(common::NodeID{2}, common::NodeID{4}));
+    EXPECT_FALSE(graph.checkIfEdgeExistsBackwardBetween(common::NodeID{4}, common::NodeID{4}));
 }
 
 TEST(OffsetArrayTest, OffsetArrayNodeExistanceTest)

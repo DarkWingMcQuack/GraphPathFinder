@@ -1,5 +1,6 @@
 #pragma once
 
+#include "common/BackwardEdgeView.hpp"
 #include <concepts/EdgeWeights.hpp>
 #include <concepts/Edges.hpp>
 #include <vector>
@@ -32,7 +33,8 @@ public:
         return id.get() < numberOfEdges();
     }
 
-    constexpr auto getEdge(common::EdgeID id) const noexcept -> const Edge *
+    constexpr auto getEdge(common::EdgeID id) const noexcept
+        -> const Edge *
     {
         if(edgeExists(id)) {
             return &edges_[id.get()];
@@ -40,7 +42,16 @@ public:
         return nullptr;
     }
 
-    constexpr auto numberOfEdges() const noexcept -> std::size_t
+    constexpr auto getBackwardEdge(common::EdgeID id) const noexcept
+        -> common::BackwardEdgeView<Edge>
+    requires concepts::HasSource<Edge> && concepts::HasTarget<Edge>
+    {
+        const auto *edge_ptr = getEdge(id);
+        return common::BackwardEdgeView{edge_ptr};
+    }
+
+    constexpr auto
+    numberOfEdges() const noexcept -> std::size_t
     {
         return edges_.size();
     }

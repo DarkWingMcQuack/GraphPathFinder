@@ -36,6 +36,12 @@ public:
         return e_ != nullptr;
     }
 
+    constexpr auto operator->() const noexcept
+        -> const BackwardEdgeView<Edge>*
+    {
+        return this;
+    }
+
 private:
     const Edge* e_;
 };

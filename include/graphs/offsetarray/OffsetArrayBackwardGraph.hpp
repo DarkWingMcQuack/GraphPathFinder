@@ -59,11 +59,11 @@ public:
         -> std::optional<common::EdgeID>
     {
         auto edge_ids = getBackwardEdgeIDsOf(from);
-        auto iter = std::find(std::begin(edge_ids),
-                              std::end(edge_ids),
-                              [&](auto id) {
-                                  return impl().getEdge(id).getTrg() == to;
-                              });
+        auto iter = std::find_if(std::begin(edge_ids),
+                                 std::end(edge_ids),
+                                 [&](auto id) {
+                                     return impl().getBackwardEdge(id)->getTrg() == to;
+                                 });
 
         if(iter != std::end(edge_ids)) {
             return *iter;
