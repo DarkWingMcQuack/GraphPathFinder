@@ -52,13 +52,13 @@ public:
     constexpr auto operator!=(const FMINode<HasLevel>&) const noexcept
         -> bool = default;
 
-    constexpr auto getID2() noexcept
+    constexpr auto getID2() const noexcept
         -> common::NodeID
     {
         return id2_;
     }
 
-    constexpr auto getElevation() noexcept
+    constexpr auto getElevation() const noexcept
         -> common::Elevation
     {
         return elev_;

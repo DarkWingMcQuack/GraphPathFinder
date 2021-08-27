@@ -28,13 +28,13 @@ public:
 
     constexpr auto nodeExists(common::NodeID id) const noexcept -> bool
     {
-        return id <= numberOfNodes();
+        return id.get() < numberOfNodes();
     }
 
     constexpr auto getNode(common::NodeID id) const noexcept -> const Node *
     {
         if(nodeExists(id)) {
-            return &nodes_[id];
+            return &nodes_[id.get()];
         }
 
         return nullptr;

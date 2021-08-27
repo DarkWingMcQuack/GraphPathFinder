@@ -55,19 +55,19 @@ public:
                                             common::NodeID to) const noexcept
         -> bool
     {
-        return getForwardEdgeIDBetween(from, to).hasValue();
+        return getForwardEdgeIDBetween(from, to).has_value();
     }
 
     constexpr auto getForwardEdgeIDBetween(common::NodeID from,
                                            common::NodeID to) const noexcept
         -> std::optional<common::EdgeID>
     {
-        const auto edge_ids = getForwardEdgeBetween(from, to);
-        const auto iter = std::find(std::begin(edge_ids),
-                                    std::end(edge_ids),
-                                    [&](auto id) {
-                                        return impl().getEdge(id)->getTrg() == to;
-                                    });
+        const auto edge_ids = getForwardEdgeIDsOf(from);
+        const auto iter = std::find_if(std::cbegin(edge_ids),
+                                       std::cend(edge_ids),
+                                       [&](auto id) {
+                                           return impl().getEdge(id)->getTrg() == to;
+                                       });
 
         if(iter != std::end(edge_ids)) {
             return *iter;

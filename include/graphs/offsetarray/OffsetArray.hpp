@@ -73,14 +73,19 @@ public :
     using NodeType = Node;
     using EdgeType = Edge;
 
-    // OffsetArray(std::vector<Node> nodes,
-    //             std::vector<Edge> edges) noexcept
-    //     requires HasForwardEdges &&(!HasBackwardEdges)
+    OffsetArray(std::vector<Node> nodes,
+                std::vector<Edge> edges) noexcept
+        requires HasForwardEdges &&(!HasBackwardEdges)
 
-    //     : OffsetArrayNodes<Node>(std::move(nodes)),
-    //       OffsetArrayEdges<Edge>(std::move(edges)),
-    //       OffsetArrayForwardGraph<Node, Edge, Self>(){}
+        : OffsetArrayNodes<Node>(std::move(nodes)),
+          OffsetArrayEdges<Edge>(std::move(edges)),
+          OffsetArrayForwardGraph<Node, Edge, Self>()
+    {}
 
+
+    //currently clang has a bug of not allowing all three constructors at the same time
+    //once this is fixed thei check can be omitted
+#ifndef __clang__
     OffsetArray(std::vector<Node> nodes,
                 std::vector<Edge> edges) noexcept
         requires HasBackwardEdges &&(!HasForwardEdges)
@@ -88,6 +93,7 @@ public :
           OffsetArrayEdges<Edge>(std::move(edges)),
           OffsetArrayBackwardGraph<Node, Edge, Self>()
     {}
+#endif
 
 
     OffsetArray(std::vector<Node> nodes,
