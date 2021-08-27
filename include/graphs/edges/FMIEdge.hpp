@@ -126,9 +126,11 @@ public:
                                      second_sc_opt.value()};
     }
 
-
-private : common::Speed speed_;
+    // clang-format off
+private:
+    common::Speed speed_;
     common::Type type_;
+    // clang-format on
 };
 
 } // namespace graphs
