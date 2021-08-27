@@ -156,7 +156,8 @@ public:
     // clang-format off
 private:
 
-    auto impl() const noexcept
+    //crtp helper function
+    constexpr auto impl() const noexcept
         -> const Graph &
     {
         return static_cast<const Graph &>(*this);
