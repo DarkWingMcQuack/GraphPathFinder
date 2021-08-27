@@ -65,7 +65,7 @@ public:
     requires(!HasShortcuts)
     // clang-format on
     {
-        const auto [src, trg, cost, speed, type] = common::extractFirstN<5>(str, " ");
+        const auto [src, trg, cost, type, speed] = common::extractFirstN<5>(str, " ");
 
         const auto src_opt = common::to<common::NodeID>(src);
         const auto trg_opt = common::to<common::NodeID>(trg);
@@ -89,7 +89,7 @@ public:
     requires HasShortcuts
     // clang-format on
     {
-        const auto [src, trg, cost, speed, type, first_sc, second_sc] = common::extractFirstN<7>(str, " ");
+        const auto [src, trg, cost, type, speed, first_sc, second_sc] = common::extractFirstN<7>(str, " ");
 
         // clang-format off
         const auto src_opt       = common::to<common::NodeID>(src);
@@ -105,7 +105,11 @@ public:
             return std::nullopt;
         }
 
-        if(!first_sc_opt or !second_sc_opt) {
+        if(!first_sc_opt xor !second_sc_opt) {
+            return std::nullopt;
+        }
+
+        if(!first_sc_opt and !second_sc_opt) {
             return FMIEdge<HasShortcuts>{src_opt.value(),
                                          trg_opt.value(),
                                          cost_opt.value(),

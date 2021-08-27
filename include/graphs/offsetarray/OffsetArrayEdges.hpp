@@ -29,13 +29,13 @@ public:
 
     constexpr auto edgeExists(common::EdgeID id) const noexcept -> bool
     {
-        return id <= numberOfEdges();
+        return id.get() < numberOfEdges();
     }
 
     constexpr auto getEdge(common::EdgeID id) const noexcept -> const Edge *
     {
         if(edgeExists(id)) {
-            return &edges_[id];
+            return &edges_[id.get()];
         }
         return nullptr;
     }

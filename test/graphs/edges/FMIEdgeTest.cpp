@@ -14,8 +14,8 @@ TEST(FMIEdgeTest, FMIEdgeWithShortcutParsingTest)
     EXPECT_EQ(edge.getSrc(), common::NodeID{26513});
     EXPECT_EQ(edge.getTrg(), common::NodeID{26506});
     EXPECT_EQ(edge.getWeight(), common::Weight{1177});
-    EXPECT_EQ(edge.getSpeed(), common::Speed{0});
-    EXPECT_EQ(edge.getEdgeType(), common::Type{-1});
+    EXPECT_EQ(edge.getEdgeType(), common::Type{0});
+    EXPECT_EQ(edge.getSpeed(), common::Speed{-1});
 
     auto expected = std::optional{std::pair{common::EdgeID(94502), common::EdgeID(63826)}};
     EXPECT_EQ(edge.getShortcut(), expected);
@@ -33,8 +33,8 @@ TEST(FMIEdgeTest, FMIEdgeWithShortcutParsingTest)
     EXPECT_EQ(edge.getSrc(), common::NodeID{26513});
     EXPECT_EQ(edge.getTrg(), common::NodeID{26504});
     EXPECT_EQ(edge.getWeight(), common::Weight{448});
-    EXPECT_EQ(edge.getSpeed(), common::Speed{13});
-    EXPECT_EQ(edge.getEdgeType(), common::Type{5});
+    EXPECT_EQ(edge.getEdgeType(), common::Type{13});
+    EXPECT_EQ(edge.getSpeed(), common::Speed{5});
 
     EXPECT_EQ(edge.getShortcut(), std::nullopt);
 
@@ -51,8 +51,8 @@ TEST(FMIEdgeTest, FMIEdgeWithoutShortcutParsingTest)
     EXPECT_EQ(edge.getSrc(), common::NodeID{26513});
     EXPECT_EQ(edge.getTrg(), common::NodeID{26504});
     EXPECT_EQ(edge.getWeight(), common::Weight{448});
-    EXPECT_EQ(edge.getSpeed(), common::Speed{13});
-    EXPECT_EQ(edge.getEdgeType(), common::Type{5});
+    EXPECT_EQ(edge.getEdgeType(), common::Type{13});
+    EXPECT_EQ(edge.getSpeed(), common::Speed{5});
 }
 
 

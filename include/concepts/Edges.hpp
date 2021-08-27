@@ -20,8 +20,12 @@ concept HasTarget = requires(const Edge& edge, common::NodeID trg)
 };
 
 template<typename Edge>
-concept HasWeight = requires(const Edge& e, Edge& mut_edge, common::Weight weight){
+concept HasWeight = requires(const Edge& e){
     {e.getWeight()} -> std::convertible_to<common::Weight>;
+};
+
+template<typename Edge>
+concept HasWeightSetter = requires(Edge& mut_edge, common::Weight weight){
     {mut_edge.setWeight(weight)} -> std::same_as<void>;
 };
 
