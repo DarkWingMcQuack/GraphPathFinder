@@ -24,7 +24,7 @@ concept DistanceOracle = requires(O& oracle, common::NodeID src, common::NodeID 
 	 * @returns true if the distance oracle can be used in a multithreaded environment,
 	 * false otherwise
 	 */
-	{O::is_threadsafe} noexcept -> std::same_as<const bool>;
+	{O::is_threadsafe} noexcept -> std::common_with<const bool>;
 };
 // clang-format on
 

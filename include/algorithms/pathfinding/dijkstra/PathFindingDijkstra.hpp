@@ -16,7 +16,12 @@
 namespace algorithms::pathfinding {
 
 template<class Graph>
-requires concepts::ForwardGraph<Graph> && concepts::HasEdges<Graph> && concepts::HasNodes<Graph>
+// clang-format off
+requires concepts::ForwardGraph<Graph>
+      && concepts::HasEdges<Graph>
+      && concepts::HasNodes<Graph>
+      && concepts::HasTarget<typename Graph::EdgeType>
+// clang-format on
 class PathFindingDijkstra
 {
 public:
@@ -47,14 +52,14 @@ public:
         -> std::optional<graphs::Path>
     {
         //fill the distance array and calculate the cost
-        auto cost = distanceBetween(source, target);
+        const auto cost = distanceBetween(source, target);
         if(cost == common::INFINITY_WEIGHT) {
             return std::nullopt;
         }
 
         //extract path starting from the target
         std::vector nodes{target};
-        while(nodes.back() != source) {
+        while(nodes.back().get() != source.get()) {
             nodes.emplace_back(before_[nodes.back().get()]);
         }
         //reverse the vector to get the actual path
@@ -73,7 +78,7 @@ public:
             return distances_[target.get()];
         }
 
-        if(!last_source_.has_value() or source != last_source_.value()) {
+        if(!last_source_.has_value() or source.get() != last_source_.value().get()) {
             resetFor(source);
         }
 
@@ -110,7 +115,7 @@ public:
                 const auto neig_dist = distances_[neig.get()];
                 const auto new_dist = current_dist + distance;
 
-                if(common::INFINITY_WEIGHT != current_dist and neig_dist > new_dist) {
+                if(common::INFINITY_WEIGHT.get() != current_dist.get() and neig_dist > new_dist) {
                     touched_.emplace_back(neig);
                     distances_[neig.get()] = new_dist;
                     pq_.emplace(neig, new_dist);

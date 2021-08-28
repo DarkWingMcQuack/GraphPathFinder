@@ -32,31 +32,31 @@ public:
         return cost_ > other.cost_;
     }
 
-    constexpr auto operator==(const Path& other) const noexcept
+    auto operator==(const Path& other) const noexcept
         -> bool
     {
         return nodes_ == other.nodes_;
     }
 
-    constexpr auto operator!=(const Path& other) const noexcept
+    auto operator!=(const Path& other) const noexcept
         -> bool
     {
         return nodes_ != other.nodes_;
     }
 
-    constexpr auto getNumberOfNodes() const noexcept
+    [[nodiscard]] auto getNumberOfNodes() const noexcept
         -> std::size_t
     {
         return nodes_.size();
     }
 
-    constexpr auto getCost() const noexcept
+    [[nodiscard]] constexpr auto getCost() const noexcept
         -> common::Weight
     {
         return cost_;
     }
 
-    constexpr auto getSource() const noexcept
+    [[nodiscard]] auto getSource() const noexcept
         -> std::optional<common::NodeID>
     {
         if(nodes_.empty()) {
@@ -66,7 +66,7 @@ public:
         return nodes_.front();
     }
 
-    constexpr auto getTarget() const noexcept
+    [[nodiscard]] auto getTarget() const noexcept
         -> std::optional<common::NodeID>
     {
         if(nodes_.empty()) {

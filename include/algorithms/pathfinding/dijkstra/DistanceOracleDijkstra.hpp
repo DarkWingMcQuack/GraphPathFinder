@@ -14,7 +14,12 @@
 namespace algorithms::pathfinding {
 
 template<class Graph>
-requires concepts::ForwardGraph<Graph> && concepts::HasEdges<Graph>
+// clang-format off
+requires concepts::ForwardGraph<Graph>
+      && concepts::HasEdges<Graph>
+      && concepts::HasNodes<Graph>
+      && concepts::HasTarget<typename Graph::EdgeType>
+// clang-format on
 class DistanceOracleDijkstra
 {
 public:
@@ -37,7 +42,7 @@ public:
     auto operator=(const DistanceOracleDijkstra&) -> DistanceOracleDijkstra& = delete;
     auto operator=(DistanceOracleDijkstra&&) noexcept -> DistanceOracleDijkstra& = default;
 
-    auto distanceBetween(common::NodeID source, common::NodeID target) noexcept
+    [[nodiscard]] auto distanceBetween(common::NodeID source, common::NodeID target) noexcept
         -> common::Weight
     {
         if(last_source_.has_value()
@@ -46,7 +51,7 @@ public:
             return distances_[target.get()];
         }
 
-        if(!last_source_.has_value() or source != last_source_.value()) {
+        if(!last_source_.has_value() or source.get() != last_source_.value().get()) {
             resetFor(source);
         }
 
@@ -69,7 +74,7 @@ public:
                 const auto* edge = graph_.getEdge(id);
                 const auto neig = edge->getTrg();
 
-				//use the edge weight if available otherwise every edge has a weight 1
+                //use the edge weight if available otherwise every edge has a weight 1
                 const auto distance = [&]() constexpr
                 {
                     if constexpr(concepts::HasWeight<typename Graph::EdgeType>) {
@@ -83,7 +88,7 @@ public:
                 const auto neig_dist = distances_[neig.get()];
                 const auto new_dist = current_dist + distance;
 
-                if(common::INFINITY_WEIGHT != current_dist and neig_dist > new_dist) {
+                if(common::INFINITY_WEIGHT.get() != current_dist.get() and neig_dist > new_dist) {
                     touched_.emplace_back(neig);
                     distances_[neig.get()] = new_dist;
                     pq_.emplace(neig, new_dist);
