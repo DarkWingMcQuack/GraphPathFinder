@@ -19,7 +19,6 @@ TEST(FMINodeTest, FMINodeWithLevelParsingTest)
 TEST(FMINodeTest, FMINodeWithoutLevelParsingTest)
 {
     auto node_opt = graphs::FMINode<false>::parse("61 625272 42.5716490 1.6112217 0");
-    auto node2_opt = graphs::FMINode<false>::parse("61 625272 42.5716490 1.6112217 0");
 
     ASSERT_TRUE(node_opt);
     EXPECT_EQ(node_opt.value().getID2(), common::NodeID{625272});
