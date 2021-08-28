@@ -48,8 +48,13 @@ public:
         }
     }
 
-    OffsetArrayForwardGraph(OffsetArrayForwardGraph &&) noexcept = default;
-    OffsetArrayForwardGraph(const OffsetArrayForwardGraph &) noexcept = default;
+    constexpr OffsetArrayForwardGraph(OffsetArrayForwardGraph &&) noexcept = default;
+    constexpr OffsetArrayForwardGraph(const OffsetArrayForwardGraph &) noexcept = default;
+
+    constexpr auto operator=(OffsetArrayForwardGraph &&) noexcept
+        -> OffsetArrayForwardGraph & = default;
+    constexpr auto operator=(const OffsetArrayForwardGraph &) noexcept
+        -> OffsetArrayForwardGraph & = default;
 
     constexpr auto checkIfEdgeExistsBetween(common::NodeID from,
                                             common::NodeID to) const noexcept

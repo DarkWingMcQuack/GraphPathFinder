@@ -58,6 +58,12 @@ public:
     constexpr NonTrivialOffsetArrayNodes(NonTrivialOffsetArrayNodes<Node> &&) noexcept = default;
     constexpr NonTrivialOffsetArrayNodes(const NonTrivialOffsetArrayNodes<Node> &) noexcept = default;
 
+    constexpr auto operator=(NonTrivialOffsetArrayNodes &&) noexcept
+        -> NonTrivialOffsetArrayNodes & = default;
+
+    constexpr auto operator=(const NonTrivialOffsetArrayNodes &) noexcept
+        -> NonTrivialOffsetArrayNodes & = default;
+
     constexpr auto nodeExists(common::NodeID id) const noexcept -> bool
     {
         return id.get() < numberOfNodes();
