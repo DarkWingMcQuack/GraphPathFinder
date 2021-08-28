@@ -1,7 +1,7 @@
 #pragma once
 
-#include <concepts/structures/EdgeWeights.hpp>
-#include <concepts/structures/Nodes.hpp>
+#include <concepts/Edges.hpp>
+#include <concepts/Nodes.hpp>
 #include <optional>
 
 namespace concepts {
@@ -10,7 +10,7 @@ namespace concepts {
 
 //O is a distance oracle for G
 template<typename O>
-concept DistanceOracle = requires(const O& oracle, common::NodeID src, common::NodeID trg)
+concept DistanceOracle = requires(O& oracle, common::NodeID src, common::NodeID trg)
 {
 	/**
 	 * @returns the shortest path distance between the nodes represented by the node ids given
@@ -18,9 +18,13 @@ concept DistanceOracle = requires(const O& oracle, common::NodeID src, common::N
 	 * and ending at the target node.
 	 * if no path between src and trg exists std::nullopt musst be returned
 	 */
-    {oracle.distanceBetween(src, trg)} noexcept -> std::same_as<std::optional<common::EdgeWeight>>;
+    {oracle.distanceBetween(src, trg)} noexcept -> std::same_as<common::Weight>;
 
-    {oracle.distanceBetweenUnsafe(src, trg)} noexcept -> std::same_as<common::EdgeWeight>;
+	/**
+	 * @returns true if the distance oracle can be used in a multithreaded environment,
+	 * false otherwise
+	 */
+	{O::is_threadsafe} noexcept -> std::same_as<const bool>;
 };
 // clang-format on
 
