@@ -1,6 +1,6 @@
 #pragma once
 
-#include <algorithms/pathfinding/dijkstra/DijkstaQueue.hpp>
+#include <algorithms/pathfinding/dijkstra/DijkstraQueue.hpp>
 #include <common/BasicGraphTypes.hpp>
 #include <common/EmptyBase.hpp>
 #include <concepts/DistanceOracle.hpp>
