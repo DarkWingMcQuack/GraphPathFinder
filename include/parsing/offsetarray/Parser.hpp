@@ -5,6 +5,7 @@
 #include <fmt/core.h>
 #include <fstream>
 #include <graphs/offsetarray/OffsetArray.hpp>
+#include <utils/MinMax.hpp>
 
 namespace parsing {
 
@@ -70,6 +71,57 @@ auto parseFromFMIFile(std::string_view file_path) noexcept
     return std::optional{
         graphs::OffsetArray<
             Node,
+            Edge,
+            HasForwardEdges,
+            HasBackwardEdges>{
+            std::move(nodes),
+            std::move(edges)}};
+}
+
+
+template<class Edge,
+         bool HasForwardEdges = true,
+         bool HasBackwardEdges = true>
+requires concepts::Parseable<Edge> && concepts::HasSource<Edge> && concepts::HasTarget<Edge>
+auto parseFromEdgeFile(std::string_view file_path) noexcept
+    -> std::optional<graphs::OffsetArray<common::NodeID, Edge, HasForwardEdges, HasBackwardEdges>>
+{
+    std::ifstream input_file(file_path.data(),
+                             std::ios::in);
+
+    if(!input_file) {
+        return std::nullopt;
+    }
+
+    common::NodeID highest_node{0};
+    std::string line;
+    std::vector<Edge> edges;
+
+    while(std::getline(input_file, line)) {
+
+        if(line.empty() or line.starts_with('%') or line.starts_with('#')) {
+            continue;
+        }
+
+        if(auto edge_opt = Edge::parse(line)) {
+            auto edge = std::move(edge_opt.value());
+
+            highest_node = util::max(highest_node,
+                                     edge.getSrc(),
+                                     edge.getTrg());
+
+            edges.emplace_back(std::move(edge));
+        }
+    }
+
+    std::vector<common::NodeID> nodes(highest_node.get() + 1);
+    for(common::NodeID n{0}; n <= highest_node; n++) {
+        nodes[n.get()] = n;
+    }
+
+    return std::optional{
+        graphs::OffsetArray<
+            common::NodeID,
             Edge,
             HasForwardEdges,
             HasBackwardEdges>{
