@@ -39,7 +39,7 @@ class OffsetArray : public OffsetArrayNodes<Node>,
 
 private:
     constexpr auto checkConcepts() const noexcept
-        -> void requires concepts::ForwardGraph<Self>
+        -> void
     {
         // clang-format off
     static_assert(HasForwardEdges || HasBackwardEdges,
@@ -68,8 +68,7 @@ private:
         // clang-format on
     }
 
-public :
-
+public:
     using NodeType = Node;
     using EdgeType = Edge;
 
@@ -109,6 +108,8 @@ public :
 
     OffsetArray(Self&&) noexcept = default;
     OffsetArray(const Self&) noexcept = default;
+    auto operator=(Self&&) noexcept -> OffsetArray& = default;
+    auto operator=(const Self&) noexcept -> OffsetArray& = default;
 };
 
 template<class Node, class Edge>
