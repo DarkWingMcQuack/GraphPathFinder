@@ -125,4 +125,5 @@ auto parseFromEdgeFile(std::string_view file_path) noexcept
             std::move(edges)}};
 }
 
+
 } // namespace parsing

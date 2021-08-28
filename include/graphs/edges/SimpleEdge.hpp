@@ -23,7 +23,7 @@ public:
         -> std::optional<SimpleEdge>
     // clang-format on
     {
-        const auto [src, trg] = common::extractFirstN<2>(str, ",");
+        const auto [src, trg] = common::extractFirstN<2>(str, " ");
 
         const auto src_opt = common::to<common::NodeID>(src);
         const auto trg_opt = common::to<common::NodeID>(trg);
