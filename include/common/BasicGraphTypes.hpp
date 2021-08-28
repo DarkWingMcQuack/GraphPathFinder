@@ -19,4 +19,7 @@ using Latitude   = fluent::NamedType<double, struct LatitudeTag, fluent::Arithme
 using Longitude  = fluent::NamedType<double, struct LongitudeTag, fluent::Arithmetic>;
 // clang-format on
 
+constexpr const static inline auto INFINITY_WEIGHT = Weight{std::numeric_limits<std::int_fast64_t>::max()};
+constexpr const static inline auto UNKNOWN_NODE_ID = NodeID{std::numeric_limits<std::size_t>::max()};
+
 } // namespace common
