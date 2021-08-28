@@ -49,15 +49,20 @@ private:
                       || concepts::ForwardGraph<OffsetArray<Node, Edge, HasForwardEdges, HasBackwardEdges>>,
                       "a graph which has forward edges should fullfill the ForwardGraph concept");
 
+
         static_assert(!HasBackwardEdges
                       || concepts::BackwardGraph<OffsetArray<Node, Edge, HasForwardEdges, HasBackwardEdges>>,
                       "a graph which has backward edges should fullfill the BackwardGraph concept");
 
         static_assert(concepts::HasNodes<OffsetArray<Node, Edge, HasForwardEdges, HasBackwardEdges>>,
-                      "the graph should fullfill the HasNodes concept");
+                      "every graph should fullfill the HasNodes concept");
+
+        static_assert(!std::is_same_v<Node, common::NodeID>
+                      || concepts::HasNontrivialNodes<OffsetArray<Node, Edge, HasForwardEdges, HasBackwardEdges>>,
+                      "a graph with non-trivial nodes should fullfill the HasNontrivialNodes concept");
 
         static_assert(concepts::HasEdges<OffsetArray<Node, Edge, HasForwardEdges, HasBackwardEdges>>,
-                      "the graph should fullfill the HasEdges concept");
+                      "every graph should fullfill the HasEdges concept");
 
         static_assert(!concepts::HasWeight<Edge>
 					  || concepts::WriteableEdgeWeights<OffsetArray<Node, Edge, HasForwardEdges, HasBackwardEdges>>,
