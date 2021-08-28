@@ -18,6 +18,7 @@ add_executable(unit_tests
   graphs/offsetarray/OffsetArrayTest.cpp
 
   algorithms/pathfinding/dijkstra/DistanceOracleDijkstraTest.cpp
+  algorithms/pathfinding/dijkstra/PathFindingDijkstraTest.cpp
   )
 
 target_link_libraries(unit_tests LINK_PRIVATE
