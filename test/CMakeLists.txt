@@ -8,12 +8,16 @@ find_package(Threads REQUIRED)
 
 add_executable(unit_tests
   main.cpp
+
   common/TokenizerTest.cpp
   common/ParsingTest.cpp
   common/BackwardEdgeViewTest.cpp
+
   graphs/nodes/FMINodeTest.cpp
   graphs/edges/FMIEdgeTest.cpp
   graphs/offsetarray/OffsetArrayTest.cpp
+
+  algorithms/pathfinding/dijkstra/DistanceOracleDijkstraTest.cpp
   )
 
 target_link_libraries(unit_tests LINK_PRIVATE
