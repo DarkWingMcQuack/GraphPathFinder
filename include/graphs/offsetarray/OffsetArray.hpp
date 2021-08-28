@@ -42,29 +42,29 @@ private:
         -> void
     {
         // clang-format off
-    static_assert(HasForwardEdges || HasBackwardEdges,
-				  "a graph without forward or backward edges is not allowed");
+        static_assert(HasForwardEdges || HasBackwardEdges,
+                      "a graph without forward or backward edges is not allowed");
 
-    static_assert(!HasForwardEdges
-				  || concepts::ForwardGraph<OffsetArray<Node, Edge, HasForwardEdges, HasBackwardEdges>>,
-                  "a graph which has forward edges should fullfill the ForwardGraph concept");
+        static_assert(!HasForwardEdges
+                      || concepts::ForwardGraph<OffsetArray<Node, Edge, HasForwardEdges, HasBackwardEdges>>,
+                      "a graph which has forward edges should fullfill the ForwardGraph concept");
 
-    static_assert(!HasBackwardEdges
-				  || concepts::BackwardGraph<OffsetArray<Node, Edge, HasForwardEdges, HasBackwardEdges>>,
-                  "a graph which has backward edges should fullfill the BackwardGraph concept");
+        static_assert(!HasBackwardEdges
+                      || concepts::BackwardGraph<OffsetArray<Node, Edge, HasForwardEdges, HasBackwardEdges>>,
+                      "a graph which has backward edges should fullfill the BackwardGraph concept");
 
-    static_assert(concepts::HasNodes<OffsetArray<Node, Edge, HasForwardEdges, HasBackwardEdges>>,
-                  "the graph should fullfill the HasNodes concept");
+        static_assert(concepts::HasNodes<OffsetArray<Node, Edge, HasForwardEdges, HasBackwardEdges>>,
+                      "the graph should fullfill the HasNodes concept");
 
-    static_assert(concepts::HasEdges<OffsetArray<Node, Edge, HasForwardEdges, HasBackwardEdges>>,
-                  "the graph should fullfill the HasEdges concept");
+        static_assert(concepts::HasEdges<OffsetArray<Node, Edge, HasForwardEdges, HasBackwardEdges>>,
+                      "the graph should fullfill the HasEdges concept");
 
-    static_assert(!concepts::HasWeight<Edge>
-				  || concepts::WriteableEdgeWeights<OffsetArray<Node, Edge, HasForwardEdges, HasBackwardEdges>>,
-                  "a graph with edges which fullfill the HasWeight concept should itself fullfill the WriteableEdgeWeights concept");
-    static_assert(!concepts::HasLevel<Node>
-				  || concepts::WriteableNodeLevels<OffsetArray<Node, Edge, HasForwardEdges, HasBackwardEdges>>,
-                  "a graph with nodes which fullfill the HasLevel concept should itself fullfill the WriteableNodeLevels concept");
+        static_assert(!concepts::HasWeight<Edge>
+					  || concepts::WriteableEdgeWeights<OffsetArray<Node, Edge, HasForwardEdges, HasBackwardEdges>>,
+                      "a graph with edges which fullfill the HasWeight concept should itself fullfill the WriteableEdgeWeights concept");
+        static_assert(!concepts::HasLevel<Node>
+					  || concepts::WriteableNodeLevels<OffsetArray<Node, Edge, HasForwardEdges, HasBackwardEdges>>,
+                      "a graph with nodes which fullfill the HasLevel concept should itself fullfill the WriteableNodeLevels concept");
         // clang-format on
     }
 
@@ -79,7 +79,9 @@ public:
         : OffsetArrayNodes<Node>(std::move(nodes)),
           OffsetArrayEdges<Edge>(std::move(edges)),
           OffsetArrayForwardGraph<Node, Edge, Self>()
-    {}
+    {
+        checkConcepts();
+    }
 
 
     //currently clang has a bug of not allowing all three constructors at the same time
@@ -91,7 +93,9 @@ public:
         : OffsetArrayNodes<Node>(std::move(nodes)),
           OffsetArrayEdges<Edge>(std::move(edges)),
           OffsetArrayBackwardGraph<Node, Edge, Self>()
-    {}
+    {
+        checkConcepts();
+    }
 #endif
 
 
