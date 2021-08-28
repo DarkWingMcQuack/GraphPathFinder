@@ -7,9 +7,14 @@ namespace concepts {
 
 // clang-format off
 template<typename Node>
-concept HasLevel = requires(const Node& node, Node& mut_node, common::NodeLevel level)
+concept HasLevel = requires(const Node& node, common::NodeLevel level)
 {
     {node.getLvl()} -> std::convertible_to<common::NodeLevel>;
+};
+
+template<typename Node>
+concept HasLevelSetter = requires(Node& mut_node, common::NodeLevel level)
+{
     {mut_node.setLvl(level)} -> std::same_as<void>;
 };
 
