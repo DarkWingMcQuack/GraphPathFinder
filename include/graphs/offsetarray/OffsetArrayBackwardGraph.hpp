@@ -21,12 +21,12 @@ public:
     {
         static_assert(concepts::BackwardGraph<OffsetArrayBackwardGraph<Node, Edge, Graph>>);
 
-        const auto &nodes = impl().getNodes();
         const auto &edges = impl().getEdges();
+        const auto number_of_nodes = impl().numberOfNodes();
 
 
         //build an adjacency list which then can be converted to an offset array
-        std::vector<std::vector<common::EdgeID>> adjacency_list(nodes.size());
+        std::vector<std::vector<common::EdgeID>> adjacency_list(number_of_nodes);
         for(std::size_t i = 0; i < edges.size(); i++) {
             const auto &e = edges[i];
             const auto trg = e.getTrg();
@@ -34,13 +34,13 @@ public:
         }
 
         //resize the offset array
-        backward_offset_.resize(nodes.size() + 1, 0);
+        backward_offset_.resize(number_of_nodes+ 1, 0);
 
         //reserve space for the flattened adjacency list
         backward_neigbours_.reserve(edges.size());
 
         //build the offset array
-        for(std::size_t n = 0; n < nodes.size(); n++) {
+        for(std::size_t n = 0; n < number_of_nodes; n++) {
             const auto &neigs = adjacency_list[n];
 
             backward_neigbours_.insert(std::end(backward_neigbours_),

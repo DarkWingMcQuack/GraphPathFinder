@@ -19,11 +19,11 @@ public:
     {
         static_assert(concepts::ForwardGraph<OffsetArrayForwardGraph<Node, Edge, Graph>>);
 
-        const auto &nodes = impl().getNodes();
         const auto &edges = impl().getEdges();
+        const auto number_of_nodes = impl().numberOfNodes();
 
         //build an adjacency list which then can be converted to an offset array
-        std::vector<std::vector<common::EdgeID>> adjacency_list(nodes.size());
+        std::vector<std::vector<common::EdgeID>> adjacency_list(number_of_nodes);
         for(std::size_t i = 0; i < edges.size(); i++) {
             const auto &e = edges[i];
             const auto src = e.getSrc();
@@ -31,13 +31,13 @@ public:
         }
 
         //resize the offset array
-        forward_offset_.resize(nodes.size() + 1, 0);
+        forward_offset_.resize(number_of_nodes + 1, 0);
 
         //reserve space for the flattened adjacency list
         forward_neigbours_.reserve(edges.size());
 
         //build the offset array
-        for(std::size_t n = 0; n < nodes.size(); n++) {
+        for(std::size_t n = 0; n < number_of_nodes; n++) {
             const auto &neigs = adjacency_list[n];
 
             forward_neigbours_.insert(std::end(forward_neigbours_),
@@ -146,8 +146,8 @@ public:
     }
 
 
-private :
     // clang-format off
+private:
 
     //crtp helper function
     constexpr auto impl() const noexcept
