@@ -68,7 +68,18 @@ public:
             for(auto id : edge_ids) {
                 const auto* edge = graph_.getEdge(id);
                 const auto neig = edge->getTrg();
-                const auto distance = edge->getWeight();
+
+				//use the edge weight if available otherwise every edge has a weight 1
+                const auto distance = [&]() constexpr
+                {
+                    if constexpr(concepts::HasWeight<typename Graph::EdgeType>) {
+                        return edge->getWeight();
+                    } else {
+                        return common::Weight{1};
+                    }
+                }
+                ();
+
                 const auto neig_dist = distances_[neig.get()];
                 const auto new_dist = current_dist + distance;
 
