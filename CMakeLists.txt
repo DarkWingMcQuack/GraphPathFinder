@@ -79,6 +79,11 @@ target_sources(GraphPathFinderLib
   ${CMAKE_CURRENT_LIST_DIR}/include/graphs/offsetarray/OffsetArrayEdges.hpp
 
   ${CMAKE_CURRENT_LIST_DIR}/include/parsing/offsetarray/Parser.hpp
+
+  
+  ${CMAKE_CURRENT_LIST_DIR}/include/algorithms/pathfinding/dijkstra/DijkstraQueue.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/include/algorithms/pathfinding/dijkstra/PathFindingDijkstra.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/include/algorithms/pathfinding/dijkstra/DistanceOracleDijkstra.hpp
   )
 
 # add the dependencies of the target to enforce
