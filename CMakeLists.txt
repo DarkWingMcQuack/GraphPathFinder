@@ -58,7 +58,6 @@ target_sources(GraphPathFinderLib
   ${CMAKE_CURRENT_LIST_DIR}/include/common/EmptyBase.hpp
   ${CMAKE_CURRENT_LIST_DIR}/include/common/BackwardEdgeView.hpp
 
-  ${CMAKE_CURRENT_LIST_DIR}/include/graphs/common/IDBase.hpp
   ${CMAKE_CURRENT_LIST_DIR}/include/graphs/common/LevelBase.hpp
   ${CMAKE_CURRENT_LIST_DIR}/include/graphs/common/WeightBase.hpp
 
