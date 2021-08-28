@@ -6,25 +6,57 @@
 
 namespace graphs {
 
+class TrivialOffsetArrayNodes
+{
+    using NodeType = common::NodeID;
+
+    constexpr TrivialOffsetArrayNodes(std::size_t number_of_nodes) noexcept
+        : number_of_nodes_(number_of_nodes) {}
+
+    constexpr TrivialOffsetArrayNodes(TrivialOffsetArrayNodes &&) noexcept = default;
+    constexpr TrivialOffsetArrayNodes(const TrivialOffsetArrayNodes &) noexcept = default;
+
+    constexpr auto operator=(TrivialOffsetArrayNodes &&) noexcept
+        -> TrivialOffsetArrayNodes & = default;
+    constexpr auto operator=(const TrivialOffsetArrayNodes &) noexcept
+        -> TrivialOffsetArrayNodes & = default;
+
+    constexpr auto nodeExists(common::NodeID id) const noexcept -> bool
+    {
+        return id.get() < numberOfNodes();
+    }
+
+    constexpr auto numberOfNodes() const noexcept -> std::size_t
+    {
+        return number_of_nodes_;
+    }
+
+private:
+    std::size_t number_of_nodes_;
+};
+
+// clang-format off
 template<class Node>
-class OffsetArrayNodes
+requires(!std::is_same_v<Node, common::NodeID>)
+class NonTrivialOffsetArrayNodes
+// clang-format on
 {
 public:
     using NodeType = Node;
 
-    OffsetArrayNodes(std::vector<Node> nodes) noexcept
+    NonTrivialOffsetArrayNodes(std::vector<Node> nodes) noexcept
         : nodes_(std::move(nodes))
     {
         // clang-format off
-        static_assert(concepts::HasNodes<OffsetArrayNodes<Node>>);
+        static_assert(concepts::HasNodes<NonTrivialOffsetArrayNodes<Node>>);
         // Nodes have levels -> OffsetarrayNodes are node level writeable
         static_assert(!concepts::HasLevel<Node>
-					  || concepts::WriteableNodeLevels<OffsetArrayNodes<Node>>);
+					  || concepts::WriteableNodeLevels<NonTrivialOffsetArrayNodes<Node>>);
         // clang-format on
     }
 
-    OffsetArrayNodes(OffsetArrayNodes<Node> &&) noexcept = default;
-    OffsetArrayNodes(const OffsetArrayNodes<Node> &) noexcept = default;
+    constexpr NonTrivialOffsetArrayNodes(NonTrivialOffsetArrayNodes<Node> &&) noexcept = default;
+    constexpr NonTrivialOffsetArrayNodes(const NonTrivialOffsetArrayNodes<Node> &) noexcept = default;
 
     constexpr auto nodeExists(common::NodeID id) const noexcept -> bool
     {
@@ -78,16 +110,18 @@ public:
         }
     }
 
-    constexpr auto getNodes() const noexcept
-        -> const std::vector<Node> &
-    {
-        return nodes_;
-    }
-
     // clang-format off
 private:
     std::vector<Node> nodes_;
     // clang-format on
 };
+
+template<class Node>
+class OffsetArrayNodes : public std::conditional_t<std::is_same_v<Node, common::NodeID>,
+                                                   TrivialOffsetArrayNodes,
+                                                   NonTrivialOffsetArrayNodes<Node>>
+{
+};
+
 
 } // namespace graphs

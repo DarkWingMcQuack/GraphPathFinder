@@ -88,12 +88,6 @@ public:
         }
     }
 
-    constexpr auto getEdges() const noexcept
-        -> const std::vector<Edge> &
-    {
-        return edges_;
-    }
-
     // clang-format off
 private :
     std::vector<Edge> edges_;

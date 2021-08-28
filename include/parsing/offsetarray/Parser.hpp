@@ -114,10 +114,6 @@ auto parseFromEdgeFile(std::string_view file_path) noexcept
         }
     }
 
-    std::vector<common::NodeID> nodes(highest_node.get() + 1);
-    for(common::NodeID n{0}; n <= highest_node; n++) {
-        nodes[n.get()] = n;
-    }
 
     return std::optional{
         graphs::OffsetArray<
@@ -125,7 +121,7 @@ auto parseFromEdgeFile(std::string_view file_path) noexcept
             Edge,
             HasForwardEdges,
             HasBackwardEdges>{
-            std::move(nodes),
+            highest_node.get(),
             std::move(edges)}};
 }
 

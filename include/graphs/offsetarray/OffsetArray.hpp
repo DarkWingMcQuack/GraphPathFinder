@@ -83,6 +83,19 @@ public:
         checkConcepts();
     }
 
+    OffsetArray(std::size_t number_of_nodes,
+                std::vector<Edge> edges) noexcept
+        requires HasForwardEdges
+        &&(!HasBackwardEdges)
+        && std::is_same_v<Node, common::NodeID>
+
+        : OffsetArrayNodes<Node>(number_of_nodes),
+        OffsetArrayEdges<Edge>(std::move(edges)),
+        OffsetArrayForwardGraph<Node, Edge, Self>()
+    {
+        checkConcepts();
+    }
+
 
     //currently clang has a bug of not allowing all three constructors at the same time
     //once this is fixed thei check can be omitted
@@ -96,6 +109,18 @@ public:
     {
         checkConcepts();
     }
+
+    OffsetArray(std::size_t number_of_nodes,
+                std::vector<Edge> edges) noexcept
+        requires HasBackwardEdges
+        &&(!HasForwardEdges)
+        && std::is_same_v<Node, common::NodeID>
+        : OffsetArrayNodes<Node>(number_of_nodes),
+        OffsetArrayEdges<Edge>(std::move(edges)),
+        OffsetArrayBackwardGraph<Node, Edge, Self>()
+    {
+        checkConcepts();
+    }
 #endif
 
 
@@ -103,6 +128,17 @@ public:
                 std::vector<Edge> edges) noexcept
         requires HasBackwardEdges && HasForwardEdges
         : OffsetArrayNodes<Node>(std::move(nodes)),
+          OffsetArrayEdges<Edge>(std::move(edges)),
+          OffsetArrayForwardGraph<Node, Edge, Self>(),
+          OffsetArrayBackwardGraph<Node, Edge, Self>()
+    {
+        checkConcepts();
+    }
+
+    OffsetArray(std::size_t number_of_nodes,
+                std::vector<Edge> edges) noexcept
+        requires HasBackwardEdges && HasForwardEdges
+        : OffsetArrayNodes<Node>(number_of_nodes),
           OffsetArrayEdges<Edge>(std::move(edges)),
           OffsetArrayForwardGraph<Node, Edge, Self>(),
           OffsetArrayBackwardGraph<Node, Edge, Self>()

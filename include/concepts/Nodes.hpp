@@ -32,19 +32,26 @@ concept HasNodes = requires(const T& graph, common::NodeID id)
     {graph.nodeExists(id)} noexcept -> std::same_as<bool>;
 
 	/*
+	 * @return the number of nodes
+	 */
+	{graph.numberOfNodes()} noexcept -> std::same_as<std::size_t>;
+};
+
+
+template<typename T>
+concept HasNontrivialNodes = requires(const T& graph, common::NodeID id)
+{
+    requires HasNodes<T>;
+
+	/*
 	 * returns a pointer to the node class associated with the
 	 * given ID
 	 * @return a non owning pointer to the node object associated with the given id,
 	 * null if no such object exists
 	 */
 	{graph.getNode(id)} noexcept -> std::same_as<const typename T::NodeType*>;
-
-	
-	/*
-	 * @return the number of nodes
-	 */
-	{graph.numberOfNodes()} noexcept -> std::same_as<std::size_t>;
 };
+
 
 // clang-format on
 
