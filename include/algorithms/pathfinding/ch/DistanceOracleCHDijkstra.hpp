@@ -48,7 +48,7 @@ public:
           graph_(graph)
     {
         static_assert(concepts::DistanceOracle<ThisType>,
-                      "DistanceOracleDijkstra should fullfill the DistanceOracle concept");
+                      "DistanceOracleCHDijkstra should fullfill the DistanceOracle concept");
     }
 
     constexpr DistanceOracleCHDijkstra(DistanceOracleCHDijkstra&&) noexcept = default;
