@@ -45,7 +45,11 @@ public:
     constexpr DistanceOracleCHDijkstra(const Graph& graph) noexcept
         : ForwardHelper(graph.numberOfNodes()),
           BackwardHelper(graph.numberOfNodes()),
-          graph_(graph) {}
+          graph_(graph)
+    {
+        static_assert(concepts::DistanceOracle<ThisType>,
+                      "DistanceOracleDijkstra should fullfill the DistanceOracle concept");
+    }
 
     constexpr DistanceOracleCHDijkstra(DistanceOracleCHDijkstra&&) noexcept = default;
     constexpr DistanceOracleCHDijkstra(const DistanceOracleCHDijkstra&) noexcept = delete;
