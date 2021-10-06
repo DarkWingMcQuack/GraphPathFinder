@@ -136,16 +136,16 @@ public:
     template<class F>
     constexpr auto sortForwardEdgeIDsAccordingTo(F&& func) noexcept
         -> void
-	    requires std::regular_invocable<F, decltype(*this)>
-	          && std::strict_weak_order<decltype(func(*this)),
-				        			    common::NodeID,
-										common::NodeID>
+	    requires std::regular_invocable<F, const Graph&>
+	  && std::strict_weak_order<decltype(func(this->impl())),
+				        			    common::EdgeID,
+										common::EdgeID>
     // clang-format on
     {
-        const auto order = std::invoke(std::forward<F>(func), *this);
+        const auto order = std::invoke(std::forward<F>(func), impl());
 
         for(std::size_t n = 0; n < impl().numberOfNodes(); n++) {
-            auto ids = getForwardEdgeIDsOf(n);
+            auto ids = getForwardEdgeIDsOf(common::NodeID{n});
             std::sort(std::begin(ids), std::end(ids), order);
         }
     }
