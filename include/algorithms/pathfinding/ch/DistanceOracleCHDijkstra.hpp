@@ -170,7 +170,7 @@ public:
                 for(const auto id : edge_ids) {
                     const auto& edge = graph_.getBackwardEdge(id);
                     const auto neig = edge->getTrg();
-                    const auto cost = edge->getForwardWeight();
+                    const auto cost = edge->getWeight();
 
                     if(current_level >= graph_.getNodeLevel(neig)) {
                         break;
