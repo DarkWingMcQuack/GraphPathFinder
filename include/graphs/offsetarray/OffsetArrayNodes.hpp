@@ -90,7 +90,7 @@ public:
     // clang-format on
     {
         if(const auto *node = getNode(id)) {
-            return node->getLevel();
+            return node->getLvl();
         }
 
         return std::nullopt;
