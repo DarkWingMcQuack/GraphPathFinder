@@ -8,18 +8,20 @@
 
 namespace algorithms::pathfinding {
 
+using NodeLabel = std::pair<common::NodeID, common::Weight>;
+
 struct DijkstraQueueComparer
 {
-    auto operator()(const std::pair<common::NodeID, common::Weight>& lhs,
-                    const std::pair<common::NodeID, common::Weight>& rhs) const noexcept
+    auto operator()(const NodeLabel& lhs,
+                    const NodeLabel& rhs) const noexcept
         -> bool
     {
         return lhs.second > rhs.second;
     }
 };
 
-using DijkstraQueue = std::priority_queue<std::pair<common::NodeID, common::Weight>,
-                                          std::vector<std::pair<common::NodeID, common::Weight>>,
+using DijkstraQueue = std::priority_queue<NodeLabel,
+                                          std::vector<NodeLabel>,
                                           DijkstraQueueComparer>;
 
 
