@@ -19,6 +19,9 @@ add_executable(unit_tests
 
   algorithms/pathfinding/dijkstra/DistanceOracleDijkstraTest.cpp
   algorithms/pathfinding/dijkstra/PathFindingDijkstraTest.cpp
+
+  
+  algorithms/pathfinding/ch/DistanceOracleCHDijkstraTest.cpp
   )
 
 target_link_libraries(unit_tests LINK_PRIVATE

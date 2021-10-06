@@ -139,9 +139,9 @@ public:
     constexpr auto sortBackwardEdgeIDsAccordingTo(F&& func) noexcept
         -> void
 	    requires std::regular_invocable<F, const Graph&>
-	  && std::strict_weak_order<decltype(func(this->impl())),
-				        			    common::EdgeID,
-										common::EdgeID>
+	    && std::strict_weak_order<std::invoke_result_t<F, const Graph&>,
+				        		  common::EdgeID,
+								  common::EdgeID>
     // clang-format on
     {
         auto order = std::invoke(std::forward<F>(func), impl());
