@@ -12,8 +12,8 @@ using NodeLabel = std::pair<common::NodeID, common::Weight>;
 
 struct DijkstraQueueComparer
 {
-    auto operator()(const NodeLabel& lhs,
-                    const NodeLabel& rhs) const noexcept
+    constexpr auto operator()(const NodeLabel& lhs,
+                              const NodeLabel& rhs) const noexcept
         -> bool
     {
         return lhs.second > rhs.second;
