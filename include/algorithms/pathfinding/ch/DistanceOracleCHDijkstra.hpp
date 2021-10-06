@@ -42,18 +42,27 @@ class DistanceOracleCHDijkstra : public DistanceOracleCHDijkstraForwardHelper<
 public:
     constexpr static inline bool is_threadsafe = false;
 
-    DistanceOracleCHDijkstra(const Graph& graph) noexcept
+    constexpr DistanceOracleCHDijkstra(const Graph& graph) noexcept
         : ForwardHelper(graph.numberOfNodes()),
           BackwardHelper(graph.numberOfNodes()),
           graph_(graph) {}
 
-    [[nodiscard]] auto distanceBetween(common::NodeID source, common::NodeID target) noexcept
+    constexpr DistanceOracleCHDijkstra(DistanceOracleCHDijkstra&&) noexcept = default;
+    constexpr DistanceOracleCHDijkstra(const DistanceOracleCHDijkstra&) noexcept = delete;
+
+    constexpr auto operator=(DistanceOracleCHDijkstra&&) noexcept
+        -> DistanceOracleCHDijkstra& = default;
+
+    constexpr auto operator=(const DistanceOracleCHDijkstra&) noexcept
+        -> DistanceOracleCHDijkstra& = delete;
+
+    [[nodiscard]] constexpr auto distanceBetween(common::NodeID source, common::NodeID target) noexcept
         -> common::Weight
     {
         this->fillForwardInfo(source);
         this->fillBackwardInfo(target);
 
-        auto top_node_opt = findShortestPathCommonNode();
+        const auto top_node_opt = findShortestPathCommonNode();
 
 
         if(!top_node_opt) {
@@ -62,13 +71,13 @@ public:
 
 
 
-        auto top_node = top_node_opt.value();
+        const auto top_node = top_node_opt.value();
 
         return this->forward_distances_[top_node.get()]
             + this->backward_distances_[top_node.get()];
     }
 
-    [[nodiscard]] auto findShortestPathCommonNode() const noexcept
+    [[nodiscard]] constexpr auto findShortestPathCommonNode() const noexcept
         -> std::optional<common::NodeID>
     {
         if(this->forward_settled_.empty() or this->backward_settled_.empty()) {

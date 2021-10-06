@@ -17,19 +17,21 @@ namespace algorithms::pathfinding {
 template<class CRTP, bool UseStallOnDemand>
 class DistanceOracleCHDijkstraBackwardHelper
 {
-    [[nodiscard]] constexpr auto getGraph() noexcept
-        -> decltype(auto)
-    {
-        return static_cast<CRTP*>(this)->getGraph();
-    }
-
 public:
-    DistanceOracleCHDijkstraBackwardHelper(std::size_t number_of_nodes)
+    constexpr DistanceOracleCHDijkstraBackwardHelper(std::size_t number_of_nodes)
         : backward_distances_(number_of_nodes, common::INFINITY_WEIGHT),
           backward_best_ingoing_(number_of_nodes, common::UNKNOWN_EDGE_ID),
           backward_already_settled_(number_of_nodes, false) {}
+    constexpr DistanceOracleCHDijkstraBackwardHelper(DistanceOracleCHDijkstraBackwardHelper&&) noexcept = default;
+    constexpr DistanceOracleCHDijkstraBackwardHelper(const DistanceOracleCHDijkstraBackwardHelper&) noexcept = delete;
 
-    auto fillBackwardInfo(common::NodeID source) noexcept
+    constexpr auto operator=(DistanceOracleCHDijkstraBackwardHelper&&) noexcept
+        -> DistanceOracleCHDijkstraBackwardHelper& = default;
+
+    constexpr auto operator=(const DistanceOracleCHDijkstraBackwardHelper&) noexcept
+        -> DistanceOracleCHDijkstraBackwardHelper& = delete;
+
+    constexpr auto fillBackwardInfo(common::NodeID source) noexcept
         -> void
     {
         if(last_source_ && last_source_.value().get() == source.get()) {
@@ -88,9 +90,9 @@ public:
     }
 
 private:
-    [[nodiscard]] auto shouldStall(common::NodeLevel current_level,
-                                   common::Weight cost_to_current,
-                                   const std::span<common::EdgeID> edge_ids) const noexcept
+    [[nodiscard]] constexpr auto shouldStall(common::NodeLevel current_level,
+                                             common::Weight cost_to_current,
+                                             const std::span<common::EdgeID> edge_ids) const noexcept
         -> bool
     {
         auto stall_on_demand_valid = false;
@@ -117,7 +119,7 @@ private:
         return false;
     }
 
-    auto resetBackwardFor(common::NodeID node) noexcept
+    constexpr auto resetBackwardFor(common::NodeID node) noexcept
         -> void
     {
         for(const auto node : backward_touched_) {
@@ -132,6 +134,12 @@ private:
         last_source_ = node;
         backward_touched_.emplace_back(node);
         backward_distances_[node.get()] = common::Weight{0};
+    }
+
+    [[nodiscard]] constexpr auto getGraph() const noexcept
+        -> decltype(auto)
+    {
+        return static_cast<const CRTP*>(this)->getGraph();
     }
 
 protected:

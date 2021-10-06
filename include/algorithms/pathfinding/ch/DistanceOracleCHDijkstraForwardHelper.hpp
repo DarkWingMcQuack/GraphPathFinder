@@ -18,19 +18,22 @@ namespace algorithms::pathfinding {
 template<class CRTP, bool UseStallOnDemand>
 class DistanceOracleCHDijkstraForwardHelper
 {
-    [[nodiscard]] constexpr auto getGraph() const noexcept
-        -> decltype(auto)
-    {
-        return static_cast<const CRTP*>(this)->getGraph();
-    }
-
 public:
-    DistanceOracleCHDijkstraForwardHelper(std::size_t number_of_nodes)
+    constexpr DistanceOracleCHDijkstraForwardHelper(std::size_t number_of_nodes)
         : forward_distances_(number_of_nodes, common::INFINITY_WEIGHT),
           forward_best_ingoing_(number_of_nodes, common::UNKNOWN_EDGE_ID),
           forward_already_settled_(number_of_nodes, false) {}
 
-    auto fillForwardInfo(common::NodeID source) noexcept
+    constexpr DistanceOracleCHDijkstraForwardHelper(DistanceOracleCHDijkstraForwardHelper&&) noexcept = default;
+    constexpr DistanceOracleCHDijkstraForwardHelper(const DistanceOracleCHDijkstraForwardHelper&) noexcept = delete;
+
+    constexpr auto operator=(DistanceOracleCHDijkstraForwardHelper&&) noexcept
+        -> DistanceOracleCHDijkstraForwardHelper& = default;
+
+    constexpr auto operator=(const DistanceOracleCHDijkstraForwardHelper&) noexcept
+        -> DistanceOracleCHDijkstraForwardHelper& = delete;
+
+    constexpr auto fillForwardInfo(common::NodeID source) noexcept
         -> void
     {
         if(last_source_ && last_source_.value().get() == source.get()) {
@@ -89,9 +92,9 @@ public:
     }
 
 private:
-    auto shouldStall(common::NodeLevel current_level,
-                     common::Weight cost_to_current,
-                     const std::span<common::EdgeID> edge_ids) const noexcept
+    constexpr auto shouldStall(common::NodeLevel current_level,
+                               common::Weight cost_to_current,
+                               const std::span<common::EdgeID> edge_ids) const noexcept
         -> bool
     {
         auto stall_on_demand_valid = false;
@@ -118,7 +121,7 @@ private:
         return false;
     }
 
-    auto resetForwardFor(common::NodeID node) noexcept
+    constexpr auto resetForwardFor(common::NodeID node) noexcept
         -> void
     {
         for(const auto node : forward_touched_) {
@@ -135,7 +138,11 @@ private:
         forward_distances_[node.get()] = common::Weight{0};
     }
 
-
+    [[nodiscard]] constexpr auto getGraph() const noexcept
+        -> decltype(auto)
+    {
+        return static_cast<const CRTP*>(this)->getGraph();
+    }
 
 protected:
     std::vector<common::Weight> forward_distances_;
