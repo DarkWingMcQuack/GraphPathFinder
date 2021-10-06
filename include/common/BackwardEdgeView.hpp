@@ -31,8 +31,8 @@ public:
         return e_ == nullptr;
     }
 
-    constexpr auto getForwardWeight() const noexcept
-        -> bool requires concepts::HasWeight<Edge>
+    constexpr auto getWeight() const noexcept
+        -> Weight requires concepts::HasWeight<Edge>
     {
         return e_->getWeight();
     }

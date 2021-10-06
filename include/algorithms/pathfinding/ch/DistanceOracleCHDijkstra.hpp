@@ -16,7 +16,7 @@
 
 namespace algorithms::pathfinding {
 
-template<class Graph, bool UseStallOnDemand>
+template<class Graph, bool UseStallOnDemand = true>
 // clang-format off
 requires concepts::ForwardGraph<Graph>
       && concepts::BackwardGraph<Graph>
@@ -30,6 +30,15 @@ class DistanceOracleCHDijkstra
 {
 public:
     constexpr static inline bool is_threadsafe = false;
+
+    DistanceOracleCHDijkstra(const Graph& graph) noexcept
+        : graph_(graph),
+          forward_distances_(graph_.numberOfNodes(), common::INFINITY_WEIGHT),
+          forward_best_ingoing_(graph_.numberOfNodes(), common::UNKNOWN_EDGE_ID),
+          forward_already_settled_(graph_.numberOfNodes(), false),
+          backward_distances_(graph_.numberOfNodes(), common::INFINITY_WEIGHT),
+          backward_best_ingoing_(graph_.numberOfNodes(), common::UNKNOWN_EDGE_ID),
+          backward_already_settled_(graph_.numberOfNodes(), false) {}
 
     [[nodiscard]] auto distanceBetween(common::NodeID source, common::NodeID target) noexcept
         -> common::Weight
@@ -80,14 +89,14 @@ public:
                 auto stall_on_demand_valid = false;
                 for(const auto id : edge_ids) {
                     const auto& edge = graph_.getEdge(id);
-                    const auto neig = edge.target;
-                    const auto cost = edge.distance;
+                    const auto neig = edge->getTrg();
+                    const auto cost = edge->getWeight();
 
                     if(current_level >= graph_.getNodeLevel(neig)) {
                         break;
                     }
 
-                    const auto current_dist_to_neig = forward_distances_[neig];
+                    const auto current_dist_to_neig = forward_distances_[neig.get()];
 
                     if(current_dist_to_neig == common::INFINITY_WEIGHT) {
                         continue;
@@ -107,9 +116,9 @@ public:
             forward_settled_.emplace_back(current_node);
 
             for(const auto id : edge_ids) {
-                const auto& edge = graph_.getEdge(id);
+                const auto edge = graph_.getEdge(id);
                 const auto neig = edge->getTrg();
-                const auto cost = edge->getForwardWeight();
+                const auto cost = edge->getWeight();
                 const auto neig_level = graph_.getNodeLevel(neig);
 
                 if(current_level >= neig_level) {
@@ -118,11 +127,11 @@ public:
 
                 const auto new_dist = cost + cost_to_current;
 
-                if(new_dist < forward_distances_[neig]) {
+                if(new_dist < forward_distances_[neig.get()]) {
                     heap.emplace(neig, new_dist);
-                    forward_distances_[neig] = new_dist;
+                    forward_distances_[neig.get()] = new_dist;
                     forward_touched_.emplace_back(neig);
-                    forward_best_ingoing_[neig] = id;
+                    forward_best_ingoing_[neig.get()] = id;
                 }
             }
         }
@@ -167,7 +176,7 @@ public:
                         break;
                     }
 
-                    const auto current_dist_to_neig = backward_distances_[neig];
+                    const auto current_dist_to_neig = backward_distances_[neig.get()];
 
                     if(current_dist_to_neig == common::INFINITY_WEIGHT) {
                         continue;
@@ -187,21 +196,22 @@ public:
             backward_settled_.emplace_back(current_node);
 
             for(const auto id : edge_ids) {
-                const auto& edge = graph_.getEdge(id);
-                const auto neig = edge.target;
+                const auto edge = graph_.getBackwardEdge(id);
+                const auto neig = edge->getTrg();
+                const auto cost = edge->getWeight();
                 const auto neig_level = graph_.getNodeLevel(neig);
 
                 if(current_level >= neig_level) {
                     break;
                 }
 
-                const auto new_dist = edge.distance + cost_to_current;
+                const auto new_dist = cost + cost_to_current;
 
-                if(new_dist < backward_distances_[neig]) {
+                if(new_dist < backward_distances_[neig.get()]) {
                     heap.emplace(neig, new_dist);
-                    backward_distances_[neig] = new_dist;
+                    backward_distances_[neig.get()] = new_dist;
                     backward_touched_.emplace_back(neig);
-                    backward_best_ingoing_[neig] = id;
+                    backward_best_ingoing_[neig.get()] = id;
                 }
             }
         }
@@ -237,7 +247,8 @@ public:
             }
 
             const auto common = forward_settled_[forward_idx];
-            const auto new_dist = forward_distances_[common.get()] + backward_distances_[common.get()];
+            const auto new_dist = forward_distances_[common.get()]
+                + backward_distances_[common.get()];
 
             if(new_dist < best_dist) {
                 best_dist = new_dist;
