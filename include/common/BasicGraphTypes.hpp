@@ -22,5 +22,6 @@ using Longitude  = fluent::NamedType<double, struct LongitudeTag, fluent::Arithm
 constexpr const static inline auto INFINITY_WEIGHT = Weight{std::numeric_limits<std::int_fast64_t>::max()};
 constexpr const static inline auto UNKNOWN_NODE_ID = NodeID{std::numeric_limits<std::size_t>::max()};
 constexpr const static inline auto UNKNOWN_EDGE_ID = EdgeID{std::numeric_limits<std::size_t>::max()};
+constexpr const static inline auto MAX_LEVEL = NodeLevel{std::numeric_limits<std::size_t>::max()};
 
 } // namespace common

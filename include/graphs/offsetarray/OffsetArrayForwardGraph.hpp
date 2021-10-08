@@ -14,7 +14,7 @@ public:
     using NodeType = Node;
     using EdgeType = Edge;
 
-    OffsetArrayForwardGraph() noexcept
+    constexpr OffsetArrayForwardGraph() noexcept
         requires concepts::HasSource<EdgeType> && concepts::HasTarget<EdgeType>
     {
         static_assert(concepts::ForwardGraph<OffsetArrayForwardGraph<Node, Edge, Graph>>);

@@ -18,7 +18,7 @@
 
 namespace algorithms::pathfinding {
 
-template<class Graph, bool UseStallOnDemand = false>
+template<class Graph, bool UseStallOnDemand = true>
 // clang-format off
 requires concepts::ForwardGraph<Graph>
       && concepts::BackwardGraph<Graph>
@@ -42,13 +42,36 @@ class DistanceOracleCHDijkstra : public DistanceOracleCHDijkstraForwardHelper<
 public:
     constexpr static inline bool is_threadsafe = false;
 
-    constexpr DistanceOracleCHDijkstra(const Graph& graph) noexcept
+
+    template<bool SortGraphEdges = true>
+    constexpr DistanceOracleCHDijkstra(Graph& graph) noexcept
         : ForwardHelper(graph.numberOfNodes()),
           BackwardHelper(graph.numberOfNodes()),
           graph_(graph)
     {
         static_assert(concepts::DistanceOracle<ThisType>,
                       "DistanceOracleCHDijkstra should fullfill the DistanceOracle concept");
+
+        if constexpr(SortGraphEdges) {
+            //sort the offeset arrays such that the ch dijkstra can be used
+            graph.sortBackwardEdgeIDsAccordingTo([](const auto& g) {
+                return [&](const auto lhs, const auto rhs) {
+                    auto lhs_trg = g.getBackwardEdge(lhs)->getTrg();
+                    auto rhs_trg = g.getBackwardEdge(rhs)->getTrg();
+
+                    return g.getNodeLevel(lhs_trg) > g.getNodeLevel(rhs_trg);
+                };
+            });
+
+            graph.sortForwardEdgeIDsAccordingTo([](const auto& g) {
+                return [&](const auto lhs, const auto rhs) {
+                    auto lhs_trg = g.getEdge(lhs)->getTrg();
+                    auto rhs_trg = g.getEdge(rhs)->getTrg();
+
+                    return g.getNodeLevel(lhs_trg) > g.getNodeLevel(rhs_trg);
+                };
+            });
+        }
     }
 
     constexpr DistanceOracleCHDijkstra(DistanceOracleCHDijkstra&&) noexcept = default;
@@ -126,6 +149,7 @@ public:
 
         return best_node;
     }
+
 
     [[nodiscard]] constexpr auto getGraph() const noexcept
         -> const Graph&

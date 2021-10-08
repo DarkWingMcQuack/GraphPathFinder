@@ -54,7 +54,7 @@ public:
             backward_already_settled_[current_node.get()] = true;
 
             const auto edge_ids = getGraph().getBackwardEdgeIDsOf(current_node);
-            const auto current_level = getGraph().getNodeLevel(current_node);
+            const auto current_level = getGraph().getNodeLevel(current_node).value_or(common::MAX_LEVEL);
 
             if constexpr(UseStallOnDemand) {
                 if(shouldStall(current_level, cost_to_current, edge_ids)) {
@@ -92,7 +92,7 @@ public:
 private:
     [[nodiscard]] constexpr auto shouldStall(common::NodeLevel current_level,
                                              common::Weight cost_to_current,
-                                             const std::span<common::EdgeID> edge_ids) const noexcept
+                                             const std::span<const common::EdgeID>& edge_ids) const noexcept
         -> bool
     {
         auto stall_on_demand_valid = false;

@@ -20,25 +20,6 @@ TEST(DistanceOracleCHDijkstraTest, MixedSourcesTest)
     ASSERT_TRUE(graph_opt);
     auto graph = std::move(graph_opt.value());
 
-    //sort the offeset arrays such that the ch dijkstra can be used
-    graph.sortBackwardEdgeIDsAccordingTo([](const auto& g) {
-        return [&](const auto lhs, const auto rhs) {
-            auto lhs_trg = g.getBackwardEdge(lhs)->getTrg();
-            auto rhs_trg = g.getBackwardEdge(rhs)->getTrg();
-
-            return g.getNodeLevel(lhs_trg) > g.getNodeLevel(rhs_trg);
-        };
-    });
-
-    graph.sortForwardEdgeIDsAccordingTo([](const auto& g) {
-        return [&](const auto lhs, const auto rhs) {
-            auto lhs_trg = g.getEdge(lhs)->getTrg();
-            auto rhs_trg = g.getEdge(rhs)->getTrg();
-
-            return g.getNodeLevel(lhs_trg) > g.getNodeLevel(rhs_trg);
-        };
-    });
-
     algorithms::pathfinding::DistanceOracleCHDijkstra dijkstra{graph};
 
     EXPECT_EQ(dijkstra.distanceBetween(common::NodeID{0}, common::NodeID{1}), common::Weight{9});
@@ -70,25 +51,6 @@ TEST(DistanceOracleCHDijkstraTest, SameSourcesTest)
 
     ASSERT_TRUE(graph_opt);
     auto graph = std::move(graph_opt.value());
-
-    //sort the offeset arrays such that the ch dijkstra can be used
-    graph.sortBackwardEdgeIDsAccordingTo([](const auto& g) {
-        return [&](const auto lhs, const auto rhs) {
-            auto lhs_trg = g.getBackwardEdge(lhs)->getTrg();
-            auto rhs_trg = g.getBackwardEdge(rhs)->getTrg();
-
-            return g.getNodeLevel(lhs_trg) > g.getNodeLevel(rhs_trg);
-        };
-    });
-
-    graph.sortForwardEdgeIDsAccordingTo([](const auto& g) {
-        return [&](const auto lhs, const auto rhs) {
-            auto lhs_trg = g.getEdge(lhs)->getTrg();
-            auto rhs_trg = g.getEdge(rhs)->getTrg();
-
-            return g.getNodeLevel(lhs_trg) > g.getNodeLevel(rhs_trg);
-        };
-    });
 
     algorithms::pathfinding::DistanceOracleCHDijkstra dijkstra{graph};
 
