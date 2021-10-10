@@ -39,6 +39,9 @@ class DistanceOracleCHDijkstra : public DistanceOracleCHDijkstraForwardHelper<
     using ForwardHelper = DistanceOracleCHDijkstraForwardHelper<ThisType, UseStallOnDemand>;
     using BackwardHelper = DistanceOracleCHDijkstraBackwardHelper<ThisType, UseStallOnDemand>;
 
+    friend ForwardHelper;
+    friend BackwardHelper;
+
 public:
     constexpr static inline bool is_threadsafe = false;
 
@@ -104,6 +107,8 @@ public:
             + this->backward_distances_[top_node.get()];
     }
 
+
+private:
     [[nodiscard]] constexpr auto findShortestPathCommonNode() const noexcept
         -> std::optional<common::NodeID>
     {
@@ -149,14 +154,6 @@ public:
 
         return best_node;
     }
-
-
-    [[nodiscard]] constexpr auto getGraph() const noexcept
-        -> const Graph&
-    {
-        return graph_;
-    }
-
 
 private:
     const Graph& graph_;

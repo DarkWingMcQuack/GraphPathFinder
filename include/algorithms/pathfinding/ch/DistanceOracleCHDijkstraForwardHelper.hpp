@@ -19,19 +19,21 @@ template<class CRTP, bool UseStallOnDemand>
 class DistanceOracleCHDijkstraForwardHelper
 {
 public:
+    constexpr auto operator=(const DistanceOracleCHDijkstraForwardHelper&) noexcept
+        -> DistanceOracleCHDijkstraForwardHelper& = delete;
+
+    constexpr DistanceOracleCHDijkstraForwardHelper(const DistanceOracleCHDijkstraForwardHelper&) noexcept = delete;
+
+private:
     constexpr DistanceOracleCHDijkstraForwardHelper(std::size_t number_of_nodes)
         : forward_distances_(number_of_nodes, common::INFINITY_WEIGHT),
           forward_best_ingoing_(number_of_nodes, common::UNKNOWN_EDGE_ID),
           forward_already_settled_(number_of_nodes, false) {}
 
     constexpr DistanceOracleCHDijkstraForwardHelper(DistanceOracleCHDijkstraForwardHelper&&) noexcept = default;
-    constexpr DistanceOracleCHDijkstraForwardHelper(const DistanceOracleCHDijkstraForwardHelper&) noexcept = delete;
 
     constexpr auto operator=(DistanceOracleCHDijkstraForwardHelper&&) noexcept
         -> DistanceOracleCHDijkstraForwardHelper& = default;
-
-    constexpr auto operator=(const DistanceOracleCHDijkstraForwardHelper&) noexcept
-        -> DistanceOracleCHDijkstraForwardHelper& = delete;
 
     constexpr auto fillForwardInfo(common::NodeID source) noexcept
         -> void
@@ -91,7 +93,6 @@ public:
                   std::end(forward_settled_));
     }
 
-private:
     constexpr auto shouldStall(common::NodeLevel current_level,
                                common::Weight cost_to_current,
                                const std::span<const common::EdgeID>& edge_ids) const noexcept
@@ -141,10 +142,11 @@ private:
     [[nodiscard]] constexpr auto getGraph() const noexcept
         -> decltype(auto)
     {
-        return static_cast<const CRTP*>(this)->getGraph();
+        return static_cast<const CRTP*>(this)->graph_;
     }
 
-protected:
+private:
+    friend CRTP;
     std::vector<common::Weight> forward_distances_;
     std::vector<common::NodeID> forward_touched_;
     std::optional<common::NodeID> last_source_;

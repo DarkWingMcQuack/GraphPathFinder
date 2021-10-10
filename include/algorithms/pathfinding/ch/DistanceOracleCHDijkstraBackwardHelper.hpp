@@ -18,18 +18,20 @@ template<class CRTP, bool UseStallOnDemand>
 class DistanceOracleCHDijkstraBackwardHelper
 {
 public:
+    constexpr DistanceOracleCHDijkstraBackwardHelper(const DistanceOracleCHDijkstraBackwardHelper&) noexcept = delete;
+    constexpr auto operator=(const DistanceOracleCHDijkstraBackwardHelper&) noexcept
+        -> DistanceOracleCHDijkstraBackwardHelper& = delete;
+
+private:
     constexpr DistanceOracleCHDijkstraBackwardHelper(std::size_t number_of_nodes)
         : backward_distances_(number_of_nodes, common::INFINITY_WEIGHT),
           backward_best_ingoing_(number_of_nodes, common::UNKNOWN_EDGE_ID),
           backward_already_settled_(number_of_nodes, false) {}
     constexpr DistanceOracleCHDijkstraBackwardHelper(DistanceOracleCHDijkstraBackwardHelper&&) noexcept = default;
-    constexpr DistanceOracleCHDijkstraBackwardHelper(const DistanceOracleCHDijkstraBackwardHelper&) noexcept = delete;
 
     constexpr auto operator=(DistanceOracleCHDijkstraBackwardHelper&&) noexcept
         -> DistanceOracleCHDijkstraBackwardHelper& = default;
 
-    constexpr auto operator=(const DistanceOracleCHDijkstraBackwardHelper&) noexcept
-        -> DistanceOracleCHDijkstraBackwardHelper& = delete;
 
     constexpr auto fillBackwardInfo(common::NodeID source) noexcept
         -> void
@@ -89,7 +91,6 @@ public:
                   std::end(backward_settled_));
     }
 
-private:
     [[nodiscard]] constexpr auto shouldStall(common::NodeLevel current_level,
                                              common::Weight cost_to_current,
                                              const std::span<const common::EdgeID>& edge_ids) const noexcept
@@ -139,10 +140,11 @@ private:
     [[nodiscard]] constexpr auto getGraph() const noexcept
         -> decltype(auto)
     {
-        return static_cast<const CRTP*>(this)->getGraph();
+        return static_cast<const CRTP*>(this)->graph_;
     }
 
-protected:
+private:
+    friend CRTP;
     std::vector<common::NodeID> backward_settled_;
     std::vector<common::Weight> backward_distances_;
     std::vector<common::NodeID> backward_touched_;
