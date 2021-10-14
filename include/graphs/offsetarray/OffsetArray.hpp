@@ -15,7 +15,11 @@ template<class Node,
          bool HasForwardEdges = true,
          bool HasBackwardEdges = true>
 requires concepts::HasSource<Edge> && concepts::HasTarget<Edge>
-class OffsetArray : public OffsetArrayNodes<Node>,
+class OffsetArray : public OffsetArrayNodes<OffsetArray<Node,
+                                                        Edge,
+                                                        HasForwardEdges,
+                                                        HasBackwardEdges>,
+                                            Node>,
                     public OffsetArrayEdges<Edge>,
                     public std::conditional_t<HasForwardEdges,
                                               OffsetArrayForwardGraph<Node,
@@ -34,7 +38,6 @@ class OffsetArray : public OffsetArrayNodes<Node>,
                                                                                    HasBackwardEdges>>,
                                               common::EmptyBase2>
 {
-
     using Self = OffsetArray<Node, Edge, HasForwardEdges, HasBackwardEdges>;
 
 private:
@@ -81,7 +84,7 @@ public:
                 std::vector<Edge> edges) noexcept
         requires HasForwardEdges &&(!HasBackwardEdges)
 
-        : OffsetArrayNodes<Node>(std::move(nodes)),
+        : OffsetArrayNodes<Self, Node>(std::move(nodes)),
           OffsetArrayEdges<Edge>(std::move(edges)),
           OffsetArrayForwardGraph<Node, Edge, Self>()
     {
@@ -94,7 +97,7 @@ public:
         &&(!HasBackwardEdges)
         && std::is_same_v<Node, common::NodeID>
 
-        : OffsetArrayNodes<Node>(number_of_nodes),
+        : OffsetArrayNodes<Self, Node>(number_of_nodes),
         OffsetArrayEdges<Edge>(std::move(edges)),
         OffsetArrayForwardGraph<Node, Edge, Self>()
     {
@@ -108,7 +111,7 @@ public:
     OffsetArray(std::vector<Node> nodes,
                 std::vector<Edge> edges) noexcept
         requires HasBackwardEdges &&(!HasForwardEdges)
-        : OffsetArrayNodes<Node>(std::move(nodes)),
+        : OffsetArrayNodes<Self, Node>(std::move(nodes)),
           OffsetArrayEdges<Edge>(std::move(edges)),
           OffsetArrayBackwardGraph<Node, Edge, Self>()
     {
@@ -120,7 +123,7 @@ public:
         requires HasBackwardEdges
         &&(!HasForwardEdges)
         && std::is_same_v<Node, common::NodeID>
-        : OffsetArrayNodes<Node>(number_of_nodes),
+        : OffsetArrayNodes<Self, Node>(number_of_nodes),
         OffsetArrayEdges<Edge>(std::move(edges)),
         OffsetArrayBackwardGraph<Node, Edge, Self>()
     {
@@ -132,7 +135,7 @@ public:
     OffsetArray(std::vector<Node> nodes,
                 std::vector<Edge> edges) noexcept
         requires HasBackwardEdges && HasForwardEdges
-        : OffsetArrayNodes<Node>(std::move(nodes)),
+        : OffsetArrayNodes<Self, Node>(std::move(nodes)),
           OffsetArrayEdges<Edge>(std::move(edges)),
           OffsetArrayForwardGraph<Node, Edge, Self>(),
           OffsetArrayBackwardGraph<Node, Edge, Self>()
@@ -143,7 +146,7 @@ public:
     OffsetArray(std::size_t number_of_nodes,
                 std::vector<Edge> edges) noexcept
         requires HasBackwardEdges && HasForwardEdges
-        : OffsetArrayNodes<Node>(number_of_nodes),
+        : OffsetArrayNodes<Self, Node>(number_of_nodes),
           OffsetArrayEdges<Edge>(std::move(edges)),
           OffsetArrayForwardGraph<Node, Edge, Self>(),
           OffsetArrayBackwardGraph<Node, Edge, Self>()

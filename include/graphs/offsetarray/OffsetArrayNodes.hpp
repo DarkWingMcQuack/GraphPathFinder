@@ -2,6 +2,7 @@
 
 #include <concepts/NodeLevels.hpp>
 #include <concepts/Nodes.hpp>
+#include <numeric>
 #include <vector>
 
 namespace graphs {
@@ -36,7 +37,7 @@ private:
 };
 
 // clang-format off
-template<class Node>
+template<class Graph, class Node>
 requires(!std::is_same_v<Node, common::NodeID>)
 class NonTrivialOffsetArrayNodes
 // clang-format on
@@ -48,15 +49,15 @@ public:
         : nodes_(std::move(nodes))
     {
         // clang-format off
-        static_assert(concepts::HasNodes<NonTrivialOffsetArrayNodes<Node>>);
+        static_assert(concepts::HasNodes<NonTrivialOffsetArrayNodes<Graph, Node>>);
         // Nodes have levels -> OffsetarrayNodes are node level writeable
         static_assert(!concepts::HasLevel<Node>
-					  || concepts::WriteableNodeLevels<NonTrivialOffsetArrayNodes<Node>>);
+					  || concepts::WriteableNodeLevels<NonTrivialOffsetArrayNodes<Graph, Node>>);
         // clang-format on
     }
 
-    constexpr NonTrivialOffsetArrayNodes(NonTrivialOffsetArrayNodes<Node> &&) noexcept = default;
-    constexpr NonTrivialOffsetArrayNodes(const NonTrivialOffsetArrayNodes<Node> &) noexcept = default;
+    constexpr NonTrivialOffsetArrayNodes(NonTrivialOffsetArrayNodes<Graph, Node> &&) noexcept = default;
+    constexpr NonTrivialOffsetArrayNodes(const NonTrivialOffsetArrayNodes<Graph, Node> &) noexcept = default;
 
     constexpr auto operator=(NonTrivialOffsetArrayNodes &&) noexcept
         -> NonTrivialOffsetArrayNodes & = default;
@@ -117,15 +118,99 @@ public:
     }
 
     // clang-format off
+    template<class F>
+    [[nodiscard]] auto sortNodesAndGetPermutationAccordingTo(F&& func) noexcept
+	    -> std::vector<common::NodeID>
+	requires std::regular_invocable<F, const Graph&>
+	&& std::strict_weak_order<std::invoke_result_t<F, const Graph&>,
+				        		  common::NodeID,
+								  common::NodeID>
+    // clang-format on
+    {
+        const auto &graph = impl();
+        const auto order = std::invoke(std::forward<F>(func), graph);
+
+        std::vector permutation(graph.numberOfNodes(),
+                                common::NodeID{0});
+        std::iota(std::begin(permutation),
+                  std::end(permutation),
+                  common::NodeID{0});
+
+        std::sort(std::begin(permutation),
+                  std::end(permutation),
+                  order);
+
+        //copy the permutation here because it gets shuffled by the algorithm
+        auto permutation_copy = permutation;
+
+        for(size_t i = 0; i < graph.numberOfNodes; i++) {
+            size_t curr = i;
+            size_t next = permutation[curr];
+            while(next != i) {
+                swap(nodes_[curr], nodes_[next]);
+                permutation[curr] = curr;
+                curr = next;
+                next = permutation[next];
+            }
+            permutation[curr] = curr;
+        }
+
+        return permutation_copy;
+    }
+
+    // clang-format off
+    template<class F>
+    auto sortNodesAccordingTo(F&& func) noexcept
+	    -> void
+	requires std::regular_invocable<F, const Graph&>
+	&& std::strict_weak_order<std::invoke_result_t<F, const Graph&>,
+				        		  common::NodeID,
+								  common::NodeID>
+    // clang-format on
+    {
+        const auto &graph = impl();
+        const auto order = std::invoke(std::forward<F>(func), graph);
+
+        std::vector permutation(graph.numberOfNodes(),
+                                common::NodeID{0});
+        std::iota(std::begin(permutation),
+                  std::end(permutation),
+                  common::NodeID{0});
+
+        std::sort(std::begin(permutation),
+                  std::end(permutation),
+                  order);
+
+        for(size_t i = 0; i < graph.numberOfNodes; i++) {
+            size_t curr = i;
+            size_t next = permutation[curr];
+            while(next != i) {
+                swap(nodes_[curr], nodes_[next]);
+                permutation[curr] = curr;
+                curr = next;
+                next = permutation[next];
+            }
+            permutation[curr] = curr;
+        }
+    }
+
+    // clang-format off
 private:
+    //crtp helper function
+    constexpr auto impl() const noexcept
+        -> const Graph &
+    {
+        return static_cast<const Graph &>(*this);
+    }
+
     std::vector<Node> nodes_;
     // clang-format on
 };
 
-template<class Node>
+template<class Graph, class Node>
 class OffsetArrayNodes : public std::conditional_t<std::is_same_v<Node, common::NodeID>,
                                                    TrivialOffsetArrayNodes,
-                                                   NonTrivialOffsetArrayNodes<Node>>
+                                                   NonTrivialOffsetArrayNodes<Graph, Node>>
 {
 };
 
