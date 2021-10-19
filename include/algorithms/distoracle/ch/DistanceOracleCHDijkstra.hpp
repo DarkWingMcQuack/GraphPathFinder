@@ -1,7 +1,7 @@
 #pragma once
 
-#include <algorithms/pathfinding/ch/DistanceOracleCHDijkstraBackwardHelper.hpp>
-#include <algorithms/pathfinding/ch/DistanceOracleCHDijkstraForwardHelper.hpp>
+#include <algorithms/distoracle/ch/DistanceOracleCHDijkstraBackwardHelper.hpp>
+#include <algorithms/distoracle/ch/DistanceOracleCHDijkstraForwardHelper.hpp>
 #include <algorithms/pathfinding/dijkstra/DijkstraQueue.hpp>
 #include <common/BasicGraphTypes.hpp>
 #include <common/EmptyBase.hpp>
@@ -16,7 +16,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace algorithms::pathfinding {
+namespace algorithms::distoracle {
 
 template<class Graph, bool UseStallOnDemand = true>
 // clang-format off
@@ -159,4 +159,4 @@ private:
     const Graph& graph_;
 };
 
-} // namespace algorithms::pathfinding
+} // namespace algorithms::distoracle

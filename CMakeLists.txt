@@ -80,10 +80,13 @@ target_sources(GraphPathFinderLib
 
   ${CMAKE_CURRENT_LIST_DIR}/include/parsing/offsetarray/Parser.hpp
 
-  
   ${CMAKE_CURRENT_LIST_DIR}/include/algorithms/pathfinding/dijkstra/DijkstraQueue.hpp
   ${CMAKE_CURRENT_LIST_DIR}/include/algorithms/pathfinding/dijkstra/PathFindingDijkstra.hpp
-  ${CMAKE_CURRENT_LIST_DIR}/include/algorithms/pathfinding/dijkstra/DistanceOracleDijkstra.hpp
+
+  ${CMAKE_CURRENT_LIST_DIR}/include/algorithms/distoracle/dijkstra/DistanceOracleDijkstra.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/include/algorithms/distoracle/ch/DistanceOracleCHDijkstraBackwardHelper.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/include/algorithms/distoracle/ch/DistanceOracleCHDijkstraForwardHelper.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/include/algorithms/distoracle/ch/DistanceOracleCHDijkstra.hpp
   )
 
 # add the dependencies of the target to enforce

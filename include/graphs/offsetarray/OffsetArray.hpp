@@ -9,7 +9,6 @@
 
 namespace graphs {
 
-
 template<class Node,
          class Edge,
          bool HasForwardEdges = true,

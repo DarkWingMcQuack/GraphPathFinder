@@ -12,7 +12,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace algorithms::pathfinding {
+namespace algorithms::distoracle {
 
 template<class CRTP, bool UseStallOnDemand>
 class DistanceOracleCHDijkstraBackwardHelper
@@ -42,7 +42,7 @@ private:
 
         resetBackwardFor(source);
 
-        DijkstraQueue heap;
+        pathfinding::DijkstraQueue heap;
         heap.emplace(source, 0);
 
         while(!heap.empty()) {
@@ -153,4 +153,4 @@ private:
     std::vector<bool> backward_already_settled_;
 };
 
-} // namespace algorithms::pathfinding
+} // namespace algorithms::distoracle

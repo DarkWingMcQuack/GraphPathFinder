@@ -1,7 +1,7 @@
 //all the includes you want to use before the gtest include
 
 #include "../../../globals.hpp"
-#include <algorithms/pathfinding/dijkstra/DistanceOracleDijkstra.hpp>
+#include <algorithms/distoracle/dijkstra/DistanceOracleDijkstra.hpp>
 #include <fmt/ranges.h>
 #include <graphs/edges/FMIEdge.hpp>
 #include <graphs/nodes/FMINode.hpp>
@@ -20,7 +20,7 @@ TEST(DistanceOracleDijkstraTest, MixedSourcesTest)
     ASSERT_TRUE(graph_opt);
     auto graph = std::move(graph_opt.value());
 
-    algorithms::pathfinding::DistanceOracleDijkstra dijkstra{graph};
+    algorithms::distoracle::DistanceOracleDijkstra dijkstra{graph};
 
     EXPECT_EQ(dijkstra.distanceBetween(common::NodeID{0}, common::NodeID{1}), common::Weight{9});
     EXPECT_EQ(dijkstra.distanceBetween(common::NodeID{1}, common::NodeID{0}), common::INFINITY_WEIGHT);
@@ -52,7 +52,7 @@ TEST(DistanceOracleDijkstraTest, SameSourcesTest)
     ASSERT_TRUE(graph_opt);
     auto graph = std::move(graph_opt.value());
 
-    algorithms::pathfinding::DistanceOracleDijkstra dijkstra{graph};
+    algorithms::distoracle::DistanceOracleDijkstra dijkstra{graph};
 
     EXPECT_EQ(dijkstra.distanceBetween(common::NodeID{0}, common::NodeID{1}), common::Weight{9});
     EXPECT_EQ(dijkstra.distanceBetween(common::NodeID{0}, common::NodeID{2}), common::Weight{8});

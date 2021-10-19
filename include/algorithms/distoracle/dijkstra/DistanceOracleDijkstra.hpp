@@ -11,7 +11,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace algorithms::pathfinding {
+namespace algorithms::distoracle {
 
 template<class Graph>
 // clang-format off
@@ -29,7 +29,7 @@ public:
         : graph_(graph),
           distances_(graph.numberOfNodes(), common::INFINITY_WEIGHT),
           settled_(graph.numberOfNodes(), false),
-          pq_(DijkstraQueueComparer{}),
+          pq_(pathfinding::DijkstraQueueComparer{}),
           last_source_(std::nullopt)
     {
         static_assert(concepts::DistanceOracle<DistanceOracleDijkstra<Graph>>,
@@ -110,7 +110,7 @@ private:
         }
 
         touched_.clear();
-        pq_ = DijkstraQueue{DijkstraQueueComparer{}};
+        pq_ = pathfinding::DijkstraQueue{pathfinding::DijkstraQueueComparer{}};
 
         last_source_ = new_source;
         pq_.emplace(new_source, 0l);
@@ -123,8 +123,8 @@ private:
     std::vector<common::Weight> distances_;
     std::vector<bool> settled_;
     std::vector<common::NodeID> touched_;
-    DijkstraQueue pq_;
+    pathfinding::DijkstraQueue pq_;
     std::optional<common::NodeID> last_source_;
 };
 
-} // namespace algorithms::pathfinding
+} // namespace algorithms::distoracle
