@@ -119,7 +119,7 @@ public:
 
     // clang-format off
     template<class F>
-    [[nodiscard]] auto sortNodesAndGetPermutationAccordingTo(F&& func) noexcept
+    [[nodiscard]] auto sortNodesAccordingTo(F&& func) noexcept
 	    -> std::vector<common::NodeID>
 	requires std::regular_invocable<F, const Graph&>
 	&& std::strict_weak_order<std::invoke_result_t<F, const Graph&>,
@@ -156,42 +156,6 @@ public:
         }
 
         return permutation_copy;
-    }
-
-    // clang-format off
-    template<class F>
-    auto sortNodesAccordingTo(F&& func) noexcept
-	    -> void
-	requires std::regular_invocable<F, const Graph&>
-	&& std::strict_weak_order<std::invoke_result_t<F, const Graph&>,
-				        		  common::NodeID,
-								  common::NodeID>
-    // clang-format on
-    {
-        const auto &graph = impl();
-        const auto order = std::invoke(std::forward<F>(func), graph);
-
-        std::vector permutation(graph.numberOfNodes(),
-                                common::NodeID{0});
-        std::iota(std::begin(permutation),
-                  std::end(permutation),
-                  common::NodeID{0});
-
-        std::sort(std::begin(permutation),
-                  std::end(permutation),
-                  order);
-
-        for(size_t i = 0; i < graph.numberOfNodes; i++) {
-            size_t curr = i;
-            size_t next = permutation[curr];
-            while(next != i) {
-                swap(nodes_[curr], nodes_[next]);
-                permutation[curr] = curr;
-                curr = next;
-                next = permutation[next];
-            }
-            permutation[curr] = curr;
-        }
     }
 
     // clang-format off
