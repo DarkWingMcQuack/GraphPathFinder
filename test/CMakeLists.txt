@@ -17,11 +17,11 @@ add_executable(unit_tests
   graphs/edges/FMIEdgeTest.cpp
   graphs/offsetarray/OffsetArrayTest.cpp
 
-  algorithms/pathfinding/dijkstra/PathFindingDijkstraTest.cpp
+  algorithms/pathfinding/dijkstra/DijkstraTest.cpp
 
-  algorithms/distoracle/dijkstra/DistanceOracleDijkstraTest.cpp
+  algorithms/distoracle/dijkstra/DijkstraTest.cpp
 
-  algorithms/distoracle/ch/DistanceOracleCHDijkstraTest.cpp
+  algorithms/distoracle/ch/CHDijkstraTest.cpp
   )
 
 target_link_libraries(unit_tests LINK_PRIVATE

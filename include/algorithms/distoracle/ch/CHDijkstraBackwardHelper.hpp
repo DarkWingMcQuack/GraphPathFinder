@@ -15,22 +15,22 @@
 namespace algorithms::distoracle {
 
 template<class CRTP, bool UseStallOnDemand>
-class DistanceOracleCHDijkstraBackwardHelper
+class CHDijkstraBackwardHelper
 {
 public:
-    constexpr DistanceOracleCHDijkstraBackwardHelper(const DistanceOracleCHDijkstraBackwardHelper&) noexcept = delete;
-    constexpr auto operator=(const DistanceOracleCHDijkstraBackwardHelper&) noexcept
-        -> DistanceOracleCHDijkstraBackwardHelper& = delete;
+    constexpr CHDijkstraBackwardHelper(const CHDijkstraBackwardHelper&) noexcept = delete;
+    constexpr auto operator=(const CHDijkstraBackwardHelper&) noexcept
+        -> CHDijkstraBackwardHelper& = delete;
 
 private:
-    constexpr DistanceOracleCHDijkstraBackwardHelper(std::size_t number_of_nodes)
+    constexpr CHDijkstraBackwardHelper(std::size_t number_of_nodes)
         : backward_distances_(number_of_nodes, common::INFINITY_WEIGHT),
           backward_best_ingoing_(number_of_nodes, common::UNKNOWN_EDGE_ID),
           backward_already_settled_(number_of_nodes, false) {}
-    constexpr DistanceOracleCHDijkstraBackwardHelper(DistanceOracleCHDijkstraBackwardHelper&&) noexcept = default;
+    constexpr CHDijkstraBackwardHelper(CHDijkstraBackwardHelper&&) noexcept = default;
 
-    constexpr auto operator=(DistanceOracleCHDijkstraBackwardHelper&&) noexcept
-        -> DistanceOracleCHDijkstraBackwardHelper& = default;
+    constexpr auto operator=(CHDijkstraBackwardHelper&&) noexcept
+        -> CHDijkstraBackwardHelper& = default;
 
 
     constexpr auto fillBackwardInfo(common::NodeID source) noexcept

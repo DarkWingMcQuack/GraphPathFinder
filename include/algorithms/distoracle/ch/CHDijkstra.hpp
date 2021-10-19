@@ -1,7 +1,7 @@
 #pragma once
 
-#include <algorithms/distoracle/ch/DistanceOracleCHDijkstraBackwardHelper.hpp>
-#include <algorithms/distoracle/ch/DistanceOracleCHDijkstraForwardHelper.hpp>
+#include <algorithms/distoracle/ch/CHDijkstraBackwardHelper.hpp>
+#include <algorithms/distoracle/ch/CHDijkstraForwardHelper.hpp>
 #include <algorithms/pathfinding/dijkstra/DijkstraQueue.hpp>
 #include <common/BasicGraphTypes.hpp>
 #include <common/EmptyBase.hpp>
@@ -28,16 +28,16 @@ requires concepts::ForwardGraph<Graph>
       && concepts::HasNodes<Graph>
       && concepts::HasTarget<typename Graph::EdgeType>
 // clang-format on
-class DistanceOracleCHDijkstra : public DistanceOracleCHDijkstraForwardHelper<
-                                     DistanceOracleCHDijkstra<Graph, UseStallOnDemand>,
-                                     UseStallOnDemand>,
-                                 public DistanceOracleCHDijkstraBackwardHelper<
-                                     DistanceOracleCHDijkstra<Graph, UseStallOnDemand>,
-                                     UseStallOnDemand>
+class CHDijkstra : public CHDijkstraForwardHelper<
+                       CHDijkstra<Graph, UseStallOnDemand>,
+                       UseStallOnDemand>,
+                   public CHDijkstraBackwardHelper<
+                       CHDijkstra<Graph, UseStallOnDemand>,
+                       UseStallOnDemand>
 {
-    using ThisType = DistanceOracleCHDijkstra<Graph, UseStallOnDemand>;
-    using ForwardHelper = DistanceOracleCHDijkstraForwardHelper<ThisType, UseStallOnDemand>;
-    using BackwardHelper = DistanceOracleCHDijkstraBackwardHelper<ThisType, UseStallOnDemand>;
+    using ThisType = CHDijkstra<Graph, UseStallOnDemand>;
+    using ForwardHelper = CHDijkstraForwardHelper<ThisType, UseStallOnDemand>;
+    using BackwardHelper = CHDijkstraBackwardHelper<ThisType, UseStallOnDemand>;
 
     friend ForwardHelper;
     friend BackwardHelper;
@@ -47,13 +47,13 @@ public:
 
 
     template<bool SortGraphEdges = true>
-    constexpr DistanceOracleCHDijkstra(Graph& graph) noexcept
+    constexpr CHDijkstra(Graph& graph) noexcept
         : ForwardHelper(graph.numberOfNodes()),
           BackwardHelper(graph.numberOfNodes()),
           graph_(graph)
     {
         static_assert(concepts::DistanceOracle<ThisType>,
-                      "DistanceOracleCHDijkstra should fullfill the DistanceOracle concept");
+                      "CHDijkstra should fullfill the DistanceOracle concept");
 
         if constexpr(SortGraphEdges) {
             //sort the offeset arrays such that the ch dijkstra can be used
@@ -77,14 +77,14 @@ public:
         }
     }
 
-    constexpr DistanceOracleCHDijkstra(DistanceOracleCHDijkstra&&) noexcept = default;
-    constexpr DistanceOracleCHDijkstra(const DistanceOracleCHDijkstra&) noexcept = delete;
+    constexpr CHDijkstra(CHDijkstra&&) noexcept = default;
+    constexpr CHDijkstra(const CHDijkstra&) noexcept = delete;
 
-    constexpr auto operator=(DistanceOracleCHDijkstra&&) noexcept
-        -> DistanceOracleCHDijkstra& = default;
+    constexpr auto operator=(CHDijkstra&&) noexcept
+        -> CHDijkstra& = default;
 
-    constexpr auto operator=(const DistanceOracleCHDijkstra&) noexcept
-        -> DistanceOracleCHDijkstra& = delete;
+    constexpr auto operator=(const CHDijkstra&) noexcept
+        -> CHDijkstra& = delete;
 
     [[nodiscard]] constexpr auto distanceBetween(common::NodeID source, common::NodeID target) noexcept
         -> common::Weight

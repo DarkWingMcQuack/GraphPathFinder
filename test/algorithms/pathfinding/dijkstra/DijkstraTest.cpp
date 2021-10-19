@@ -1,7 +1,7 @@
 //all the includes you want to use before the gtest include
 
 #include "../../../globals.hpp"
-#include <algorithms/pathfinding/dijkstra/PathFindingDijkstra.hpp>
+#include <algorithms/pathfinding/dijkstra/Dijkstra.hpp>
 #include <fmt/ranges.h>
 #include <graphs/edges/FMIEdge.hpp>
 #include <graphs/nodes/FMINode.hpp>
@@ -20,7 +20,7 @@ TEST(PathFindingDijkstraTest, MixedSourcesTest)
     ASSERT_TRUE(graph_opt);
     auto graph = std::move(graph_opt.value());
 
-    algorithms::pathfinding::PathFindingDijkstra dijkstra{graph};
+    algorithms::pathfinding::Dijkstra dijkstra{graph};
 
     EXPECT_EQ(dijkstra.distanceBetween(common::NodeID{0}, common::NodeID{1}), common::Weight{9});
     EXPECT_EQ(dijkstra.distanceBetween(common::NodeID{1}, common::NodeID{0}), common::INFINITY_WEIGHT);
@@ -52,7 +52,7 @@ TEST(PathFindingDijkstraTest, SameSourcesTest)
     ASSERT_TRUE(graph_opt);
     auto graph = std::move(graph_opt.value());
 
-    algorithms::pathfinding::PathFindingDijkstra dijkstra{graph};
+    algorithms::pathfinding::Dijkstra dijkstra{graph};
 
     EXPECT_EQ(dijkstra.distanceBetween(common::NodeID{0}, common::NodeID{1}), common::Weight{9});
     EXPECT_EQ(dijkstra.distanceBetween(common::NodeID{0}, common::NodeID{2}), common::Weight{8});
@@ -89,7 +89,7 @@ TEST(PathFindingDijkstraTest, SameSourcesPathTest)
     ASSERT_TRUE(graph_opt);
     auto graph = std::move(graph_opt.value());
 
-    algorithms::pathfinding::PathFindingDijkstra dijkstra{graph};
+    algorithms::pathfinding::Dijkstra dijkstra{graph};
 
     auto actual_opt = dijkstra.pathBetween(common::NodeID{0}, common::NodeID{1});
     ASSERT_TRUE(actual_opt);
@@ -211,7 +211,7 @@ TEST(PathFindingDijkstraTest, MixedSourcesPathTest)
     ASSERT_TRUE(graph_opt);
     auto graph = std::move(graph_opt.value());
 
-    algorithms::pathfinding::PathFindingDijkstra dijkstra{graph};
+    algorithms::pathfinding::Dijkstra dijkstra{graph};
 
     auto actual_opt = dijkstra.pathBetween(common::NodeID{0}, common::NodeID{1});
     ASSERT_TRUE(actual_opt);

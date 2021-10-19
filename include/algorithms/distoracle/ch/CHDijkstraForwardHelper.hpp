@@ -16,24 +16,24 @@
 namespace algorithms::distoracle {
 
 template<class CRTP, bool UseStallOnDemand>
-class DistanceOracleCHDijkstraForwardHelper
+class CHDijkstraForwardHelper
 {
 public:
-    constexpr auto operator=(const DistanceOracleCHDijkstraForwardHelper&) noexcept
-        -> DistanceOracleCHDijkstraForwardHelper& = delete;
+    constexpr auto operator=(const CHDijkstraForwardHelper&) noexcept
+        -> CHDijkstraForwardHelper& = delete;
 
-    constexpr DistanceOracleCHDijkstraForwardHelper(const DistanceOracleCHDijkstraForwardHelper&) noexcept = delete;
+    constexpr CHDijkstraForwardHelper(const CHDijkstraForwardHelper&) noexcept = delete;
 
 private:
-    constexpr DistanceOracleCHDijkstraForwardHelper(std::size_t number_of_nodes)
+    constexpr CHDijkstraForwardHelper(std::size_t number_of_nodes)
         : forward_distances_(number_of_nodes, common::INFINITY_WEIGHT),
           forward_best_ingoing_(number_of_nodes, common::UNKNOWN_EDGE_ID),
           forward_already_settled_(number_of_nodes, false) {}
 
-    constexpr DistanceOracleCHDijkstraForwardHelper(DistanceOracleCHDijkstraForwardHelper&&) noexcept = default;
+    constexpr CHDijkstraForwardHelper(CHDijkstraForwardHelper&&) noexcept = default;
 
-    constexpr auto operator=(DistanceOracleCHDijkstraForwardHelper&&) noexcept
-        -> DistanceOracleCHDijkstraForwardHelper& = default;
+    constexpr auto operator=(CHDijkstraForwardHelper&&) noexcept
+        -> CHDijkstraForwardHelper& = default;
 
     constexpr auto fillForwardInfo(common::NodeID source) noexcept
         -> void

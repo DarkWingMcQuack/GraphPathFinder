@@ -6,12 +6,14 @@
 #include <concepts/DistanceOracle.hpp>
 #include <concepts/Edges.hpp>
 #include <concepts/ForwardGraph.hpp>
+#include <concepts/PathOracle.hpp>
 #include <fmt/core.h>
+#include <graphs/Path.hpp>
 #include <queue>
 #include <type_traits>
 #include <utility>
 
-namespace algorithms::distoracle {
+namespace algorithms::pathfinding {
 
 template<class Graph>
 // clang-format off
@@ -20,29 +22,54 @@ requires concepts::ForwardGraph<Graph>
       && concepts::HasNodes<Graph>
       && concepts::HasTarget<typename Graph::EdgeType>
 // clang-format on
-class DistanceOracleDijkstra
+class Dijkstra
 {
 public:
     constexpr static inline bool is_threadsafe = false;
 
-    DistanceOracleDijkstra(const Graph& graph) noexcept
+    Dijkstra(const Graph& graph) noexcept
         : graph_(graph),
           distances_(graph.numberOfNodes(), common::INFINITY_WEIGHT),
           settled_(graph.numberOfNodes(), false),
-          pq_(pathfinding::DijkstraQueueComparer{}),
-          last_source_(std::nullopt)
+          pq_(DijkstraQueueComparer{}),
+          last_source_(std::nullopt),
+          before_(graph.numberOfNodes(), common::UNKNOWN_NODE_ID)
     {
-        static_assert(concepts::DistanceOracle<DistanceOracleDijkstra<Graph>>,
-                      "DistanceOracleDijkstra should fullfill the DistanceOracle concept");
+        static_assert(concepts::PathOracle<Dijkstra<Graph>>,
+                      "Dijkstra should fullfill the  concept");
+
+        static_assert(concepts::DistanceOracle<Dijkstra<Graph>>,
+                      "Dijkstra should fullfill the  concept");
     }
 
-    DistanceOracleDijkstra() = delete;
-    DistanceOracleDijkstra(DistanceOracleDijkstra&&) noexcept = default;
-    DistanceOracleDijkstra(const DistanceOracleDijkstra&) noexcept = default;
-    auto operator=(const DistanceOracleDijkstra&) -> DistanceOracleDijkstra& = delete;
-    auto operator=(DistanceOracleDijkstra&&) noexcept -> DistanceOracleDijkstra& = default;
+    Dijkstra() = delete;
+    Dijkstra(Dijkstra&&) noexcept = default;
+    Dijkstra(const Dijkstra&) noexcept = default;
+    auto operator=(const Dijkstra&) -> Dijkstra& = delete;
+    auto operator=(Dijkstra&&) noexcept -> Dijkstra& = default;
 
-    [[nodiscard]] auto distanceBetween(common::NodeID source, common::NodeID target) noexcept
+    auto pathBetween(common::NodeID source, common::NodeID target) noexcept
+        -> std::optional<graphs::Path>
+    {
+        //fill the distance array and calculate the cost
+        const auto cost = distanceBetween(source, target);
+        if(cost == common::INFINITY_WEIGHT) {
+            return std::nullopt;
+        }
+
+        //extract path starting from the target
+        std::vector nodes{target};
+        while(nodes.back().get() != source.get()) {
+            nodes.emplace_back(before_[nodes.back().get()]);
+        }
+        //reverse the vector to get the actual path
+        std::reverse(std::begin(nodes), std::end(nodes));
+
+        return graphs::Path(std::move(nodes),
+                            cost);
+    }
+
+    auto distanceBetween(common::NodeID source, common::NodeID target) noexcept
         -> common::Weight
     {
         if(last_source_.has_value()
@@ -92,6 +119,7 @@ public:
                     touched_.emplace_back(neig);
                     distances_[neig.get()] = new_dist;
                     pq_.emplace(neig, new_dist);
+                    before_[neig.get()] = current_node;
                 }
             }
         }
@@ -107,10 +135,11 @@ private:
             const auto n = id.get();
             settled_[n] = false;
             distances_[n] = common::INFINITY_WEIGHT;
+            before_[n] = common::UNKNOWN_NODE_ID;
         }
 
         touched_.clear();
-        pq_ = pathfinding::DijkstraQueue{pathfinding::DijkstraQueueComparer{}};
+        pq_ = DijkstraQueue{DijkstraQueueComparer{}};
 
         last_source_ = new_source;
         pq_.emplace(new_source, 0l);
@@ -123,8 +152,9 @@ private:
     std::vector<common::Weight> distances_;
     std::vector<bool> settled_;
     std::vector<common::NodeID> touched_;
-    pathfinding::DijkstraQueue pq_;
+    DijkstraQueue pq_;
     std::optional<common::NodeID> last_source_;
+    std::vector<common::NodeID> before_;
 };
 
-} // namespace algorithms::distoracle
+} // namespace algorithms::pathfinding
