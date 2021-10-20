@@ -285,24 +285,22 @@ public:
 
         //apply the permutation to the forward connections
         if constexpr(concepts::ForwardGraph<Self>) {
-            for(size_t i = 0; i < this->numberOfNodes(); i++) {
-                common::NodeID n{i};
-                auto edge_ids = this->getForwardEdgeIDsOf(n);
-                for(std::size_t j = 0; j < edge_ids.size(); j++) {
-                    edge_ids[j] = permutation[edge_ids[j].get()];
-                }
-            }
+            std::transform(std::begin(this->forward_neigbours_),
+                           std::end(this->forward_neigbours_),
+                           std::begin(this->forward_neigbours_),
+                           [&](auto id) {
+                               return common::EdgeID{permutation[id.get()]};
+                           });
         }
 
         //apply the permutation to the backward connections
         if constexpr(concepts::BackwardGraph<Self>) {
-            for(size_t i = 0; i < this->numberOfNodes(); i++) {
-                common::NodeID n{i};
-                auto edge_ids = this->getBackwardEdgeIDsOf(n);
-                for(std::size_t j = 0; j < edge_ids.size(); j++) {
-                    edge_ids[j] = permutation[edge_ids[j].get()];
-                }
-            }
+            std::transform(std::begin(this->backward_neigbours_),
+                           std::end(this->backward_neigbours_),
+                           std::begin(this->backward_neigbours_),
+                           [&](auto id) {
+                               return common::EdgeID{permutation[id.get()]};
+                           });
         }
 
         this->edges = util::applyPermutation(std::move(this->edges_),
