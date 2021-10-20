@@ -8,19 +8,21 @@ namespace concepts {
 // clang-format off
 
 template<typename Edge>
-concept HasSource = requires(const Edge& edge, common::NodeID src)
+concept HasSource = requires(const Edge& edge, Edge& e,common::NodeID n)
 {
     {edge.getSrc()} -> std::same_as<common::NodeID>;
+    {e.setSrc(n)} -> std::same_as<void>;
 };
 
 template<typename Edge>
-concept HasTarget = requires(const Edge& edge, common::NodeID trg)
+concept HasTarget = requires(const Edge& edge, Edge& e, common::NodeID trg)
 {
     {edge.getTrg()} -> std::same_as<common::NodeID>;
+    {e.setTrg(trg)} -> std::same_as<void>;
 };
 
 template<typename Edge>
-concept HasWeight = requires(const Edge& e){
+concept HasWeight = requires(const Edge& e, common::Weight w){
     {e.getWeight()} -> std::convertible_to<common::Weight>;
 };
 

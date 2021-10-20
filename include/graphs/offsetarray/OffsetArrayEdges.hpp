@@ -93,12 +93,7 @@ public:
 
     // clang-format off
 private:
-    //crtp helper function
-    constexpr auto impl() noexcept
-        -> Graph &
-    {
-        return static_cast<Graph &>(*this);
-    }
+    friend Graph;
 
     std::vector<Edge> edges_;
     // clang-format on

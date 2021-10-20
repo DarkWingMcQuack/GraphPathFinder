@@ -16,6 +16,12 @@ public:
         return src_;
     }
 
+    constexpr auto setSrc(common::NodeID src) noexcept
+        -> void
+    {
+        src_ = src;
+    }
+
 private:
     common::NodeID src_;
 };

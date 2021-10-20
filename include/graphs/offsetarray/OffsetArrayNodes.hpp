@@ -123,17 +123,7 @@ public:
 
     // clang-format off
 private:
-    //crtp helper function
-    constexpr auto impl() noexcept
-        -> Graph &
-    {
-        return static_cast<Graph &>(*this);
-    }
-    constexpr auto impl() const noexcept
-        -> const Graph &
-    {
-        return static_cast<const Graph &>(*this);
-    }
+    friend Graph;
 
     std::vector<Node> nodes_;
     // clang-format on

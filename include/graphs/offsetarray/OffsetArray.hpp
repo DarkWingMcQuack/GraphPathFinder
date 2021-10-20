@@ -192,7 +192,8 @@ public:
         //apply the permutation to the forward offsetarray
         if constexpr(concepts::ForwardGraph<Self>) {
             std::vector<size_t> forward_offset(number_of_nodes + 1, 0);
-            std::vector<common::EdgeID> forward_neigbours(number_of_edges);
+            std::vector<common::EdgeID> forward_neigbours;
+            forward_neigbours.reserve(number_of_edges);
 
             for(size_t i = 0; i < number_of_nodes; i++) {
                 common::NodeID n{inv_perm[i]};
@@ -203,16 +204,16 @@ public:
                                          std::end(neigs));
 
                 forward_offset[i + 1] = forward_neigbours.size();
-
-                this->forward_offset_ = std::move(forward_offset);
-                this->forward_neibours_ = std::move(forward_neigbours);
             }
+            this->forward_offset_ = std::move(forward_offset);
+            this->forward_neigbours_ = std::move(forward_neigbours);
         }
 
         //apply the permutation to the backward offsetarray
         if constexpr(concepts::BackwardGraph<Self>) {
             std::vector<size_t> backward_offset(number_of_nodes + 1, 0);
-            std::vector<common::EdgeID> backward_neigbours(number_of_edges);
+            std::vector<common::EdgeID> backward_neigbours;
+            backward_neigbours.reserve(number_of_edges);
 
             for(size_t i = 0; i < number_of_nodes; i++) {
                 common::NodeID n{inv_perm[i]};
@@ -223,12 +224,32 @@ public:
                                           std::end(neigs));
 
                 backward_offset[i + 1] = backward_neigbours.size();
+            }
+            this->backward_offset_ = std::move(backward_offset);
+            this->backward_neigbours_ = std::move(backward_neigbours);
+        }
 
-                this->backward_offset_ = std::move(backward_offset);
-                this->backward_neibours_ = std::move(backward_neigbours);
+        //update the sources and targets of edges in the graph
+        if constexpr(concepts::HasEdges<Self>) {
+            for(auto& e : this->edges_) {
+
+                //update src if available
+                if constexpr(concepts::HasSource<EdgeType>) {
+                    auto current = e.getSrc();
+                    auto new_src = common::NodeID{perm[e.getSrc().get()]};
+                    e.setSrc(new_src);
+                }
+
+                //update trg if available
+                if constexpr(concepts::HasTarget<EdgeType>) {
+                    auto current = e.getSrc();
+                    auto new_trg = common::NodeID{perm[e.getTrg().get()]};
+                    e.setTrg(new_trg);
+                }
             }
         }
 
+        //update the nodes_ array if available
         if constexpr(!std::is_same_v<NodeType, common::NodeID>) {
             //perm is geting copied here because it will be consumed by the
             //applypermutation function

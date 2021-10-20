@@ -161,6 +161,8 @@ private:
         return static_cast<const Graph &>(*this);
     }
 
+    friend Graph;
+
     std::vector<common::EdgeID> forward_neigbours_;
     std::vector<size_t> forward_offset_;
     // clang-format off

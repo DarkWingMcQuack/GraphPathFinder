@@ -16,6 +16,12 @@ public:
         return trg_;
     }
 
+    constexpr auto setTrg(common::NodeID trg) noexcept
+        -> void
+    {
+        trg_ = trg;
+    }
+
 private:
     common::NodeID trg_;
 };
