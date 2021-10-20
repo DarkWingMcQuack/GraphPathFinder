@@ -41,7 +41,7 @@ class OffsetArray : public OffsetArrayNodes<OffsetArray<Node,
                                                                                    HasBackwardEdges>>,
                                               common::EmptyBase2>
 {
-    using Self = OffsetArray<Node, Edge, HasForwardEdges, HasBackwardEdges>;
+    using ThisType = OffsetArray<Node, Edge, HasForwardEdges, HasBackwardEdges>;
 
 private:
     constexpr auto checkConcepts() const noexcept
@@ -87,9 +87,9 @@ public:
                 std::vector<Edge> edges) noexcept
         requires HasForwardEdges &&(!HasBackwardEdges)
 
-        : OffsetArrayNodes<Self, Node>(std::move(nodes)),
-          OffsetArrayEdges<Self, Edge>(std::move(edges)),
-          OffsetArrayForwardGraph<Node, Edge, Self>()
+        : OffsetArrayNodes<ThisType, Node>(std::move(nodes)),
+          OffsetArrayEdges<ThisType, Edge>(std::move(edges)),
+          OffsetArrayForwardGraph<Node, Edge, ThisType>()
     {
         checkConcepts();
     }
@@ -99,9 +99,9 @@ public:
         requires HasForwardEdges &&(!HasBackwardEdges)
         && std::is_same_v<Node, common::NodeID>
 
-        : OffsetArrayNodes<Self, Node>(number_of_nodes),
-        OffsetArrayEdges<Self, Edge>(std::move(edges)),
-        OffsetArrayForwardGraph<Node, Edge, Self>()
+        : OffsetArrayNodes<ThisType, Node>(number_of_nodes),
+        OffsetArrayEdges<ThisType, Edge>(std::move(edges)),
+        OffsetArrayForwardGraph<Node, Edge, ThisType>()
     {
         checkConcepts();
     }
@@ -113,9 +113,9 @@ public:
     OffsetArray(std::vector<Node> nodes,
                 std::vector<Edge> edges) noexcept
         requires HasBackwardEdges &&(!HasForwardEdges)
-        : OffsetArrayNodes<Self, Node>(std::move(nodes)),
-          OffsetArrayEdges<Self, Edge>(std::move(edges)),
-          OffsetArrayBackwardGraph<Node, Edge, Self>()
+        : OffsetArrayNodes<ThisType, Node>(std::move(nodes)),
+          OffsetArrayEdges<ThisType, Edge>(std::move(edges)),
+          OffsetArrayBackwardGraph<Node, Edge, ThisType>()
     {
         checkConcepts();
     }
@@ -125,9 +125,9 @@ public:
         requires HasBackwardEdges
         &&(!HasForwardEdges)
         && std::is_same_v<Node, common::NodeID>
-        : OffsetArrayNodes<Self, Node>(number_of_nodes),
-        OffsetArrayEdges<Self, Edge>(std::move(edges)),
-        OffsetArrayBackwardGraph<Node, Edge, Self>()
+        : OffsetArrayNodes<ThisType, Node>(number_of_nodes),
+        OffsetArrayEdges<ThisType, Edge>(std::move(edges)),
+        OffsetArrayBackwardGraph<Node, Edge, ThisType>()
     {
         checkConcepts();
     }
@@ -137,10 +137,10 @@ public:
     OffsetArray(std::vector<Node> nodes,
                 std::vector<Edge> edges) noexcept
         requires HasBackwardEdges && HasForwardEdges
-        : OffsetArrayNodes<Self, Node>(std::move(nodes)),
-          OffsetArrayEdges<Self, Edge>(std::move(edges)),
-          OffsetArrayForwardGraph<Node, Edge, Self>(),
-          OffsetArrayBackwardGraph<Node, Edge, Self>()
+        : OffsetArrayNodes<ThisType, Node>(std::move(nodes)),
+          OffsetArrayEdges<ThisType, Edge>(std::move(edges)),
+          OffsetArrayForwardGraph<Node, Edge, ThisType>(),
+          OffsetArrayBackwardGraph<Node, Edge, ThisType>()
     {
         checkConcepts();
     }
@@ -148,25 +148,25 @@ public:
     OffsetArray(std::size_t number_of_nodes,
                 std::vector<Edge> edges) noexcept
         requires HasBackwardEdges && HasForwardEdges
-        : OffsetArrayNodes<Self, Node>(number_of_nodes),
-          OffsetArrayEdges<Self, Edge>(std::move(edges)),
-          OffsetArrayForwardGraph<Node, Edge, Self>(),
-          OffsetArrayBackwardGraph<Node, Edge, Self>()
+        : OffsetArrayNodes<ThisType, Node>(number_of_nodes),
+          OffsetArrayEdges<ThisType, Edge>(std::move(edges)),
+          OffsetArrayForwardGraph<Node, Edge, ThisType>(),
+          OffsetArrayBackwardGraph<Node, Edge, ThisType>()
     {
         checkConcepts();
     }
 
-    OffsetArray(Self&&) noexcept = default;
-    OffsetArray(const Self&) noexcept = default;
-    auto operator=(Self&&) noexcept -> OffsetArray& = default;
-    auto operator=(const Self&) noexcept -> OffsetArray& = default;
+    OffsetArray(ThisType&&) noexcept = default;
+    OffsetArray(const ThisType&) noexcept = default;
+    auto operator=(ThisType&&) noexcept -> OffsetArray& = default;
+    auto operator=(const ThisType&) noexcept -> OffsetArray& = default;
 
     // clang-format off
     template<class F>
     auto sortNodesAccordingTo(F&& func) noexcept
 	  -> std::vector<std::size_t>
-	requires std::regular_invocable<F, const Self&>
-	      && std::strict_weak_order<std::invoke_result_t<F, const Self&>,
+	requires std::regular_invocable<F, const ThisType&>
+	      && std::strict_weak_order<std::invoke_result_t<F, const ThisType&>,
 			                        common::NodeID,
 								    common::NodeID>
     // clang-format on
@@ -187,7 +187,7 @@ public:
         const auto number_of_edges = this->numberOfEdges();
 
         //apply the permutation to the forward offsetarray
-        if constexpr(concepts::ForwardGraph<Self>) {
+        if constexpr(concepts::ForwardGraph<ThisType>) {
             std::vector<size_t> forward_offset(number_of_nodes + 1, 0);
             std::vector<common::EdgeID> forward_neigbours;
             forward_neigbours.reserve(number_of_edges);
@@ -207,7 +207,7 @@ public:
         }
 
         //apply the permutation to the backward offsetarray
-        if constexpr(concepts::BackwardGraph<Self>) {
+        if constexpr(concepts::BackwardGraph<ThisType>) {
             std::vector<size_t> backward_offset(number_of_nodes + 1, 0);
             std::vector<common::EdgeID> backward_neigbours;
             backward_neigbours.reserve(number_of_edges);
@@ -227,7 +227,7 @@ public:
         }
 
         //update the sources and targets of edges in the graph
-        if constexpr(concepts::HasEdges<Self>) {
+        if constexpr(concepts::HasEdges<ThisType>) {
             for(auto& e : this->edges_) {
 
                 //update src if available
@@ -261,8 +261,8 @@ public:
     template<class F>
     auto sortEdgesAccordingTo(F&& func) noexcept
 	    -> std::vector<std::size_t>
-	requires std::regular_invocable<F, const Self&>
-	      && std::strict_weak_order<std::invoke_result_t<F, const Self&>,
+	requires std::regular_invocable<F, const ThisType&>
+	      && std::strict_weak_order<std::invoke_result_t<F, const ThisType&>,
 				        	        common::EdgeID,
 							        common::EdgeID>
     // clang-format on
@@ -281,7 +281,7 @@ public:
                   order);
 
         //apply the permutation to the forward connections
-        if constexpr(concepts::ForwardGraph<Self>) {
+        if constexpr(concepts::ForwardGraph<ThisType>) {
             std::transform(std::begin(this->forward_neigbours_),
                            std::end(this->forward_neigbours_),
                            std::begin(this->forward_neigbours_),
@@ -291,7 +291,7 @@ public:
         }
 
         //apply the permutation to the backward connections
-        if constexpr(concepts::BackwardGraph<Self>) {
+        if constexpr(concepts::BackwardGraph<ThisType>) {
             std::transform(std::begin(this->backward_neigbours_),
                            std::end(this->backward_neigbours_),
                            std::begin(this->backward_neigbours_),
