@@ -303,6 +303,7 @@ public:
                            });
         }
 
+        //permutation will get copied into applypermutation because it will be consumed
         this->edges = util::applyPermutation(std::move(this->edges_),
                                              permutation);
 
