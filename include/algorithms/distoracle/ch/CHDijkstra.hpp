@@ -55,6 +55,9 @@ public:
         static_assert(concepts::DistanceOracle<ThisType>,
                       "CHDijkstra should fullfill the DistanceOracle concept");
 
+        static_assert(!SortGraphEdges || (concepts::SortableForwardGraph<Graph> and concepts::SortableBackwardGraph<Graph>),
+                      "SortGraphEdges = true, but the given graph type does not fullfill the Sortable concepts needed");
+
         if constexpr(SortGraphEdges) {
             //sort the offeset arrays such that the ch dijkstra can be used
             graph.sortBackwardEdgeIDsAccordingTo([](const auto& g) {
