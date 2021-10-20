@@ -20,12 +20,6 @@ TEST(DistanceOracleCHDijkstraTest, MixedSourcesTest)
     ASSERT_TRUE(graph_opt);
     auto graph = std::move(graph_opt.value());
 
-    graph.sortEdgesAccordingTo([](const auto& g) {
-        return [&](const auto lhs, const auto rhs) {
-            return lhs > rhs;
-        };
-    });
-
     algorithms::distoracle::CHDijkstra dijkstra{graph};
 
 
