@@ -96,8 +96,7 @@ public:
 
     OffsetArray(std::size_t number_of_nodes,
                 std::vector<Edge> edges) noexcept
-        requires HasForwardEdges
-        &&(!HasBackwardEdges)
+        requires HasForwardEdges &&(!HasBackwardEdges)
         && std::is_same_v<Node, common::NodeID>
 
         : OffsetArrayNodes<Self, Node>(number_of_nodes),
@@ -183,11 +182,9 @@ public:
                   std::end(perm),
                   order);
 
-        auto inv_perm = util::inversePermutation(perm);
-
-        //TODO: permutate the offset array
-        auto number_of_nodes = this->numberOfNodes();
-        auto number_of_edges = this->numberOfEdges();
+        const auto inv_perm = util::inversePermutation(perm);
+        const auto number_of_nodes = this->numberOfNodes();
+        const auto number_of_edges = this->numberOfEdges();
 
         //apply the permutation to the forward offsetarray
         if constexpr(concepts::ForwardGraph<Self>) {
