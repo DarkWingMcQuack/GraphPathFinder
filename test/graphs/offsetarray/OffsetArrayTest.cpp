@@ -714,6 +714,50 @@ TEST(OffsetArrayTest, CHOffsetArrayNestedEdgeTest)
     EXPECT_FALSE(edge->isShortcut());
 }
 
+TEST(OffsetArrayTest, OffsetArrayNodeSortingTest)
+{
+    auto example_graph = data_dir + "fmi-example.txt";
+    auto graph_opt = parsing::parseFromFMIFile<graphs::FMINode<false>, graphs::FMIEdge<false>>(example_graph);
+
+    ASSERT_TRUE(graph_opt);
+    auto graph = std::move(graph_opt.value());
+    auto perm = graph.sortNodesAccordingTo([](const auto &g) {
+        return [](auto lhs, auto rhs) {
+            return lhs > rhs;
+        };
+    });
+
+    EXPECT_EQ(perm[0], 4);
+    EXPECT_EQ(perm[1], 3);
+    EXPECT_EQ(perm[2], 2);
+    EXPECT_EQ(perm[3], 1);
+    EXPECT_EQ(perm[4], 0);
+
+    auto id = graph.getForwardEdgeIDBetween(common::NodeID{perm[0]}, common::NodeID{perm[1]}).value();
+    EXPECT_EQ(graph.getEdgeWeight(id).value(), common::Weight{9});
+
+    id = graph.getForwardEdgeIDBetween(common::NodeID{perm[0]}, common::NodeID{perm[4]}).value();
+    EXPECT_EQ(graph.getEdgeWeight(id).value(), common::Weight{7});
+
+    id = graph.getForwardEdgeIDBetween(common::NodeID{perm[2]}, common::NodeID{perm[0]}).value();
+    EXPECT_EQ(graph.getEdgeWeight(id).value(), common::Weight{6});
+
+    id = graph.getForwardEdgeIDBetween(common::NodeID{perm[2]}, common::NodeID{perm[1]}).value();
+    EXPECT_EQ(graph.getEdgeWeight(id).value(), common::Weight{5});
+
+    id = graph.getForwardEdgeIDBetween(common::NodeID{perm[2]}, common::NodeID{perm[4]}).value();
+    EXPECT_EQ(graph.getEdgeWeight(id).value(), common::Weight{4});
+
+    id = graph.getForwardEdgeIDBetween(common::NodeID{perm[3]}, common::NodeID{perm[2]}).value();
+    EXPECT_EQ(graph.getEdgeWeight(id).value(), common::Weight{3});
+
+    id = graph.getForwardEdgeIDBetween(common::NodeID{perm[4]}, common::NodeID{perm[1]}).value();
+    EXPECT_EQ(graph.getEdgeWeight(id).value(), common::Weight{2});
+
+    id = graph.getForwardEdgeIDBetween(common::NodeID{perm[4]}, common::NodeID{perm[3]}).value();
+    EXPECT_EQ(graph.getEdgeWeight(id).value(), common::Weight{1});
+}
+
 TEST(OffsetArrayTest, CHOffsetArrayNodeSortingTest)
 {
     auto example_graph = data_dir + "ch-fmi-example.txt";
