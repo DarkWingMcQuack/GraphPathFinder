@@ -20,6 +20,7 @@ public:
     OffsetArrayBackwardGraph() noexcept
     {
         static_assert(concepts::BackwardGraph<OffsetArrayBackwardGraph<Node, Edge, Graph>>);
+        static_assert(concepts::SortableBackwardGraph<OffsetArrayBackwardGraph<Node, Edge, Graph>>);
 
         const auto number_of_edges = impl().numberOfEdges();
         const auto number_of_nodes = impl().numberOfNodes();

@@ -38,6 +38,18 @@ concept BackwardGraph = requires(const T& graph, common::NodeID src, common::Nod
 	 */
 	{graph.getBackwardEdgeIDsOf(src)} noexcept -> std::same_as<std::span<const common::EdgeID>>;
 };
+
+template<typename T>
+//f is a curried edge comparer which, given a graph returns an function defining an order for edge ids
+concept SortableBackwardGraph = requires(T& mut_graph, std::function<std::function<bool(common::EdgeID, common::EdgeID)>(const T&)> f)
+{
+    requires BackwardGraph<T>;
+	requires std::strict_weak_order<decltype(f(mut_graph)),
+				        		    common::EdgeID,
+								    common::EdgeID>;
+
+	{mut_graph.sortBackwardEdgeIDsAccordingTo(f)};
+};
 // clang-format on
 
 } // namespace concepts

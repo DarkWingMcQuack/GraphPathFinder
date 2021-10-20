@@ -2,6 +2,7 @@
 
 #include <common/EmptyBase.hpp>
 #include <concepts/Parseable.hpp>
+#include <concepts/SortableGraph.hpp>
 #include <graphs/offsetarray/OffsetArrayBackwardGraph.hpp>
 #include <graphs/offsetarray/OffsetArrayEdges.hpp>
 #include <graphs/offsetarray/OffsetArrayForwardGraph.hpp>
@@ -47,36 +48,36 @@ private:
     constexpr auto checkConcepts() const noexcept
         -> void
     {
-        // clang-format off
         static_assert(HasForwardEdges || HasBackwardEdges,
                       "a graph without forward or backward edges is not allowed");
 
-        static_assert(!HasForwardEdges
-                      || concepts::ForwardGraph<OffsetArray<Node, Edge, HasForwardEdges, HasBackwardEdges>>,
+        static_assert(!HasForwardEdges || concepts::ForwardGraph<ThisType>,
                       "a graph which has forward edges should fullfill the ForwardGraph concept");
 
-
-        static_assert(!HasBackwardEdges
-                      || concepts::BackwardGraph<OffsetArray<Node, Edge, HasForwardEdges, HasBackwardEdges>>,
+        static_assert(!HasBackwardEdges || concepts::BackwardGraph<ThisType>,
                       "a graph which has backward edges should fullfill the BackwardGraph concept");
 
-        static_assert(concepts::HasNodes<OffsetArray<Node, Edge, HasForwardEdges, HasBackwardEdges>>,
-                      "every graph should fullfill the HasNodes concept");
+        static_assert(concepts::HasNodes<ThisType>, "every graph should fullfill the HasNodes concept");
 
-        static_assert(!std::is_same_v<Node, common::NodeID>
-                      || concepts::HasNontrivialNodes<OffsetArray<Node, Edge, HasForwardEdges, HasBackwardEdges>>,
+        static_assert(!std::is_same_v<Node, common::NodeID> || concepts::HasNontrivialNodes<ThisType>,
                       "a graph with non-trivial nodes should fullfill the HasNontrivialNodes concept");
 
-        static_assert(concepts::HasEdges<OffsetArray<Node, Edge, HasForwardEdges, HasBackwardEdges>>,
+        static_assert(concepts::HasEdges<ThisType>,
                       "every graph should fullfill the HasEdges concept");
 
-        static_assert(!concepts::HasWeight<Edge>
-					  || concepts::WriteableEdgeWeights<OffsetArray<Node, Edge, HasForwardEdges, HasBackwardEdges>>,
+        static_assert(!concepts::HasWeight<Edge> || concepts::WriteableEdgeWeights<ThisType>,
                       "a graph with edges which fullfill the HasWeight concept should itself fullfill the WriteableEdgeWeights concept");
-        static_assert(!concepts::HasLevel<Node>
-					  || concepts::WriteableNodeLevels<OffsetArray<Node, Edge, HasForwardEdges, HasBackwardEdges>>,
+        static_assert(!concepts::HasLevel<Node> || concepts::WriteableNodeLevels<ThisType>,
                       "a graph with nodes which fullfill the HasLevel concept should itself fullfill the WriteableNodeLevels concept");
-        // clang-format on
+
+        static_assert(!HasForwardEdges || concepts::SortableForwardGraph<ThisType>,
+                      "an offsetarray which is a forward graph should also be able to sort the forward connections");
+
+        static_assert(!HasBackwardEdges || concepts::SortableBackwardGraph<ThisType>,
+                      "an offsetarray which is a backward graph should also be able to sort the forward connections");
+
+        static_assert(concepts::EdgesSortable<ThisType>, "edges of an offsetarray should be sortable");
+        static_assert(concepts::NodesSortable<ThisType>, "nodes of an offsetarray should be sortable");
     }
 
 public:

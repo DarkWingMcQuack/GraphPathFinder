@@ -44,6 +44,19 @@ concept ForwardGraph = requires(const T& graph, T& mut_graph, common::NodeID src
 	 */
 	{mut_graph.getForwardEdgeIDsOf(src)} noexcept -> std::same_as<std::span<common::EdgeID>>;
 };
+
+
+template<typename T>
+//f is a curried edge comparer which, given a graph returns an function defining an order for edge ids
+concept SortableForwardGraph = requires(T& mut_graph, std::function<std::function<bool(common::EdgeID, common::EdgeID)>(const T&)> f)
+{
+    requires ForwardGraph<T>;
+	requires std::strict_weak_order<decltype(f(mut_graph)),
+				        		    common::EdgeID,
+								    common::EdgeID>;
+
+	{mut_graph.sortForwardEdgeIDsAccordingTo(f)};
+};
 // clang-format on
 
 } // namespace concepts
