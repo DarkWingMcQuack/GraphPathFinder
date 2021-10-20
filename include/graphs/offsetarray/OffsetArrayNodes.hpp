@@ -106,7 +106,7 @@ public:
         requires concepts::HasLevel<NodeType>
     //clang-format on
     {
-        return getNode(id)->getLevel();
+        return getNode(id)->getLvl();
     }
 
     // clang-format off
@@ -116,7 +116,7 @@ public:
     // clang-format on
     {
         if(const auto *node = getNode(id)) {
-            return node->setLevel(lvl);
+            return node->setLvl(lvl);
         }
     }
 
