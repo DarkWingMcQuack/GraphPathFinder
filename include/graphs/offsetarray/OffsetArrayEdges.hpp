@@ -92,7 +92,7 @@ public:
 
     // clang-format off
     template<class F>
-    [[nodiscard]] auto sortEdgesAccordingTo(F&& func) noexcept
+    auto sortEdgesAccordingTo(F&& func) noexcept
 	    -> std::vector<common::EdgeID>
 	requires std::regular_invocable<F, const Graph&>
 	&& std::strict_weak_order<std::invoke_result_t<F, const Graph&>,
@@ -105,9 +105,10 @@ public:
 
         std::vector permutation(graph.numberOfEdges(),
                                 common::EdgeID{0});
-        std::iota(std::begin(permutation),
-                  std::end(permutation),
-                  common::EdgeID{0});
+
+        for(std::size_t i = 0; i < permutation.size(); i++) {
+            permutation[i] = common::EdgeID{i};
+        }
 
         //sort the edgeids according to the given order
         std::sort(std::begin(permutation),
@@ -120,7 +121,7 @@ public:
                 common::NodeID n{i};
                 auto edge_ids = graph.getForwardEdgeIDsOf(n);
                 for(std::size_t j = 0; j < edge_ids.size(); j++) {
-                    edge_ids[j] = permutation[edge_ids[j]];
+                    edge_ids[j] = permutation[edge_ids[j].get()];
                 }
             }
         }
@@ -131,7 +132,7 @@ public:
                 common::NodeID n{i};
                 auto edge_ids = graph.getBackwardEdgeIDsOf(n);
                 for(std::size_t j = 0; j < edge_ids.size(); j++) {
-                    edge_ids[j] = permutation[edge_ids[j]];
+                    edge_ids[j] = permutation[edge_ids[j].get()];
                 }
             }
         }
@@ -141,15 +142,15 @@ public:
 
         //apply the permutation to the edges
         for(std::size_t i = 0; i < graph.numberOfEdges(); i++) {
-            std::size_t curr = i;
-            std::size_t next = permutation[curr];
+            size_t curr = i;
+            size_t next = permutation[curr].get();
             while(next != i) {
-                swap(edges_[curr], edges_[next]);
-                permutation[curr] = curr;
+                std::swap(edges_[curr], edges_[next]);
+                permutation[curr] = common::EdgeID{curr};
                 curr = next;
-                next = permutation[next];
+                next = permutation[next].get();
             }
-            permutation[curr] = curr;
+            permutation[curr] = common::EdgeID{curr};
         }
 
         return permutation_copy;

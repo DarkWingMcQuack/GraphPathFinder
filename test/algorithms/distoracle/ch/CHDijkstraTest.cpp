@@ -20,7 +20,14 @@ TEST(DistanceOracleCHDijkstraTest, MixedSourcesTest)
     ASSERT_TRUE(graph_opt);
     auto graph = std::move(graph_opt.value());
 
+    graph.sortEdgesAccordingTo([](const auto& g) {
+        return [&](const auto lhs, const auto rhs) {
+            return lhs > rhs;
+        };
+    });
+
     algorithms::distoracle::CHDijkstra dijkstra{graph};
+
 
     EXPECT_EQ(dijkstra.distanceBetween(common::NodeID{0}, common::NodeID{1}), common::Weight{9});
     EXPECT_EQ(dijkstra.distanceBetween(common::NodeID{1}, common::NodeID{0}), common::INFINITY_WEIGHT);
