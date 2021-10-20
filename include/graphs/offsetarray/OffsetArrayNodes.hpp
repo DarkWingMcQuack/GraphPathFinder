@@ -1,8 +1,11 @@
 #pragma once
 
+#include <concepts/BackwardGraph.hpp>
+#include <concepts/ForwardGraph.hpp>
 #include <concepts/NodeLevels.hpp>
 #include <concepts/Nodes.hpp>
 #include <numeric>
+#include <utils/Permutation.hpp>
 #include <vector>
 
 namespace graphs {
@@ -117,52 +120,15 @@ public:
         }
     }
 
-    // clang-format off
-    template<class F>
-    auto sortNodesAccordingTo(F&& func) noexcept
-	    -> std::vector<common::NodeID>
-	requires std::regular_invocable<F, const Graph&>
-	      && std::strict_weak_order<std::invoke_result_t<F, const Graph&>,
-			                        common::NodeID,
-								    common::NodeID>
-    // clang-format on
-    {
-        const auto &graph = impl();
-        const auto order = std::invoke(std::forward<F>(func), graph);
-
-        std::vector permutation(graph.numberOfNodes(),
-                                common::NodeID{0});
-
-        for(std::size_t i = 0; i < permutation.size(); i++) {
-            permutation[i] = common::NodeID{i};
-        }
-
-        std::sort(std::begin(permutation),
-                  std::end(permutation),
-                  order);
-
-
-        //copy the permutation here because it gets shuffled by the algorithm
-        auto permutation_copy = permutation;
-
-        for(size_t i = 0; i < graph.numberOfNodes; i++) {
-            size_t curr = i;
-            size_t next = permutation[curr].get();
-            while(next != i) {
-                std::swap(nodes_[curr], nodes_[next]);
-                permutation[curr] = common::NodeID{curr};
-                curr = next;
-                next = permutation[next].get();
-            }
-            permutation[curr] = common::NodeID{curr};
-        }
-
-        return permutation_copy;
-    }
 
     // clang-format off
 private:
     //crtp helper function
+    constexpr auto impl() noexcept
+        -> Graph &
+    {
+        return static_cast<Graph &>(*this);
+    }
     constexpr auto impl() const noexcept
         -> const Graph &
     {

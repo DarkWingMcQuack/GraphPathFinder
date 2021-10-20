@@ -161,6 +161,134 @@ public:
     OffsetArray(const Self&) noexcept = default;
     auto operator=(Self&&) noexcept -> OffsetArray& = default;
     auto operator=(const Self&) noexcept -> OffsetArray& = default;
+
+    // clang-format off
+    template<class F>
+    auto sortNodesAccordingTo(F&& func) noexcept
+	  -> std::vector<std::size_t>
+	requires std::regular_invocable<F, const Self&>
+	      && std::strict_weak_order<std::invoke_result_t<F, const Self&>,
+			                        common::NodeID,
+								    common::NodeID>
+    // clang-format on
+    {
+        const auto order = std::invoke(std::forward<F>(func), *this);
+
+        std::vector<std::size_t> perm(this->numberOfNodes());
+        std::iota(std::begin(perm),
+                  std::end(perm),
+                  0);
+
+        std::sort(std::begin(perm),
+                  std::end(perm),
+                  order);
+
+        auto inv_perm = util::inversePermutation(perm);
+
+        //TODO: permutate the offset array
+        auto number_of_nodes = this->numberOfNodes();
+        auto number_of_edges = this->numberOfEdges();
+
+        //apply the permutation to the forward offsetarray
+        if constexpr(concepts::ForwardGraph<Self>) {
+            std::vector<size_t> forward_offset(number_of_nodes + 1, 0);
+            std::vector<common::EdgeID> forward_neigbours(number_of_edges);
+
+            for(size_t i = 0; i < number_of_nodes; i++) {
+                common::NodeID n{inv_perm[i]};
+                auto neigs = this->getForwardEdgeIDsOf(n);
+
+                forward_neigbours.insert(std::end(forward_neigbours),
+                                         std::begin(neigs),
+                                         std::end(neigs));
+
+                forward_offset[i + 1] = forward_neigbours.size();
+
+                this->forward_offset_ = std::move(forward_offset);
+                this->forward_neibours_ = std::move(forward_neigbours);
+            }
+        }
+
+        //apply the permutation to the backward offsetarray
+        if constexpr(concepts::BackwardGraph<Self>) {
+            std::vector<size_t> backward_offset(number_of_nodes + 1, 0);
+            std::vector<common::EdgeID> backward_neigbours(number_of_edges);
+
+            for(size_t i = 0; i < number_of_nodes; i++) {
+                common::NodeID n{inv_perm[i]};
+                auto neigs = this->getBackwardEdgeIDsOf(n);
+
+                backward_neigbours.insert(std::end(backward_neigbours),
+                                          std::begin(neigs),
+                                          std::end(neigs));
+
+                backward_offset[i + 1] = backward_neigbours.size();
+
+                this->backward_offset_ = std::move(backward_offset);
+                this->backward_neibours_ = std::move(backward_neigbours);
+            }
+        }
+
+        if constexpr(!std::is_same_v<NodeType, common::NodeID>) {
+            //perm is geting copied here because it will be consumed by the
+            //applypermutation function
+            this->nodes_ = util::applyPermutation(std::move(this->nodes_),
+                                                  perm);
+        }
+
+        return perm;
+    }
+
+    // clang-format off
+    template<class F>
+    auto sortEdgesAccordingTo(F&& func) noexcept
+	    -> std::vector<std::size_t>
+	requires std::regular_invocable<F, const Self&>
+	      && std::strict_weak_order<std::invoke_result_t<F, const Self&>,
+				        	        common::EdgeID,
+							        common::EdgeID>
+    // clang-format on
+    {
+        const auto order = std::invoke(std::forward<F>(func), *this);
+
+        std::vector<std::size_t> permutation(this->numberOfEdges());
+        std::iota(std::begin(permutation),
+                  std::end(permutation),
+                  0);
+
+
+        //sort the edgeids according to the given order
+        std::sort(std::begin(permutation),
+                  std::end(permutation),
+                  order);
+
+        //apply the permutation to the forward connections
+        if constexpr(concepts::ForwardGraph<Self>) {
+            for(size_t i = 0; i < this->numberOfNodes(); i++) {
+                common::NodeID n{i};
+                auto edge_ids = this->getForwardEdgeIDsOf(n);
+                for(std::size_t j = 0; j < edge_ids.size(); j++) {
+                    edge_ids[j] = permutation[edge_ids[j].get()];
+                }
+            }
+        }
+
+        //apply the permutation to the backward connections
+        if constexpr(concepts::BackwardGraph<Self>) {
+            for(size_t i = 0; i < this->numberOfNodes(); i++) {
+                common::NodeID n{i};
+                auto edge_ids = this->getBackwardEdgeIDsOf(n);
+                for(std::size_t j = 0; j < edge_ids.size(); j++) {
+                    edge_ids[j] = permutation[edge_ids[j].get()];
+                }
+            }
+        }
+
+        this->edges = util::applyPermutation(std::move(this->edges_),
+                                             permutation);
+
+        return permutation;
+    }
 };
 
 template<class Node, class Edge>

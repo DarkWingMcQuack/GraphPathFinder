@@ -18,6 +18,7 @@ template<class CRTP, bool UseStallOnDemand>
 class CHDijkstraBackwardHelper
 {
 public:
+    //deleted things should be public
     constexpr CHDijkstraBackwardHelper(const CHDijkstraBackwardHelper&) noexcept = delete;
     constexpr auto operator=(const CHDijkstraBackwardHelper&) noexcept
         -> CHDijkstraBackwardHelper& = delete;
