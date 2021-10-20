@@ -20,6 +20,8 @@ TEST(DistanceOracleCHDijkstraTest, MixedSourcesTest)
     ASSERT_TRUE(graph_opt);
     auto graph = std::move(graph_opt.value());
 
+	graph = algorithms::distoracle::prepareGraphForCHDijkstra(std::move(graph));
+
     algorithms::distoracle::CHDijkstra dijkstra{graph};
 
 
@@ -52,6 +54,8 @@ TEST(DistanceOracleCHDijkstraTest, SameSourcesTest)
 
     ASSERT_TRUE(graph_opt);
     auto graph = std::move(graph_opt.value());
+
+	graph = algorithms::distoracle::prepareGraphForCHDijkstra(std::move(graph));
 
     algorithms::distoracle::CHDijkstra dijkstra{graph};
 

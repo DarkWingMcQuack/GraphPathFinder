@@ -157,19 +157,19 @@ public:
         checkConcepts();
     }
 
-    OffsetArray(ThisType&&) noexcept = default;
-    OffsetArray(const ThisType&) noexcept = default;
-    auto operator=(ThisType&&) noexcept -> OffsetArray& = default;
-    auto operator=(const ThisType&) noexcept -> OffsetArray& = default;
+    constexpr OffsetArray(ThisType&&) noexcept = default;
+    constexpr OffsetArray(const ThisType&) noexcept = default;
+    constexpr auto operator=(ThisType&&) noexcept -> OffsetArray& = default;
+    constexpr auto operator=(const ThisType&) noexcept -> OffsetArray& = default;
 
     // clang-format off
     template<class F>
     auto sortNodesAccordingTo(F&& func) noexcept
 	  -> std::vector<std::size_t>
-	requires std::regular_invocable<F, const ThisType&>
-	      && std::strict_weak_order<std::invoke_result_t<F, const ThisType&>,
-			                        common::NodeID,
-								    common::NodeID>
+	  requires std::regular_invocable<F, const ThisType&>
+	  && std::strict_weak_order<std::invoke_result_t<F, const ThisType&>,
+								common::NodeID,
+								common::NodeID>
     // clang-format on
     {
         const auto order = std::invoke(std::forward<F>(func), *this);
@@ -261,11 +261,11 @@ public:
     // clang-format off
     template<class F>
     auto sortEdgesAccordingTo(F&& func) noexcept
-	    -> std::vector<std::size_t>
-	requires std::regular_invocable<F, const ThisType&>
-	      && std::strict_weak_order<std::invoke_result_t<F, const ThisType&>,
-				        	        common::EdgeID,
-							        common::EdgeID>
+	  -> std::vector<std::size_t>
+	  requires std::regular_invocable<F, const ThisType&>
+	  && std::strict_weak_order<std::invoke_result_t<F, const ThisType&>,
+								common::EdgeID,
+								common::EdgeID>
     // clang-format on
     {
         const auto order = std::invoke(std::forward<F>(func), *this);

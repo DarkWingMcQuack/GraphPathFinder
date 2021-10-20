@@ -55,29 +55,6 @@ public:
         static_assert(concepts::DistanceOracle<ThisType>,
                       "CHDijkstra should fullfill the DistanceOracle concept");
 
-        static_assert(!SortGraphEdges || (concepts::SortableForwardGraph<Graph> and concepts::SortableBackwardGraph<Graph>),
-                      "SortGraphEdges = true, but the given graph type does not fullfill the Sortable concepts needed");
-
-        if constexpr(SortGraphEdges) {
-            //sort the offeset arrays such that the ch dijkstra can be used
-            graph.sortBackwardEdgeIDsAccordingTo([](const auto& g) {
-                return [&](const auto lhs, const auto rhs) {
-                    auto lhs_trg = g.getBackwardEdge(lhs)->getTrg();
-                    auto rhs_trg = g.getBackwardEdge(rhs)->getTrg();
-
-                    return g.getNodeLevel(lhs_trg) > g.getNodeLevel(rhs_trg);
-                };
-            });
-
-            graph.sortForwardEdgeIDsAccordingTo([](const auto& g) {
-                return [&](const auto lhs, const auto rhs) {
-                    auto lhs_trg = g.getEdge(lhs)->getTrg();
-                    auto rhs_trg = g.getEdge(rhs)->getTrg();
-
-                    return g.getNodeLevel(lhs_trg) > g.getNodeLevel(rhs_trg);
-                };
-            });
-        }
     }
 
     constexpr CHDijkstra(CHDijkstra&&) noexcept = default;
@@ -161,5 +138,34 @@ private:
 private:
     const Graph& graph_;
 };
+
+
+
+template<class Graph>
+requires concepts::SortableForwardGraph<Graph> && concepts::SortableBackwardGraph<Graph>
+[[nodiscard]] constexpr static auto prepareGraphForCHDijkstra(Graph&& g) noexcept
+    -> Graph
+{
+    //sort the offeset arrays such that the ch dijkstra can be used
+    g.sortBackwardEdgeIDsAccordingTo([](const auto& g) {
+        return [&](const auto lhs, const auto rhs) {
+            auto lhs_trg = g.getBackwardEdge(lhs)->getTrg();
+            auto rhs_trg = g.getBackwardEdge(rhs)->getTrg();
+
+            return g.getNodeLevel(lhs_trg) > g.getNodeLevel(rhs_trg);
+        };
+    });
+
+    g.sortForwardEdgeIDsAccordingTo([](const auto& g) {
+        return [&](const auto lhs, const auto rhs) {
+            auto lhs_trg = g.getEdge(lhs)->getTrg();
+            auto rhs_trg = g.getEdge(rhs)->getTrg();
+
+            return g.getNodeLevel(lhs_trg) > g.getNodeLevel(rhs_trg);
+        };
+    });
+
+	return std::move(g);
+}
 
 } // namespace algorithms::distoracle

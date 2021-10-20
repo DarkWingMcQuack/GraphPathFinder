@@ -28,8 +28,13 @@ public:
         // clang-format on
     }
 
-    OffsetArrayEdges(OffsetArrayEdges<Graph, Edge> &&) noexcept = default;
-    OffsetArrayEdges(const OffsetArrayEdges<Graph, Edge> &) noexcept = default;
+    constexpr OffsetArrayEdges(OffsetArrayEdges &&) noexcept = default;
+    constexpr OffsetArrayEdges(const OffsetArrayEdges &) noexcept = default;
+
+    constexpr auto operator=(OffsetArrayEdges &&) noexcept
+        -> OffsetArrayEdges & = default;
+    constexpr auto operator=(const OffsetArrayEdges &) noexcept
+        -> OffsetArrayEdges & = default;
 
     constexpr auto edgeExists(common::EdgeID id) const noexcept -> bool
     {

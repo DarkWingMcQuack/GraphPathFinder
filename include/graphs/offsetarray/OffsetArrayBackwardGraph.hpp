@@ -52,8 +52,13 @@ public:
         }
     }
 
-    OffsetArrayBackwardGraph(OffsetArrayBackwardGraph &&) noexcept = default;
-    OffsetArrayBackwardGraph(const OffsetArrayBackwardGraph &) noexcept = default;
+    constexpr OffsetArrayBackwardGraph(OffsetArrayBackwardGraph &&) noexcept = default;
+    constexpr OffsetArrayBackwardGraph(const OffsetArrayBackwardGraph &) noexcept = default;
+
+    constexpr auto operator=(OffsetArrayBackwardGraph &&) noexcept
+        -> OffsetArrayBackwardGraph & = default;
+    constexpr auto operator=(const OffsetArrayBackwardGraph &) noexcept
+        -> OffsetArrayBackwardGraph & = default;
 
     constexpr auto getBackwardEdgeIDBetween(common::NodeID from,
                                             common::NodeID to) const noexcept
