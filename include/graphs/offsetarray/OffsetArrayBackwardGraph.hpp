@@ -5,8 +5,15 @@
 #include <concepts/Edges.hpp>
 #include <vector>
 
-namespace graphs {
 
+// forward declare PHAST to be able to make it a friend of OffsetArrayBackwardGraph
+namespace algorithms::distoracle {
+template<class T>
+class PHAST;
+}
+
+
+namespace graphs {
 
 template<class Node, class Edge, class Graph>
 requires concepts::HasTarget<Edge> && concepts::HasSource<Edge>
@@ -143,11 +150,11 @@ public:
     // clang-format off
     template<class F>
     constexpr auto sortBackwardEdgeIDsAccordingTo(F&& func) noexcept
-        -> void
+	    -> void
 	    requires std::regular_invocable<F, const Graph&>
-	    && std::strict_weak_order<std::invoke_result_t<F, const Graph&>,
-				        		  common::EdgeID,
-								  common::EdgeID>
+	          && std::strict_weak_order<std::invoke_result_t<F, const Graph&>,
+				         				common::EdgeID,
+						        		common::EdgeID>
     // clang-format on
     {
         auto order = std::invoke(std::forward<F>(func), impl());
@@ -160,16 +167,17 @@ public:
 
 
     // clang-format off
-private:
+  private:
 
     //crtp helper function
     constexpr auto impl() const noexcept
-        -> const Graph &
+	  -> const Graph &
     {
-        return static_cast<const Graph &>(*this);
+	  return static_cast<const Graph &>(*this);
     }
 
     friend Graph;
+    friend class algorithms::distoracle::PHAST<Graph>;
 
     std::vector<common::EdgeID> backward_neigbours_;
     std::vector<size_t> backward_offset_;
