@@ -184,14 +184,14 @@ public:
         backward_neigbours.reserve(number_of_edges);
 
         for(size_t i = 0; i < number_of_nodes; i++) {
-            common::NodeID n{i};
-            auto neigs = this->getBackwardEdgeIDsOf(n);
+            auto ids = getBackwardEdgeIDsOf(common::NodeID{i});
 
-            for(auto edge_id : neigs) {
-                if(!predicate(edge_id)) {
-                    backward_neigbours.emplace_back(edge_id);
-                }
-            }
+            std::copy_if(std::begin(ids),
+                         std::end(ids),
+                         std::back_inserter(backward_neigbours),
+                         [&](auto id) {
+                             return !predicate(id);
+                         });
 
             backward_offset[i + 1] = backward_neigbours.size();
         }

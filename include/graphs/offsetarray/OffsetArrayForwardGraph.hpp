@@ -170,14 +170,14 @@ public:
         forward_neigbours.reserve(number_of_edges);
 
         for(size_t i = 0; i < number_of_nodes; i++) {
-            common::NodeID n{i};
-            auto neigs = this->getForwardEdgeIDsOf(n);
+            auto ids = this->getForwardEdgeIDsOf(common::NodeID{i});
 
-            for(auto edge_id : neigs) {
-                if(!predicate(edge_id)) {
-                    forward_neigbours.emplace_back(edge_id);
-                }
-            }
+            std::copy_if(std::begin(ids),
+                         std::end(ids),
+                         std::back_inserter(forward_neigbours),
+                         [&](auto id) {
+                             return !predicate(id);
+                         });
 
             forward_offset[i + 1] = forward_neigbours.size();
         }

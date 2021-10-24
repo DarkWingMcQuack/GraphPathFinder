@@ -195,7 +195,7 @@ public:
             forward_neigbours.reserve(number_of_edges);
 
             for(size_t i = 0; i < number_of_nodes; i++) {
-                common::NodeID n{perm[i]};
+                common::NodeID n{inv_perm[i]};
                 auto neigs = this->getForwardEdgeIDsOf(n);
 
                 forward_neigbours.insert(std::end(forward_neigbours),
@@ -215,7 +215,7 @@ public:
             backward_neigbours.reserve(number_of_edges);
 
             for(size_t i = 0; i < number_of_nodes; i++) {
-                common::NodeID n{perm[i]};
+                common::NodeID n{inv_perm[i]};
                 auto neigs = this->getBackwardEdgeIDsOf(n);
 
                 backward_neigbours.insert(std::end(backward_neigbours),
@@ -235,14 +235,14 @@ public:
                 //update src if available
                 if constexpr(concepts::HasSource<EdgeType>) {
                     auto current = e.getSrc();
-                    auto new_src = common::NodeID{perm[e.getSrc().get()]};
+                    auto new_src = common::NodeID{perm[current.get()]};
                     e.setSrc(new_src);
                 }
 
                 //update trg if available
                 if constexpr(concepts::HasTarget<EdgeType>) {
-                    auto current = e.getSrc();
-                    auto new_trg = common::NodeID{perm[e.getTrg().get()]};
+                    auto current = e.getTrg();
+                    auto new_trg = common::NodeID{perm[current.get()]};
                     e.setTrg(new_trg);
                 }
             }
