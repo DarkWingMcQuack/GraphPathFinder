@@ -4,7 +4,6 @@
 #include <concepts/BackwardGraph.hpp>
 #include <concepts/EdgeWeights.hpp>
 #include <concepts/Edges.hpp>
-#include <concepts/ForwardGraph.hpp>
 #include <numeric>
 #include <vector>
 
@@ -16,7 +15,7 @@ class OffsetArrayEdges
 public:
     using EdgeType = Edge;
 
-    OffsetArrayEdges(std::vector<Edge> edges) noexcept
+    constexpr OffsetArrayEdges(std::vector<Edge> edges) noexcept
         : edges_(std::move(edges))
     {
 

@@ -1,7 +1,5 @@
 #pragma once
 
-#include <concepts/BackwardGraph.hpp>
-#include <concepts/ForwardGraph.hpp>
 #include <concepts/NodeLevels.hpp>
 #include <concepts/Nodes.hpp>
 #include <numeric>
@@ -48,7 +46,7 @@ class NonTrivialOffsetArrayNodes
 public:
     using NodeType = Node;
 
-    NonTrivialOffsetArrayNodes(std::vector<Node> nodes) noexcept
+    constexpr NonTrivialOffsetArrayNodes(std::vector<Node> nodes) noexcept
         : nodes_(std::move(nodes))
     {
         // clang-format off

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <concepts/Edges.hpp>
-#include <concepts/ForwardGraph.hpp>
+#include <concepts/ForwardConnections.hpp>
 #include <vector>
 
 namespace graphs {
@@ -17,7 +17,7 @@ public:
     constexpr OffsetArrayForwardGraph() noexcept
         requires concepts::HasSource<EdgeType> && concepts::HasTarget<EdgeType>
     {
-        static_assert(concepts::ForwardGraph<OffsetArrayForwardGraph<Node, Edge, Graph>>);
+        static_assert(concepts::ForwardConnections<OffsetArrayForwardGraph<Node, Edge, Graph>>);
         static_assert(concepts::SortableForwardGraph<OffsetArrayForwardGraph<Node, Edge, Graph>>);
 
         const auto number_of_edges = impl().numberOfEdges();

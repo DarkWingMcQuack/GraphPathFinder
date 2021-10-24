@@ -5,7 +5,7 @@
 #include <common/EmptyBase.hpp>
 #include <concepts/DistanceOracle.hpp>
 #include <concepts/Edges.hpp>
-#include <concepts/ForwardGraph.hpp>
+#include <concepts/ForwardConnections.hpp>
 #include <fmt/core.h>
 #include <queue>
 #include <type_traits>
@@ -15,7 +15,7 @@ namespace algorithms::distoracle {
 
 template<class Graph>
 // clang-format off
-requires concepts::ForwardGraph<Graph>
+requires concepts::ForwardConnections<Graph>
       && concepts::HasEdges<Graph>
       && concepts::HasNodes<Graph>
       && concepts::HasTarget<typename Graph::EdgeType>

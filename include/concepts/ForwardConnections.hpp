@@ -9,7 +9,7 @@ namespace concepts {
 
 // clang-format off
 template<typename T>
-concept ForwardGraph = requires(const T& graph, T& mut_graph, common::NodeID src, common::NodeID trg)
+concept ForwardConnections = requires(const T& graph, T& mut_graph, common::NodeID src, common::NodeID trg)
 {
 	/**
 	 * checks if an edge between to nodes identified by the two given ids exists
@@ -50,7 +50,7 @@ template<typename T>
 //f is a curried edge comparer which, given a graph returns an function defining an order for edge ids
 concept SortableForwardGraph = requires(T& mut_graph, std::function<std::function<bool(common::EdgeID, common::EdgeID)>(const T&)> f)
 {
-    requires ForwardGraph<T>;
+    requires ForwardConnections<T>;
 	requires std::strict_weak_order<decltype(f(mut_graph)),
 				        		    common::EdgeID,
 								    common::EdgeID>;

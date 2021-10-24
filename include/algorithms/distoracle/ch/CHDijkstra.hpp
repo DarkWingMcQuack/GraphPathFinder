@@ -9,7 +9,7 @@
 #include <concepts/BackwardGraph.hpp>
 #include <concepts/DistanceOracle.hpp>
 #include <concepts/Edges.hpp>
-#include <concepts/ForwardGraph.hpp>
+#include <concepts/ForwardConnections.hpp>
 #include <concepts/NodeLevels.hpp>
 #include <fmt/core.h>
 #include <queue>
@@ -20,7 +20,7 @@ namespace algorithms::distoracle {
 
 template<class Graph, bool UseStallOnDemand = true>
 // clang-format off
-requires concepts::ForwardGraph<Graph>
+requires concepts::ForwardConnections<Graph>
       && concepts::BackwardGraph<Graph>
       && concepts::ReadableNodeLevels<Graph>
       && concepts::HasEdges<Graph>
@@ -54,7 +54,6 @@ public:
     {
         static_assert(concepts::DistanceOracle<ThisType>,
                       "CHDijkstra should fullfill the DistanceOracle concept");
-
     }
 
     constexpr CHDijkstra(CHDijkstra&&) noexcept = default;
@@ -165,7 +164,7 @@ requires concepts::SortableForwardGraph<Graph> && concepts::SortableBackwardGrap
         };
     });
 
-	return std::move(g);
+    return std::move(g);
 }
 
 } // namespace algorithms::distoracle

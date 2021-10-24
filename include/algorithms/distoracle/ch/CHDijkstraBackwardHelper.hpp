@@ -3,12 +3,8 @@
 #include <algorithms/pathfinding/dijkstra/DijkstraQueue.hpp>
 #include <common/BasicGraphTypes.hpp>
 #include <common/EmptyBase.hpp>
-#include <concepts/BackwardEdges.hpp>
-#include <concepts/BackwardGraph.hpp>
-#include <concepts/DistanceOracle.hpp>
-#include <concepts/Edges.hpp>
-#include <concepts/NodeLevels.hpp>
 #include <queue>
+#include <span>
 #include <type_traits>
 #include <utility>
 
