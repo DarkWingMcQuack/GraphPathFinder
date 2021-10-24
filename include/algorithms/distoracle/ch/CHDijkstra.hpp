@@ -35,10 +35,8 @@ class CHDijkstra : public CHDijkstraForwardHelper<
                        CHDijkstra<Graph, UseStallOnDemand>,
                        UseStallOnDemand>
 {
-    using ThisType = CHDijkstra<Graph, UseStallOnDemand>;
-    using ForwardHelper = CHDijkstraForwardHelper<ThisType, UseStallOnDemand>;
-    using BackwardHelper = CHDijkstraBackwardHelper<ThisType, UseStallOnDemand>;
-
+    using ForwardHelper = CHDijkstraForwardHelper<CHDijkstra, UseStallOnDemand>;
+    using BackwardHelper = CHDijkstraBackwardHelper<CHDijkstra, UseStallOnDemand>;
     friend ForwardHelper;
     friend BackwardHelper;
 
@@ -52,7 +50,7 @@ public:
           BackwardHelper(graph.numberOfNodes()),
           graph_(graph)
     {
-        static_assert(concepts::DistanceOracle<ThisType>,
+        static_assert(concepts::DistanceOracle<CHDijkstra>,
                       "CHDijkstra should fullfill the DistanceOracle concept");
     }
 
