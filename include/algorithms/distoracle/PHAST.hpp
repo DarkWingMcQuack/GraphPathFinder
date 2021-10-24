@@ -5,13 +5,7 @@
 #include <algorithms/pathfinding/dijkstra/DijkstraQueue.hpp>
 #include <common/BasicGraphTypes.hpp>
 #include <common/EmptyBase.hpp>
-#include <concepts/BackwardConnections.hpp>
-#include <concepts/BackwardEdges.hpp>
 #include <concepts/DistanceOracle.hpp>
-#include <concepts/Edges.hpp>
-#include <concepts/ForwardConnections.hpp>
-#include <concepts/NodeLevels.hpp>
-#include <concepts/SortableGraph.hpp>
 #include <fmt/core.h>
 #include <graphs/offsetarray/OffsetArray.hpp>
 #include <numeric>
@@ -166,7 +160,7 @@ template<class Node, class Edge>
 
     g.deleteBackwardEdgesIDsIf([](const auto& graph) {
         return [&](const auto id) {
-            const auto* edge = graph.getBackwardEdge(id);
+            const auto edge = graph.getBackwardEdge(id);
             const auto src = edge->getSrc();
             const auto trg = edge->getTrg();
             const auto src_lvl = graph.getNodeLevelUnsafe(src);
