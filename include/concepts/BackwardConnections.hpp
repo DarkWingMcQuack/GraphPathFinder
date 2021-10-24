@@ -50,6 +50,15 @@ concept SortableBackwardConnections = requires(T& mut_graph, std::function<std::
 
 	{mut_graph.sortBackwardEdgeIDsAccordingTo(f)};
 };
+
+  
+template<typename T>
+concept DeletableBackwardConnections = requires(T& mut_graph, std::function<std::function<bool(common::EdgeID)>(const T&)> f)
+{
+    requires ForwardConnections<T>;
+
+	{mut_graph.deleteForwardEdgesIDsIf(f)};
+};
 // clang-format on
 
 } // namespace concepts
