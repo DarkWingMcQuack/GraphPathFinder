@@ -48,11 +48,12 @@ target_sources(GraphPathFinderLib
   ${CMAKE_CURRENT_LIST_DIR}/include/concepts/Edges.hpp
   ${CMAKE_CURRENT_LIST_DIR}/include/concepts/EdgeWeights.hpp
   ${CMAKE_CURRENT_LIST_DIR}/include/concepts/NodeLevels.hpp
-  ${CMAKE_CURRENT_LIST_DIR}/include/concepts/BackwardGraph.hpp
-  ${CMAKE_CURRENT_LIST_DIR}/include/concepts/ForwardGraph.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/include/concepts/BackwardConnections.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/include/concepts/ForwardConnections.hpp
   ${CMAKE_CURRENT_LIST_DIR}/include/concepts/DistanceOracle.hpp
   ${CMAKE_CURRENT_LIST_DIR}/include/concepts/PathOracle.hpp
   ${CMAKE_CURRENT_LIST_DIR}/include/concepts/Utils.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/include/concepts/SortableGraph.hpp
 
   ${CMAKE_CURRENT_LIST_DIR}/include/common/BasicGraphTypes.hpp
   ${CMAKE_CURRENT_LIST_DIR}/include/common/EmptyBase.hpp
