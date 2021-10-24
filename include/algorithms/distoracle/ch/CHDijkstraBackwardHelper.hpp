@@ -29,7 +29,6 @@ private:
     constexpr auto operator=(CHDijkstraBackwardHelper&&) noexcept
         -> CHDijkstraBackwardHelper& = default;
 
-
     constexpr auto fillBackwardInfo(common::NodeID source) noexcept
         -> void
     {

@@ -71,12 +71,9 @@ public:
 
         const auto top_node_opt = findShortestPathCommonNode();
 
-
         if(!top_node_opt) {
             return common::INFINITY_WEIGHT;
         }
-
-
 
         const auto top_node = top_node_opt.value();
 
