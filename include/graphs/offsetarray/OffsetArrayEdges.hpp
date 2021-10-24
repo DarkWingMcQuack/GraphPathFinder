@@ -1,7 +1,6 @@
 #pragma once
 
 #include <common/BackwardEdgeView.hpp>
-#include <concepts/BackwardGraph.hpp>
 #include <concepts/EdgeWeights.hpp>
 #include <concepts/Edges.hpp>
 #include <numeric>

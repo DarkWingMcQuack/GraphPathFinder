@@ -1,8 +1,6 @@
 #pragma once
 
-#include <concepts/BackwardGraph.hpp>
 #include <concepts/Edges.hpp>
-#include <concepts/ForwardConnections.hpp>
 #include <concepts/Nodes.hpp>
 #include <optional>
 

@@ -54,7 +54,7 @@ private:
         static_assert(!HasForwardEdges || concepts::ForwardConnections<ThisType>,
                       "a graph which has forward edges should fullfill the ForwardGraph concept");
 
-        static_assert(!HasBackwardEdges || concepts::BackwardGraph<ThisType>,
+        static_assert(!HasBackwardEdges || concepts::BackwardConnections<ThisType>,
                       "a graph which has backward edges should fullfill the BackwardGraph concept");
 
         static_assert(concepts::HasNodes<ThisType>, "every graph should fullfill the HasNodes concept");
@@ -208,7 +208,7 @@ public:
         }
 
         //apply the permutation to the backward offsetarray
-        if constexpr(concepts::BackwardGraph<ThisType>) {
+        if constexpr(concepts::BackwardConnections<ThisType>) {
             std::vector<size_t> backward_offset(number_of_nodes + 1, 0);
             std::vector<common::EdgeID> backward_neigbours;
             backward_neigbours.reserve(number_of_edges);
@@ -292,7 +292,7 @@ public:
         }
 
         //apply the permutation to the backward connections
-        if constexpr(concepts::BackwardGraph<ThisType>) {
+        if constexpr(concepts::BackwardConnections<ThisType>) {
             std::transform(std::begin(this->backward_neigbours_),
                            std::end(this->backward_neigbours_),
                            std::begin(this->backward_neigbours_),

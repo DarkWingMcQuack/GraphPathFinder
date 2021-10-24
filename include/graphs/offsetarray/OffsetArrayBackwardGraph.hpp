@@ -1,7 +1,7 @@
 #pragma once
 
 #include <common/BackwardEdgeView.hpp>
-#include <concepts/BackwardGraph.hpp>
+#include <concepts/BackwardConnections.hpp>
 #include <concepts/Edges.hpp>
 #include <vector>
 
@@ -19,7 +19,7 @@ public:
 
     OffsetArrayBackwardGraph() noexcept
     {
-        static_assert(concepts::BackwardGraph<OffsetArrayBackwardGraph<Node, Edge, Graph>>);
+        static_assert(concepts::BackwardConnections<OffsetArrayBackwardGraph<Node, Edge, Graph>>);
         static_assert(concepts::SortableBackwardGraph<OffsetArrayBackwardGraph<Node, Edge, Graph>>);
 
         const auto number_of_edges = impl().numberOfEdges();

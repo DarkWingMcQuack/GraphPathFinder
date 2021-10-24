@@ -5,8 +5,8 @@
 #include <algorithms/pathfinding/dijkstra/DijkstraQueue.hpp>
 #include <common/BasicGraphTypes.hpp>
 #include <common/EmptyBase.hpp>
+#include <concepts/BackwardConnections.hpp>
 #include <concepts/BackwardEdges.hpp>
-#include <concepts/BackwardGraph.hpp>
 #include <concepts/DistanceOracle.hpp>
 #include <concepts/Edges.hpp>
 #include <concepts/ForwardConnections.hpp>
@@ -21,7 +21,7 @@ namespace algorithms::distoracle {
 template<class Graph, bool UseStallOnDemand = true>
 // clang-format off
 requires concepts::ForwardConnections<Graph>
-      && concepts::BackwardGraph<Graph>
+      && concepts::BackwardConnections<Graph>
       && concepts::ReadableNodeLevels<Graph>
       && concepts::HasEdges<Graph>
       && concepts::HasBackwardEdges<Graph>
