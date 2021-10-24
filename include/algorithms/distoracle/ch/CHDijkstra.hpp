@@ -143,7 +143,6 @@ requires concepts::DeletableForwardConnections<Graph> &&
 [[nodiscard]] constexpr inline auto prepareGraphForCHDijkstra(Graph&& g) noexcept
     -> Graph
 {
-
     //the graph should only return valid edges for the forward and backward search
     g.deleteForwardEdgesIDsIf([](const auto& graph) {
         return [&](const auto id) {
