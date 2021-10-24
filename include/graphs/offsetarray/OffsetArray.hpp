@@ -180,7 +180,9 @@ public:
 
         std::sort(std::begin(perm),
                   std::end(perm),
-                  order);
+                  [&](auto lhs, auto rhs) {
+                      return order(common::NodeID{lhs}, common::NodeID{rhs});
+                  });
 
         const auto inv_perm = util::inversePermutation(perm);
         const auto number_of_nodes = this->numberOfNodes();
@@ -274,11 +276,12 @@ public:
                   std::end(permutation),
                   0);
 
-
         //sort the edgeids according to the given order
         std::sort(std::begin(permutation),
                   std::end(permutation),
-                  order);
+                  [&](auto lhs, auto rhs) {
+                      return order(common::NodeID{lhs}, common::NodeID{rhs});
+                  });
 
         //apply the permutation to the forward connections
         if constexpr(concepts::ForwardConnections<OffsetArray>) {
