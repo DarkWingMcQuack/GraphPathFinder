@@ -20,13 +20,13 @@ namespace algorithms::distoracle {
 
 template<class Graph, bool UseStallOnDemand = true>
 // clang-format off
-requires concepts::ForwardConnections<Graph>
-      && concepts::BackwardConnections<Graph>
-      && concepts::ReadableNodeLevels<Graph>
-      && concepts::HasEdges<Graph>
-      && concepts::HasBackwardEdges<Graph>
-      && concepts::HasNodes<Graph>
-      && concepts::HasTarget<typename Graph::EdgeType>
+  requires concepts::ForwardConnections<Graph>
+  && concepts::BackwardConnections<Graph>
+  && concepts::ReadableNodeLevels<Graph>
+  && concepts::HasEdges<Graph>
+  && concepts::HasBackwardEdges<Graph>
+  && concepts::HasNodes<Graph>
+  && concepts::HasTarget<typename Graph::EdgeType>
 // clang-format on
 class CHDijkstra : public CHDijkstraForwardHelper<
                        CHDijkstra<Graph, UseStallOnDemand>,
@@ -140,28 +140,33 @@ private:
 
 // clang-format off
 template<class Graph>
-requires concepts::SortableForwardConnections<Graph> &&
-         concepts::SortableBackwardConnections<Graph>
+requires concepts::DeletableForwardConnections<Graph> &&
+         concepts::DeletableBackwardConnections<Graph>
+// clang-format on
 [[nodiscard]] constexpr inline auto prepareGraphForCHDijkstra(Graph&& g) noexcept
     -> Graph
-// clang-format on
 {
-    //sort the offeset arrays such that the ch dijkstra can be used
-    g.sortBackwardEdgeIDsAccordingTo([](const auto& g) {
-        return [&](const auto lhs, const auto rhs) {
-            auto lhs_trg = g.getBackwardEdge(lhs)->getTrg();
-            auto rhs_trg = g.getBackwardEdge(rhs)->getTrg();
 
-            return g.getNodeLevel(lhs_trg) > g.getNodeLevel(rhs_trg);
+    //the graph should only return valid edges for the forward and backward search
+    g.deleteForwardEdgesIDsIf([](const auto& graph) {
+        return [&](const auto id) {
+            const auto* edge = graph.getEdge(id);
+            const auto src = edge->getSrc();
+            const auto trg = edge->getTrg();
+            const auto src_lvl = graph.getNodeLevelUnsafe(src);
+            const auto trg_lvl = graph.getNodeLevelUnsafe(trg);
+            return src_lvl >= trg_lvl;
         };
     });
 
-    g.sortForwardEdgeIDsAccordingTo([](const auto& g) {
-        return [&](const auto lhs, const auto rhs) {
-            auto lhs_trg = g.getEdge(lhs)->getTrg();
-            auto rhs_trg = g.getEdge(rhs)->getTrg();
-
-            return g.getNodeLevel(lhs_trg) > g.getNodeLevel(rhs_trg);
+    g.deleteBackwardEdgesIDsIf([](const auto& graph) {
+        return [&](const auto id) {
+            const auto edge = graph.getBackwardEdge(id);
+            const auto src = edge->getSrc();
+            const auto trg = edge->getTrg();
+            const auto src_lvl = graph.getNodeLevelUnsafe(src);
+            const auto trg_lvl = graph.getNodeLevelUnsafe(trg);
+            return src_lvl >= trg_lvl;
         };
     });
 

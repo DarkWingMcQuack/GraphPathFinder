@@ -53,10 +53,9 @@ private:
             backward_already_settled_[current_node.get()] = true;
 
             const auto edge_ids = getGraph().getBackwardEdgeIDsOf(current_node);
-            const auto current_level = getGraph().getNodeLevel(current_node).value_or(common::MAX_LEVEL);
 
             if constexpr(UseStallOnDemand) {
-                if(shouldStall(current_level, cost_to_current, edge_ids)) {
+                if(shouldStall(cost_to_current, edge_ids)) {
                     continue;
                 }
             }
@@ -67,12 +66,6 @@ private:
                 const auto edge = getGraph().getBackwardEdge(id);
                 const auto neig = edge->getTrg();
                 const auto cost = edge->getWeight();
-                const auto neig_level = getGraph().getNodeLevel(neig);
-
-                if(current_level >= neig_level) {
-                    break;
-                }
-
                 const auto new_dist = cost + cost_to_current;
 
                 if(new_dist < backward_distances_[neig.get()]) {
@@ -88,21 +81,14 @@ private:
                   std::end(backward_settled_));
     }
 
-    [[nodiscard]] constexpr auto shouldStall(common::NodeLevel current_level,
-                                             common::Weight cost_to_current,
+    [[nodiscard]] constexpr auto shouldStall(common::Weight cost_to_current,
                                              const std::span<const common::EdgeID>& edge_ids) const noexcept
         -> bool
     {
-        auto stall_on_demand_valid = false;
         for(const auto id : edge_ids) {
             const auto& edge = getGraph().getBackwardEdge(id);
             const auto neig = edge->getTrg();
             const auto cost = edge->getWeight();
-
-            if(current_level >= getGraph().getNodeLevel(neig)) {
-                return stall_on_demand_valid;
-            }
-
             const auto current_dist_to_neig = backward_distances_[neig.get()];
 
             if(current_dist_to_neig == common::INFINITY_WEIGHT) {

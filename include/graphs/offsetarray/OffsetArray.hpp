@@ -166,9 +166,9 @@ public:
     auto sortNodesAccordingTo(F&& func) noexcept
 	  -> std::vector<std::size_t>
 	  requires std::regular_invocable<F, const OffsetArray&>
-	  && std::strict_weak_order<std::invoke_result_t<F, const OffsetArray&>,
-								common::NodeID,
-								common::NodeID>
+	        && std::strict_weak_order<std::invoke_result_t<F, const OffsetArray&>,
+								      common::NodeID,
+								      common::NodeID>
     // clang-format on
     {
         const auto order = std::invoke(std::forward<F>(func), *this);

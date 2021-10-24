@@ -19,6 +19,7 @@ public:
     {
         static_assert(concepts::ForwardConnections<OffsetArrayForwardGraph>);
         static_assert(concepts::SortableForwardConnections<OffsetArrayForwardGraph>);
+        static_assert(concepts::DeletableForwardConnections<OffsetArrayForwardGraph>);
 
         const auto number_of_edges = impl().numberOfEdges();
         const auto number_of_nodes = impl().numberOfNodes();
@@ -136,11 +137,11 @@ public:
     // clang-format off
     template<class F>
     constexpr auto sortForwardEdgeIDsAccordingTo(F&& func) noexcept
-        -> void
-	    requires std::regular_invocable<F, const Graph&>
-	    && std::strict_weak_order<std::invoke_result_t<F, const Graph&>,
-				        		  common::EdgeID,
-								  common::EdgeID>
+	  -> void
+	  requires std::regular_invocable<F, const Graph&>
+	  && std::strict_weak_order<std::invoke_result_t<F, const Graph&>,
+								common::EdgeID,
+								common::EdgeID>
     // clang-format on
     {
         const auto order = std::invoke(std::forward<F>(func), impl());
@@ -151,15 +152,49 @@ public:
         }
     }
 
+    // clang-format off
+    template<class F>
+    auto deleteForwardEdgesIDsIf(F&& func) noexcept
+	    -> void
+	    requires std::regular_invocable<F, const Graph&>
+	          && std::predicate<std::invoke_result_t<F, const Graph&>,
+				        		common::EdgeID>
+    // clang-format on
+    {
+        const auto predicate = std::invoke(std::forward<F>(func), impl());
+        const auto number_of_nodes = impl().numberOfNodes();
+        const auto number_of_edges = impl().numberOfEdges();
+
+        std::vector<size_t> forward_offset(number_of_nodes + 1, 0);
+        std::vector<common::EdgeID> forward_neigbours;
+        forward_neigbours.reserve(number_of_edges);
+
+        for(size_t i = 0; i < number_of_nodes; i++) {
+            common::NodeID n{i};
+            auto neigs = this->getForwardEdgeIDsOf(n);
+
+            for(auto edge_id : neigs) {
+                if(!predicate(edge_id)) {
+                    forward_neigbours.emplace_back(edge_id);
+                }
+            }
+
+            forward_offset[i + 1] = forward_neigbours.size();
+        }
+        this->forward_offset_ = std::move(forward_offset);
+        this->forward_neigbours_ = std::move(forward_neigbours);
+    }
+
+
 
     // clang-format off
-private:
+  private:
 
     //crtp helper function
     constexpr auto impl() const noexcept
-        -> const Graph &
+	  -> const Graph &
     {
-        return static_cast<const Graph &>(*this);
+	  return static_cast<const Graph &>(*this);
     }
 
     friend Graph;
@@ -167,6 +202,6 @@ private:
     std::vector<common::EdgeID> forward_neigbours_;
     std::vector<size_t> forward_offset_;
     // clang-format off
-};
+  };
 
 } // namespace graphs

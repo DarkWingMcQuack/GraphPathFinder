@@ -42,6 +42,8 @@ private:
         pathfinding::DijkstraQueue heap;
         heap.emplace(source, 0);
 
+        const auto& graph = getGraph();
+
         while(!heap.empty()) {
             const auto [current_node, cost_to_current] = heap.top();
             heap.pop();
@@ -52,11 +54,10 @@ private:
 
             forward_already_settled_[current_node.get()] = true;
 
-            const auto edge_ids = getGraph().getForwardEdgeIDsOf(current_node);
-            const auto current_level = getGraph().getNodeLevel(current_node).value_or(common::MAX_LEVEL);
+            const auto edge_ids = graph.getForwardEdgeIDsOf(current_node);
 
             if constexpr(UseStallOnDemand) {
-                if(shouldStall(current_level, cost_to_current, edge_ids)) {
+                if(shouldStall(cost_to_current, edge_ids)) {
                     continue;
                 }
             }
@@ -64,15 +65,9 @@ private:
             forward_settled_.emplace_back(current_node);
 
             for(const auto id : edge_ids) {
-                const auto edge = getGraph().getEdge(id);
+                const auto edge = graph.getEdge(id);
                 const auto neig = edge->getTrg();
                 const auto cost = edge->getWeight();
-                const auto neig_level = getGraph().getNodeLevel(neig);
-
-                if(current_level >= neig_level) {
-                    break;
-                }
-
                 const auto new_dist = cost + cost_to_current;
 
                 if(new_dist < forward_distances_[neig.get()]) {
@@ -88,21 +83,14 @@ private:
                   std::end(forward_settled_));
     }
 
-    constexpr auto shouldStall(common::NodeLevel current_level,
-                               common::Weight cost_to_current,
+    constexpr auto shouldStall(common::Weight cost_to_current,
                                const std::span<const common::EdgeID>& edge_ids) const noexcept
         -> bool
     {
-        auto stall_on_demand_valid = false;
         for(const auto id : edge_ids) {
-            const auto& edge = getGraph().getEdge(id);
+            const auto* edge = getGraph().getEdge(id);
             const auto neig = edge->getTrg();
             const auto cost = edge->getWeight();
-
-            if(current_level >= getGraph().getNodeLevel(neig)) {
-                return stall_on_demand_valid;
-            }
-
             const auto current_dist_to_neig = forward_distances_[neig.get()];
 
             if(current_dist_to_neig == common::INFINITY_WEIGHT) {

@@ -8,7 +8,7 @@
 
 // forward declare PHAST to be able to make it a friend of OffsetArrayBackwardGraph
 namespace algorithms::distoracle {
-template<class T>
+template<class N, class E>
 class PHAST;
 }
 
@@ -26,8 +26,9 @@ public:
 
     OffsetArrayBackwardGraph() noexcept
     {
-        static_assert(concepts::BackwardConnections<OffsetArrayBackwardGraph<Node, Edge, Graph>>);
-        static_assert(concepts::SortableBackwardConnections<OffsetArrayBackwardGraph<Node, Edge, Graph>>);
+        static_assert(concepts::BackwardConnections<OffsetArrayBackwardGraph>);
+        static_assert(concepts::SortableBackwardConnections<OffsetArrayBackwardGraph>);
+        static_assert(concepts::DeletableBackwardConnections<OffsetArrayBackwardGraph>);
 
         const auto number_of_edges = impl().numberOfEdges();
         const auto number_of_nodes = impl().numberOfNodes();
@@ -165,9 +166,42 @@ public:
         }
     }
 
+    // clang-format off
+    template<class F>
+    auto deleteBackwardEdgesIDsIf(F&& func) noexcept
+	    -> void
+	    requires std::regular_invocable<F, const Graph&>
+	          && std::predicate<std::invoke_result_t<F, const Graph&>,
+				        		common::EdgeID>
+    // clang-format on
+    {
+        const auto predicate = std::invoke(std::forward<F>(func), impl());
+        const auto number_of_nodes = impl().numberOfNodes();
+        const auto number_of_edges = impl().numberOfEdges();
+
+        std::vector<size_t> backward_offset(number_of_nodes + 1, 0);
+        std::vector<common::EdgeID> backward_neigbours;
+        backward_neigbours.reserve(number_of_edges);
+
+        for(size_t i = 0; i < number_of_nodes; i++) {
+            common::NodeID n{i};
+            auto neigs = this->getBackwardEdgeIDsOf(n);
+
+            for(auto edge_id : neigs) {
+                if(!predicate(edge_id)) {
+                    backward_neigbours.emplace_back(edge_id);
+                }
+            }
+
+            backward_offset[i + 1] = backward_neigbours.size();
+        }
+        this->backward_offset_ = std::move(backward_offset);
+        this->backward_neigbours_ = std::move(backward_neigbours);
+    }
+
 
     // clang-format off
-  private:
+private:
 
     //crtp helper function
     constexpr auto impl() const noexcept
@@ -177,7 +211,7 @@ public:
     }
 
     friend Graph;
-    friend class algorithms::distoracle::PHAST<Graph>;
+    friend class algorithms::distoracle::PHAST<Node, Edge>;
 
     std::vector<common::EdgeID> backward_neigbours_;
     std::vector<size_t> backward_offset_;
