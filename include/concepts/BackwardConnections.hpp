@@ -41,7 +41,7 @@ concept BackwardConnections = requires(const T& graph, common::NodeID src, commo
 
 template<typename T>
 //f is a curried edge comparer which, given a graph returns an function defining an order for edge ids
-concept SortableBackwardGraph = requires(T& mut_graph, std::function<std::function<bool(common::EdgeID, common::EdgeID)>(const T&)> f)
+concept SortableBackwardConnections = requires(T& mut_graph, std::function<std::function<bool(common::EdgeID, common::EdgeID)>(const T&)> f)
 {
     requires BackwardConnections<T>;
 	requires std::strict_weak_order<decltype(f(mut_graph)),

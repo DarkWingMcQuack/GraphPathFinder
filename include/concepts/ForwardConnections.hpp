@@ -48,7 +48,7 @@ concept ForwardConnections = requires(const T& graph, T& mut_graph, common::Node
 
 template<typename T>
 //f is a curried edge comparer which, given a graph returns an function defining an order for edge ids
-concept SortableForwardGraph = requires(T& mut_graph, std::function<std::function<bool(common::EdgeID, common::EdgeID)>(const T&)> f)
+concept SortableForwardConnections = requires(T& mut_graph, std::function<std::function<bool(common::EdgeID, common::EdgeID)>(const T&)> f)
 {
     requires ForwardConnections<T>;
 	requires std::strict_weak_order<decltype(f(mut_graph)),

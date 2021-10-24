@@ -18,7 +18,7 @@ public:
         requires concepts::HasSource<EdgeType> && concepts::HasTarget<EdgeType>
     {
         static_assert(concepts::ForwardConnections<OffsetArrayForwardGraph<Node, Edge, Graph>>);
-        static_assert(concepts::SortableForwardGraph<OffsetArrayForwardGraph<Node, Edge, Graph>>);
+        static_assert(concepts::SortableForwardConnections<OffsetArrayForwardGraph<Node, Edge, Graph>>);
 
         const auto number_of_edges = impl().numberOfEdges();
         const auto number_of_nodes = impl().numberOfNodes();

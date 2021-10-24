@@ -141,7 +141,7 @@ private:
 
 
 template<class Graph>
-requires concepts::SortableForwardGraph<Graph> && concepts::SortableBackwardGraph<Graph>
+requires concepts::SortableForwardConnections<Graph> && concepts::SortableBackwardConnections<Graph>
 [[nodiscard]] constexpr static auto prepareGraphForCHDijkstra(Graph&& g) noexcept
     -> Graph
 {

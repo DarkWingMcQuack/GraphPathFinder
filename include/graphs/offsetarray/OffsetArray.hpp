@@ -70,10 +70,10 @@ private:
         static_assert(!concepts::HasLevel<Node> || concepts::WriteableNodeLevels<ThisType>,
                       "a graph with nodes which fullfill the HasLevel concept should itself fullfill the WriteableNodeLevels concept");
 
-        static_assert(!HasForwardEdges || concepts::SortableForwardGraph<ThisType>,
+        static_assert(!HasForwardEdges || concepts::SortableForwardConnections<ThisType>,
                       "an offsetarray which is a forward graph should also be able to sort the forward connections");
 
-        static_assert(!HasBackwardEdges || concepts::SortableBackwardGraph<ThisType>,
+        static_assert(!HasBackwardEdges || concepts::SortableBackwardConnections<ThisType>,
                       "an offsetarray which is a backward graph should also be able to sort the forward connections");
 
         static_assert(concepts::EdgesSortable<ThisType>, "edges of an offsetarray should be sortable");
