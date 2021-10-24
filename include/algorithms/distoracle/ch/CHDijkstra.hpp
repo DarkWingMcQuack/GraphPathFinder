@@ -140,10 +140,13 @@ private:
 
 
 
+// clang-format off
 template<class Graph>
-requires concepts::SortableForwardConnections<Graph> && concepts::SortableBackwardConnections<Graph>
-[[nodiscard]] constexpr static auto prepareGraphForCHDijkstra(Graph&& g) noexcept
+requires concepts::SortableForwardConnections<Graph> &&
+         concepts::SortableBackwardConnections<Graph>
+[[nodiscard]] constexpr inline auto prepareGraphForCHDijkstra(Graph&& g) noexcept
     -> Graph
+// clang-format on
 {
     //sort the offeset arrays such that the ch dijkstra can be used
     g.sortBackwardEdgeIDsAccordingTo([](const auto& g) {
@@ -164,7 +167,7 @@ requires concepts::SortableForwardConnections<Graph> && concepts::SortableBackwa
         };
     });
 
-    return std::move(g);
+    return g;
 }
 
 } // namespace algorithms::distoracle
