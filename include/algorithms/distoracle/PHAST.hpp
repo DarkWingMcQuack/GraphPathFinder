@@ -11,7 +11,9 @@
 #include <concepts/Edges.hpp>
 #include <concepts/ForwardConnections.hpp>
 #include <concepts/NodeLevels.hpp>
+#include <concepts/SortableGraph.hpp>
 #include <fmt/core.h>
+#include <graphs/offsetarray/OffsetArray.hpp>
 #include <numeric>
 #include <queue>
 #include <type_traits>
@@ -19,22 +21,13 @@
 
 namespace algorithms::distoracle {
 
-template<class Graph>
-// clang-format off
-  requires concepts::ForwardConnections<Graph>
-  && concepts::BackwardConnections<Graph>
-  && concepts::ReadableNodeLevels<Graph>
-  && concepts::HasEdges<Graph>
-  && concepts::HasBackwardEdges<Graph>
-  && concepts::HasNodes<Graph>
-  && concepts::HasTarget<typename Graph::EdgeType>
-// clang-format on
+template<class Node, class Edge>
 class PHAST
 {
 public:
     constexpr static inline bool is_threadsafe = false;
 
-    constexpr PHAST(const Graph& graph) noexcept
+    constexpr PHAST(const graphs::OffsetArray<Node, Edge>& graph) noexcept
         : graph_(graph),
           distances_(graph_.numberOfNodes(), common::INFINITY_WEIGHT)
     {
@@ -147,13 +140,52 @@ private:
         }
     }
 
-
-
 private:
-    const Graph& graph_;
+    const graphs::OffsetArray<Node, Edge>& graph_;
     std::vector<common::Weight> distances_;
     std::optional<common::NodeID> last_src_;
 };
 
+
+// clang-format off
+template<class Node, class Edge>
+[[nodiscard]] inline auto prepareGraphForPHAST(graphs::OffsetArray<Node, Edge>&& g) noexcept
+    -> graphs::OffsetArray<Node, Edge>
+// clang-format on
+{
+    g.deleteForwardEdgesIDsIf([](const auto& graph) {
+        return [&](const auto id) {
+            const auto* edge = graph.getEdge(id);
+            const auto src = edge->getSrc();
+            const auto trg = edge->getTrg();
+            const auto src_lvl = graph.getNodeLevelUnsafe(src);
+            const auto trg_lvl = graph.getNodeLevelUnsafe(trg);
+            return src_lvl >= trg_lvl;
+        };
+    });
+
+    g.deleteBackwardEdgesIDsIf([](const auto& graph) {
+        return [&](const auto id) {
+            const auto* edge = graph.getBackwardEdge(id);
+            const auto src = edge->getSrc();
+            const auto trg = edge->getTrg();
+            const auto src_lvl = graph.getNodeLevelUnsafe(src);
+            const auto trg_lvl = graph.getNodeLevelUnsafe(trg);
+            return src_lvl >= trg_lvl;
+        };
+    });
+
+    g.sortNodesAccordingTo([](const auto& graph) {
+        return [&](const auto lhs, const auto rhs) {
+            const auto lhs_lvl = graph.getNodeLevelUnsafe(lhs);
+            const auto rhs_lvl = graph.getNodeLevelUnsafe(rhs);
+            return lhs_lvl >= rhs_lvl;
+        };
+    });
+
+    //TODO: how to sort the edges and the offset arrays??
+
+    return g;
+}
 
 } // namespace algorithms::distoracle
