@@ -4,6 +4,8 @@
 #include <common/EmptyBase.hpp>
 #include <common/Parsing.hpp>
 #include <common/Tokenizer.hpp>
+#include <concepts/EdgeWeights.hpp>
+#include <concepts/Edges.hpp>
 #include <graphs/edges/ShortcutBase.hpp>
 #include <graphs/edges/WeightedEdge.hpp>
 #include <string_view>
@@ -16,6 +18,13 @@ class FMIEdge : public WeightedEdge,
                                           ShortcutBase,
                                           common::EmptyBase1>
 {
+    constexpr auto checkConcepts()
+    {
+        static_assert(concepts::HasSource<FMIEdge>, "FMIEdge should fullfill the HasSource concept");
+        static_assert(concepts::HasTarget<FMIEdge>, "FMIEdge should fullfill the HasTarget concept");
+        static_assert(concepts::HasWeight<FMIEdge>, "FMIEdge should fullfill the HasWeight concept");
+    }
+
 public:
     constexpr FMIEdge(common::NodeID src,
                       common::NodeID trg,
@@ -24,7 +33,10 @@ public:
                       common::Type type) requires(!HasShortcuts)
         : WeightedEdge(src, trg, cost),
           speed_(speed),
-          type_(type) {}
+          type_(type)
+    {
+        checkConcepts();
+    }
 
     constexpr FMIEdge(common::NodeID src,
                       common::NodeID trg,
@@ -34,7 +46,10 @@ public:
         : WeightedEdge(src, trg, cost),
           ShortcutBase(),
           speed_(speed),
-          type_(type) {}
+          type_(type)
+    {
+        checkConcepts();
+    }
 
     constexpr FMIEdge(common::NodeID src,
                       common::NodeID trg,
@@ -46,7 +61,10 @@ public:
         : WeightedEdge(src, trg, cost),
           ShortcutBase(first_shortcut, second_shortcut),
           speed_(speed),
-          type_(type) {}
+          type_(type)
+    {
+        checkConcepts();
+    }
 
     constexpr auto getSpeed() const noexcept
         -> common::Speed
