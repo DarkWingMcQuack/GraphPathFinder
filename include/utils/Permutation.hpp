@@ -32,7 +32,7 @@ template<class T>
 [[nodiscard]] inline auto inversePermutation(const std::vector<std::size_t>& permutation) noexcept
     -> std::vector<std::size_t>
 {
-  std::vector<std::size_t> inverse_perm(permutation.size(), 0);
+    std::vector<std::size_t> inverse_perm(permutation.size(), 0);
     for(std::size_t i = 0; i < permutation.size(); i++) {
         inverse_perm[permutation[i]] = i;
     }
