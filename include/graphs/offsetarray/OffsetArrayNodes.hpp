@@ -49,12 +49,9 @@ public:
     constexpr NonTrivialOffsetArrayNodes(std::vector<Node> nodes) noexcept
         : nodes_(std::move(nodes))
     {
-        // clang-format off
-        static_assert(concepts::HasNodes<NonTrivialOffsetArrayNodes<Graph, Node>>);
+        static_assert(concepts::HasNodes<NonTrivialOffsetArrayNodes>);
         // Nodes have levels -> OffsetarrayNodes are node level writeable
-        static_assert(!concepts::HasLevel<Node>
-					  || concepts::WriteableNodeLevels<NonTrivialOffsetArrayNodes<Graph, Node>>);
-        // clang-format on
+        static_assert(!concepts::HasLevel<Node> || concepts::WriteableNodeLevels<NonTrivialOffsetArrayNodes>);
     }
 
     constexpr NonTrivialOffsetArrayNodes(NonTrivialOffsetArrayNodes<Graph, Node> &&) noexcept = default;
