@@ -117,7 +117,6 @@ public:
 
     // clang-format off
 private:
-    common::NodeID id1_;
     common::NodeID id2_;
     common::Elevation elev_;
     // clang-format on
