@@ -172,8 +172,10 @@ public:
     // clang-format on
     {
         const auto order = std::invoke(std::forward<F>(func), *this);
+        const auto number_of_nodes = this->numberOfNodes();
+        const auto number_of_edges = this->numberOfEdges();
 
-        std::vector<std::size_t> perm(this->numberOfNodes());
+        std::vector<std::size_t> perm(number_of_nodes);
         std::iota(std::begin(perm),
                   std::end(perm),
                   0);
@@ -185,8 +187,6 @@ public:
                   });
 
         const auto inv_perm = util::inversePermutation(perm);
-        const auto number_of_nodes = this->numberOfNodes();
-        const auto number_of_edges = this->numberOfEdges();
 
         //apply the permutation to the forward offsetarray
         if constexpr(concepts::ForwardConnections<OffsetArray>) {
@@ -196,8 +196,7 @@ public:
 
             for(size_t i = 0; i < number_of_nodes; i++) {
                 common::NodeID n{inv_perm[i]};
-                auto neigs = this->getForwardEdgeIDsOf(n);
-
+                const auto neigs = this->getForwardEdgeIDsOf(n);
                 forward_neigbours.insert(std::end(forward_neigbours),
                                          std::begin(neigs),
                                          std::end(neigs));
@@ -214,10 +213,10 @@ public:
             std::vector<common::EdgeID> backward_neigbours;
             backward_neigbours.reserve(number_of_edges);
 
+
             for(size_t i = 0; i < number_of_nodes; i++) {
                 common::NodeID n{inv_perm[i]};
-                auto neigs = this->getBackwardEdgeIDsOf(n);
-
+                const auto neigs = this->getBackwardEdgeIDsOf(n);
                 backward_neigbours.insert(std::end(backward_neigbours),
                                           std::begin(neigs),
                                           std::end(neigs));
@@ -250,8 +249,8 @@ public:
 
         //update the nodes_ array if available
         if constexpr(!std::is_same_v<NodeType, common::NodeID>) {
-            //perm is geting copied here because it will be consumed by the
-            //applypermutation function
+            // perm is geting copied here because it will be consumed by the
+            // applypermutation function
             this->nodes_ = util::applyPermutation(std::move(this->nodes_),
                                                   perm);
         }
