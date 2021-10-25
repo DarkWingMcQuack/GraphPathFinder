@@ -733,6 +733,24 @@ TEST(OffsetArrayTest, OffsetArrayNodeSortingTest)
     EXPECT_EQ(perm[3], 1);
     EXPECT_EQ(perm[4], 0);
 
+    for(std::size_t i = 0; i < graph.numberOfNodes(); i++) {
+        auto ids = graph.getForwardEdgeIDsOf(common::NodeID{i});
+        for(auto id : ids) {
+            const auto *edge = graph.getEdge(id);
+            const auto src = edge->getSrc();
+            EXPECT_EQ(src.get(), i);
+        }
+    }
+
+    for(std::size_t i = 0; i < graph.numberOfNodes(); i++) {
+        auto ids = graph.getBackwardEdgeIDsOf(common::NodeID{i});
+        for(auto id : ids) {
+            const auto edge = graph.getBackwardEdge(id);
+            const auto src = edge->getSrc();
+            EXPECT_EQ(src.get(), i);
+        }
+    }
+
     auto id = graph.getForwardEdgeIDBetween(common::NodeID{perm[0]}, common::NodeID{perm[1]}).value();
     EXPECT_EQ(graph.getEdgeWeight(id).value(), common::Weight{9});
 
@@ -783,6 +801,34 @@ TEST(OffsetArrayTest, CHOffsetArrayNodeSortingTest1)
     EXPECT_EQ(graph.getNodeLevel(common::NodeID{perm[2]}), common::NodeLevel{2});
     EXPECT_EQ(graph.getNodeLevel(common::NodeID{perm[3]}), common::NodeLevel{0});
     EXPECT_EQ(graph.getNodeLevel(common::NodeID{perm[4]}), common::NodeLevel{1});
+
+    for(std::size_t i = 0; i < graph.numberOfNodes(); i++) {
+        auto ids = graph.getForwardEdgeIDsOf(common::NodeID{i});
+        for(auto id : ids) {
+            const auto *edge = graph.getEdge(id);
+            const auto src = edge->getSrc();
+            const auto trg = edge->getTrg();
+            const auto src_lvl = graph.getNodeLevelUnsafe(src);
+            const auto trg_lvl = graph.getNodeLevelUnsafe(trg);
+
+            EXPECT_EQ(src.get(), i);
+            EXPECT_NE(src_lvl.get(), trg_lvl.get());
+        }
+    }
+
+    for(std::size_t i = 0; i < graph.numberOfNodes(); i++) {
+        auto ids = graph.getBackwardEdgeIDsOf(common::NodeID{i});
+        for(auto id : ids) {
+            const auto edge = graph.getBackwardEdge(id);
+            const auto src = edge->getSrc();
+            const auto trg = edge->getTrg();
+            const auto src_lvl = graph.getNodeLevelUnsafe(src);
+            const auto trg_lvl = graph.getNodeLevelUnsafe(trg);
+
+            EXPECT_EQ(src.get(), i);
+            EXPECT_NE(src_lvl.get(), trg_lvl.get());
+        }
+    }
 
     EXPECT_TRUE(graph.checkIfEdgeExistsBetween(common::NodeID{perm[0]}, common::NodeID{perm[1]}));
     EXPECT_TRUE(graph.checkIfEdgeExistsBetween(common::NodeID{perm[0]}, common::NodeID{perm[2]}));
@@ -855,15 +901,27 @@ TEST(OffsetArrayTest, CHOffsetArrayNodeSortingTest2)
         return [&](const auto lhs, const auto rhs) {
             const auto lhs_lvl = graph.getNodeLevelUnsafe(lhs);
             const auto rhs_lvl = graph.getNodeLevelUnsafe(rhs);
-            return lhs_lvl >= rhs_lvl;
+            return lhs_lvl > rhs_lvl;
         };
     });
 
     EXPECT_EQ(perm[0], 0);
     EXPECT_EQ(perm[1], 2);
     EXPECT_EQ(perm[2], 4);
-    EXPECT_EQ(perm[3], 3);
-    EXPECT_EQ(perm[4], 1);
+    EXPECT_EQ(perm[3], 1);
+    EXPECT_EQ(perm[4], 3);
+
+    EXPECT_EQ(graph.getForwardEdgeIDsOf(common::NodeID{perm[0]}).size(), 3);
+    EXPECT_EQ(graph.getForwardEdgeIDsOf(common::NodeID{perm[1]}).size(), 0);
+    EXPECT_EQ(graph.getForwardEdgeIDsOf(common::NodeID{perm[2]}).size(), 3);
+    EXPECT_EQ(graph.getForwardEdgeIDsOf(common::NodeID{perm[3]}).size(), 1);
+    EXPECT_EQ(graph.getForwardEdgeIDsOf(common::NodeID{perm[4]}).size(), 3);
+
+    EXPECT_EQ(graph.getBackwardEdgeIDsOf(common::NodeID{perm[0]}).size(), 1);
+    EXPECT_EQ(graph.getBackwardEdgeIDsOf(common::NodeID{perm[1]}).size(), 3);
+    EXPECT_EQ(graph.getBackwardEdgeIDsOf(common::NodeID{perm[2]}).size(), 3);
+    EXPECT_EQ(graph.getBackwardEdgeIDsOf(common::NodeID{perm[3]}).size(), 1);
+    EXPECT_EQ(graph.getBackwardEdgeIDsOf(common::NodeID{perm[4]}).size(), 2);
 
     EXPECT_EQ(graph.getNodeLevelUnsafe(common::NodeID{0}), common::NodeLevel{3});
     EXPECT_EQ(graph.getNodeLevelUnsafe(common::NodeID{1}), common::NodeLevel{2});
@@ -897,6 +955,34 @@ TEST(OffsetArrayTest, CHOffsetArrayNodeSortingTest2)
     EXPECT_FALSE(graph.checkIfEdgeExistsBetween(common::NodeID{perm[3]}, common::NodeID{perm[4]}));
     EXPECT_FALSE(graph.checkIfEdgeExistsBetween(common::NodeID{perm[4]}, common::NodeID{perm[0]}));
     EXPECT_FALSE(graph.checkIfEdgeExistsBetween(common::NodeID{perm[4]}, common::NodeID{perm[4]}));
+
+    for(std::size_t i = 0; i < graph.numberOfNodes(); i++) {
+        auto ids = graph.getForwardEdgeIDsOf(common::NodeID{i});
+        for(auto id : ids) {
+            const auto *edge = graph.getEdge(id);
+            const auto src = edge->getSrc();
+            const auto trg = edge->getTrg();
+            const auto src_lvl = graph.getNodeLevelUnsafe(src);
+            const auto trg_lvl = graph.getNodeLevelUnsafe(trg);
+
+            EXPECT_EQ(src.get(), i);
+            EXPECT_NE(src_lvl.get(), trg_lvl.get());
+        }
+    }
+
+    for(std::size_t i = 0; i < graph.numberOfNodes(); i++) {
+        auto ids = graph.getBackwardEdgeIDsOf(common::NodeID{i});
+        for(auto id : ids) {
+            const auto edge = graph.getBackwardEdge(id);
+            const auto src = edge->getSrc();
+            const auto trg = edge->getTrg();
+            const auto src_lvl = graph.getNodeLevelUnsafe(src);
+            const auto trg_lvl = graph.getNodeLevelUnsafe(trg);
+
+            EXPECT_EQ(src.get(), i);
+            EXPECT_NE(src_lvl.get(), trg_lvl.get());
+        }
+    }
 
 
     auto id = graph.getForwardEdgeIDBetween(common::NodeID{perm[0]}, common::NodeID{perm[1]}).value();
@@ -1018,4 +1104,130 @@ TEST(OffsetArrayTest, CHOffsetArrayNodeSortingTest2)
     id = graph.getBackwardEdgeIDBetween(common::NodeID{perm[3]}, common::NodeID{perm[4]}).value();
     EXPECT_EQ(graph.getBackwardEdge(id)->getSrc(), common::NodeID{perm[3]});
     EXPECT_EQ(graph.getBackwardEdge(id)->getTrg(), common::NodeID{perm[4]});
+}
+
+TEST(OffsetArrayTest, CHOffsetArrayEdgeIdDeleteTest1)
+{
+    auto example_graph = data_dir + "ch-fmi-example.txt";
+    auto graph_opt = parsing::parseFromFMIFile<graphs::FMINode<true>, graphs::FMIEdge<true>>(example_graph);
+
+    ASSERT_TRUE(graph_opt);
+    auto graph = std::move(graph_opt.value());
+
+    graph.deleteForwardEdgesIDsIf([](const auto &graph) {
+        return [&](const auto id) {
+            const auto *edge = graph.getEdge(id);
+            const auto src = edge->getSrc();
+            const auto trg = edge->getTrg();
+            const auto src_lvl = graph.getNodeLevelUnsafe(src);
+            const auto trg_lvl = graph.getNodeLevelUnsafe(trg);
+            return src_lvl > trg_lvl;
+        };
+    });
+
+    graph.deleteBackwardEdgesIDsIf([](const auto &graph) {
+        return [&](const auto id) {
+            const auto edge = graph.getBackwardEdge(id);
+            const auto src = edge->getSrc();
+            const auto trg = edge->getTrg();
+            const auto src_lvl = graph.getNodeLevelUnsafe(src);
+            const auto trg_lvl = graph.getNodeLevelUnsafe(trg);
+            return src_lvl > trg_lvl;
+        };
+    });
+
+    for(std::size_t i = 0; i < graph.numberOfNodes(); i++) {
+        auto ids = graph.getForwardEdgeIDsOf(common::NodeID{i});
+        for(auto id : ids) {
+            const auto *edge = graph.getEdge(id);
+            const auto src = edge->getSrc();
+            const auto trg = edge->getTrg();
+            const auto src_lvl = graph.getNodeLevelUnsafe(src);
+            const auto trg_lvl = graph.getNodeLevelUnsafe(trg);
+
+            EXPECT_EQ(src.get(), i);
+            EXPECT_LT(src_lvl, trg_lvl);
+        }
+    }
+
+    for(std::size_t i = 0; i < graph.numberOfNodes(); i++) {
+        auto ids = graph.getBackwardEdgeIDsOf(common::NodeID{i});
+        for(auto id : ids) {
+            const auto edge = graph.getBackwardEdge(id);
+            const auto src = edge->getSrc();
+            const auto trg = edge->getTrg();
+            const auto src_lvl = graph.getNodeLevelUnsafe(src);
+            const auto trg_lvl = graph.getNodeLevelUnsafe(trg);
+
+            EXPECT_EQ(src.get(), i);
+            EXPECT_LT(src_lvl, trg_lvl);
+        }
+    }
+}
+
+TEST(OffsetArrayTest, CHOffsetArrayEdgeIdDeleteAndSortTest1)
+{
+    auto example_graph = data_dir + "ch-fmi-example.txt";
+    auto graph_opt = parsing::parseFromFMIFile<graphs::FMINode<true>, graphs::FMIEdge<true>>(example_graph);
+
+    ASSERT_TRUE(graph_opt);
+    auto graph = std::move(graph_opt.value());
+
+    graph.deleteForwardEdgesIDsIf([](const auto &graph) {
+        return [&](const auto id) {
+            const auto *edge = graph.getEdge(id);
+            const auto src = edge->getSrc();
+            const auto trg = edge->getTrg();
+            const auto src_lvl = graph.getNodeLevelUnsafe(src);
+            const auto trg_lvl = graph.getNodeLevelUnsafe(trg);
+            return src_lvl > trg_lvl;
+        };
+    });
+
+    graph.deleteBackwardEdgesIDsIf([](const auto &graph) {
+        return [&](const auto id) {
+            const auto edge = graph.getBackwardEdge(id);
+            const auto src = edge->getSrc();
+            const auto trg = edge->getTrg();
+            const auto src_lvl = graph.getNodeLevelUnsafe(src);
+            const auto trg_lvl = graph.getNodeLevelUnsafe(trg);
+            return src_lvl > trg_lvl;
+        };
+    });
+
+    auto perm = graph.sortNodesAccordingTo([](const auto &graph) {
+        return [&](const auto lhs, const auto rhs) {
+            const auto lhs_lvl = graph.getNodeLevelUnsafe(lhs);
+            const auto rhs_lvl = graph.getNodeLevelUnsafe(rhs);
+            return lhs_lvl > rhs_lvl;
+        };
+    });
+
+    for(std::size_t i = 0; i < graph.numberOfNodes(); i++) {
+        auto ids = graph.getForwardEdgeIDsOf(common::NodeID{i});
+        for(auto id : ids) {
+            const auto *edge = graph.getEdge(id);
+            const auto src = edge->getSrc();
+            const auto trg = edge->getTrg();
+            const auto src_lvl = graph.getNodeLevelUnsafe(src);
+            const auto trg_lvl = graph.getNodeLevelUnsafe(trg);
+
+            EXPECT_EQ(src.get(), i);
+            EXPECT_LT(src_lvl, trg_lvl);
+        }
+    }
+
+    for(std::size_t i = 0; i < graph.numberOfNodes(); i++) {
+        auto ids = graph.getBackwardEdgeIDsOf(common::NodeID{i});
+        for(auto id : ids) {
+            const auto edge = graph.getBackwardEdge(id);
+            const auto src = edge->getSrc();
+            const auto trg = edge->getTrg();
+            const auto src_lvl = graph.getNodeLevelUnsafe(src);
+            const auto trg_lvl = graph.getNodeLevelUnsafe(trg);
+
+            EXPECT_EQ(src.get(), i);
+            EXPECT_LT(src_lvl, trg_lvl);
+        }
+    }
 }
