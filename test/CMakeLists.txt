@@ -22,6 +22,10 @@ add_executable(unit_tests
   algorithms/distoracle/dijkstra/DijkstraTest.cpp
 
   algorithms/distoracle/ch/CHDijkstraTest.cpp
+
+  algorithms/distoracle/PHASTTest.cpp
+
+  utils/PermutationTest.cpp
   )
 
 target_link_libraries(unit_tests LINK_PRIVATE
