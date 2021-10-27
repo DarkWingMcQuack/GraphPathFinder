@@ -31,6 +31,18 @@ concept HasWeightSetter = requires(Edge& mut_edge, common::Weight weight){
     {mut_edge.setWeight(weight)} -> std::same_as<void>;
 };
 
+template<typename Edge>
+concept CanHaveShortcuts = requires(const Edge& const_edge, Edge& mut_edge, common::EdgeID id){
+    {const_edge.getShortcut()} -> std::same_as<std::optional<std::pair<common::EdgeID, common::EdgeID>>>;
+
+    {const_edge.getShortcutUnsafe()} -> std::same_as<std::pair<common::EdgeID, common::EdgeID>>;
+
+    {mut_edge.setShortcut(id, id)} -> std::same_as<void>;
+
+    {const_edge.isShortcut()} -> std::same_as<bool>;
+};
+  
+
 template<typename T>
 concept HasEdges = requires(const T& graph, common::EdgeID id)
 {
