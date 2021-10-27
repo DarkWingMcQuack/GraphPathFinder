@@ -25,10 +25,12 @@ public:
         return shortcut_.value();
     }
 
-    constexpr auto setShortcut(common::EdgeID first, common::EdgeID second) noexcept
+    //TODO: it seems that std::optional<T>::emplace is not constexpr in gcc 10
+    //according to the standard it should be in C++20
+    auto setShortcut(common::EdgeID first, common::EdgeID second) noexcept
         -> void
     {
-        shortcut_ = std::pair{first, second};
+        shortcut_.emplace(first, second);
     }
 
     constexpr auto isShortcut() const noexcept
