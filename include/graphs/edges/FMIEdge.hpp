@@ -23,6 +23,8 @@ class FMIEdge : public WeightedEdge,
         static_assert(concepts::HasSource<FMIEdge>, "FMIEdge should fullfill the HasSource concept");
         static_assert(concepts::HasTarget<FMIEdge>, "FMIEdge should fullfill the HasTarget concept");
         static_assert(concepts::HasWeight<FMIEdge>, "FMIEdge should fullfill the HasWeight concept");
+        static_assert(!HasShortcuts || concepts::CanHaveShortcuts<FMIEdge>,
+                      "FMIEdge should fullfill the CanHaveShortcuts concept if it has shortcuts");
     }
 
 public:
