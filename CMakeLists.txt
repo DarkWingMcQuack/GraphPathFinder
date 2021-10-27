@@ -133,34 +133,11 @@ target_link_libraries(GraphPathFinderLib INTERFACE
   ${CMAKE_THREAD_LIBS_INIT})
 
 
-###############################
-## THE ACTUAL BINARY
-###############################
-add_executable(GraphPathFinder src/main.cpp)
-
-# make headers available
-target_include_directories(GraphPathFinder PUBLIC
-  ${CMAKE_CURRENT_SOURCE_DIR}/include
-  fmt
-  tbb
-  ${CLI11_INCLUDE_DIR}
-  ${PROGRESS_CPP_INCLUDE_DIR}
-  ${NLOHMANN_INCLUDE_DIR}
-  ${NAMEDTYPE_INCLUDE_DIR}
-  )
-
-#link against libarys
-target_link_libraries(GraphPathFinder LINK_PUBLIC
-  GraphPathFinderLib
-  fmt
-  tbb
-  ${CMAKE_THREAD_LIBS_INIT})
-
-# add the dependencies of the target to enforce
-# the right order of compiling
-add_dependencies(GraphPathFinder GraphPathFinderLib)
-
 if (BUILD_TESTS)
   enable_testing()
   add_subdirectory(test)
 endif (BUILD_TESTS)
+
+if (BUILD_EXAMPLES)
+  add_subdirectory(examples)
+endif (BUILD_EXAMPLES)

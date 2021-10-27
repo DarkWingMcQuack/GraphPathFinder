@@ -10,3 +10,4 @@ if(USE_CLANG)
 endif(USE_CLANG)
 
 option(BUILD_TESTS "build tests" ON)
+option(BUILD_EXAMPLES "build examples" ON)
