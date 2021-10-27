@@ -118,6 +118,7 @@ private:
             const auto trg = edge->getTrg().get();
             const auto weight = edge->getWeight();
 
+            //skip if src is not reachable from current node
             if(distances_[src] == common::INFINITY_WEIGHT) {
                 continue;
             }
