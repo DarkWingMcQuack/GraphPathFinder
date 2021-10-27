@@ -59,6 +59,9 @@ target_sources(GraphPathFinderLib
   ${CMAKE_CURRENT_LIST_DIR}/include/common/EmptyBase.hpp
   ${CMAKE_CURRENT_LIST_DIR}/include/common/BackwardEdgeView.hpp
 
+  ${CMAKE_CURRENT_LIST_DIR}/include/utils/MinMax.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/include/utils/Permutation.hpp
+
   ${CMAKE_CURRENT_LIST_DIR}/include/graphs/common/LevelBase.hpp
   ${CMAKE_CURRENT_LIST_DIR}/include/graphs/common/WeightBase.hpp
 
@@ -89,6 +92,8 @@ target_sources(GraphPathFinderLib
   ${CMAKE_CURRENT_LIST_DIR}/include/algorithms/distoracle/ch/CHDijkstraBackwardHelper.hpp
   ${CMAKE_CURRENT_LIST_DIR}/include/algorithms/distoracle/ch/CHDijkstraForwardHelper.hpp
   ${CMAKE_CURRENT_LIST_DIR}/include/algorithms/distoracle/ch/CHDijkstra.hpp
+
+  ${CMAKE_CURRENT_LIST_DIR}/include/algorithms/distoracle/PHAST.hpp
   )
 
 # add the dependencies of the target to enforce
