@@ -112,20 +112,18 @@ private:
     auto downward() noexcept
         -> void
     {
-        for(std::size_t i = 0; i < graph_.numberOfNodes(); ++i) {
-            for(const auto edge_id : graph_.getBackwardEdgeIDsOf(common::NodeID{i})) {
-                const auto* edge = graph_.getEdge(edge_id);
-                const auto src = edge->getSrc().get();
-                const auto trg = edge->getTrg().get();
-                const auto weight = edge->getWeight();
+        for(const auto edge_id : graph_.backward_neigbours_) {
+            const auto* edge = graph_.getEdge(edge_id);
+            const auto src = edge->getSrc().get();
+            const auto trg = edge->getTrg().get();
+            const auto weight = edge->getWeight();
 
-                if(distances_[src] == common::INFINITY_WEIGHT) {
-                    continue;
-                }
-
-                distances_[trg] = std::min(distances_[trg],
-                                           distances_[src] + weight);
+            if(distances_[src] == common::INFINITY_WEIGHT) {
+                continue;
             }
+
+            distances_[trg] = std::min(distances_[trg],
+                                       distances_[src] + weight);
         }
     }
 
@@ -142,14 +140,6 @@ template<class Node, class Edge>
     -> graphs::OffsetArray<Node, Edge>
 // clang-format on
 {
-    g.sortNodesAccordingTo([](const auto& graph) {
-        return [&](const auto lhs, const auto rhs) {
-            const auto lhs_lvl = graph.getNodeLevelUnsafe(lhs);
-            const auto rhs_lvl = graph.getNodeLevelUnsafe(rhs);
-            return lhs_lvl > rhs_lvl;
-        };
-    });
-
     g.deleteForwardEdgesIDsIf([](const auto& graph) {
         return [&](const auto id) {
             const auto* edge = graph.getEdge(id);
@@ -173,6 +163,13 @@ template<class Node, class Edge>
         };
     });
 
+    g.sortNodesAccordingTo([](const auto& graph) {
+        return [&](const auto lhs, const auto rhs) {
+            const auto lhs_lvl = graph.getNodeLevelUnsafe(lhs);
+            const auto rhs_lvl = graph.getNodeLevelUnsafe(rhs);
+            return lhs_lvl > rhs_lvl;
+        };
+    });
     //TODO: how to sort the edges and the offset arrays??
 
     return g;
