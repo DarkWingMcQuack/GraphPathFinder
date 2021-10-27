@@ -44,20 +44,26 @@ add_library(GraphPathFinderLib INTERFACE)
 
 target_sources(GraphPathFinderLib
   INTERFACE
-  ${CMAKE_CURRENT_LIST_DIR}/include/concepts/Nodes.hpp
-  ${CMAKE_CURRENT_LIST_DIR}/include/concepts/Edges.hpp
-  ${CMAKE_CURRENT_LIST_DIR}/include/concepts/EdgeWeights.hpp
-  ${CMAKE_CURRENT_LIST_DIR}/include/concepts/NodeLevels.hpp
   ${CMAKE_CURRENT_LIST_DIR}/include/concepts/BackwardConnections.hpp
-  ${CMAKE_CURRENT_LIST_DIR}/include/concepts/ForwardConnections.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/include/concepts/BackwardEdges.hpp
   ${CMAKE_CURRENT_LIST_DIR}/include/concepts/DistanceOracle.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/include/concepts/EdgeWeights.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/include/concepts/Edges.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/include/concepts/ForwardConnections.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/include/concepts/NodeLevels.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/include/concepts/Nodes.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/include/concepts/Parseable.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/include/concepts/Path.hpp
   ${CMAKE_CURRENT_LIST_DIR}/include/concepts/PathOracle.hpp
-  ${CMAKE_CURRENT_LIST_DIR}/include/concepts/Utils.hpp
   ${CMAKE_CURRENT_LIST_DIR}/include/concepts/SortableGraph.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/include/concepts/Utils.hpp
 
+  ${CMAKE_CURRENT_LIST_DIR}/include/common/BackwardEdgeView.hpp
   ${CMAKE_CURRENT_LIST_DIR}/include/common/BasicGraphTypes.hpp
   ${CMAKE_CURRENT_LIST_DIR}/include/common/EmptyBase.hpp
-  ${CMAKE_CURRENT_LIST_DIR}/include/common/BackwardEdgeView.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/include/common/Parsing.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/include/common/Range.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/include/common/Tokenizer.hpp
 
   ${CMAKE_CURRENT_LIST_DIR}/include/utils/MinMax.hpp
   ${CMAKE_CURRENT_LIST_DIR}/include/utils/Permutation.hpp
@@ -69,9 +75,9 @@ target_sources(GraphPathFinderLib
   ${CMAKE_CURRENT_LIST_DIR}/include/graphs/nodes/FMINode.hpp
   ${CMAKE_CURRENT_LIST_DIR}/include/graphs/nodes/SimpleMapNode.hpp
 
-  
   ${CMAKE_CURRENT_LIST_DIR}/include/graphs/edges/FMIEdge.hpp
   ${CMAKE_CURRENT_LIST_DIR}/include/graphs/edges/ShortcutBase.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/include/graphs/edges/SimpleEdge.hpp
   ${CMAKE_CURRENT_LIST_DIR}/include/graphs/edges/SrcBase.hpp
   ${CMAKE_CURRENT_LIST_DIR}/include/graphs/edges/TrgBase.hpp
   ${CMAKE_CURRENT_LIST_DIR}/include/graphs/edges/WeightedEdge.hpp
@@ -81,6 +87,8 @@ target_sources(GraphPathFinderLib
   ${CMAKE_CURRENT_LIST_DIR}/include/graphs/offsetarray/OffsetArrayForwardGraph.hpp
   ${CMAKE_CURRENT_LIST_DIR}/include/graphs/offsetarray/OffsetArrayNodes.hpp
   ${CMAKE_CURRENT_LIST_DIR}/include/graphs/offsetarray/OffsetArrayEdges.hpp
+
+  ${CMAKE_CURRENT_LIST_DIR}/include/graphs/Path.hpp
 
   ${CMAKE_CURRENT_LIST_DIR}/include/parsing/offsetarray/Parser.hpp
 
@@ -153,6 +161,6 @@ target_link_libraries(GraphPathFinder LINK_PUBLIC
 add_dependencies(GraphPathFinder GraphPathFinderLib)
 
 if (BUILD_TESTS)
-    enable_testing()
-    add_subdirectory(test)
+  enable_testing()
+  add_subdirectory(test)
 endif (BUILD_TESTS)
