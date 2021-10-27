@@ -16,7 +16,7 @@ before_script:
 
 script:
   - make
-  - ./test/unit_tests
+  - ./test/unit_tests ../test/data/
 
 matrix:
   include:
