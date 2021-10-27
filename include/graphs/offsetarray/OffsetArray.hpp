@@ -164,11 +164,11 @@ public:
     // clang-format off
     template<class F>
     auto sortNodesAccordingTo(F&& func) noexcept
-	  -> std::vector<std::size_t>
-	  requires std::regular_invocable<F, const OffsetArray&>
-	        && std::strict_weak_order<std::invoke_result_t<F, const OffsetArray&>,
-								      common::NodeID,
-								      common::NodeID>
+	    -> std::pair<std::vector<std::size_t>, std::vector<std::size_t> >
+	    requires std::regular_invocable<F, const OffsetArray&>
+	          && std::strict_weak_order<std::invoke_result_t<F, const OffsetArray&>,
+		        				        common::NodeID,
+								        common::NodeID>
     // clang-format on
     {
         const auto order = std::invoke(std::forward<F>(func), *this);
@@ -180,13 +180,15 @@ public:
                   std::end(perm),
                   0);
 
+
         std::sort(std::begin(perm),
                   std::end(perm),
                   [&](auto lhs, auto rhs) {
                       return order(common::NodeID{lhs}, common::NodeID{rhs});
                   });
 
-        const auto inv_perm = util::inversePermutation(perm);
+        //dont const because it will be moved out of the function
+        auto inv_perm = util::inversePermutation(perm);
 
         //apply the permutation to the forward offsetarray
         if constexpr(concepts::ForwardConnections<OffsetArray>) {
@@ -195,7 +197,7 @@ public:
             forward_neigbours.reserve(number_of_edges);
 
             for(size_t i = 0; i < number_of_nodes; i++) {
-                common::NodeID n{inv_perm[i]};
+                common::NodeID n{perm[i]};
                 const auto neigs = this->getForwardEdgeIDsOf(n);
                 forward_neigbours.insert(std::end(forward_neigbours),
                                          std::begin(neigs),
@@ -215,7 +217,7 @@ public:
 
 
             for(size_t i = 0; i < number_of_nodes; i++) {
-                common::NodeID n{inv_perm[i]};
+                common::NodeID n{perm[i]};
                 const auto neigs = this->getBackwardEdgeIDsOf(n);
                 backward_neigbours.insert(std::end(backward_neigbours),
                                           std::begin(neigs),
@@ -233,15 +235,15 @@ public:
 
                 //update src if available
                 if constexpr(concepts::HasSource<EdgeType>) {
-                    auto current = e.getSrc();
-                    auto new_src = common::NodeID{perm[current.get()]};
+                    auto current_src = e.getSrc();
+                    auto new_src = common::NodeID{inv_perm[current_src.get()]};
                     e.setSrc(new_src);
                 }
 
                 //update trg if available
                 if constexpr(concepts::HasTarget<EdgeType>) {
-                    auto current = e.getTrg();
-                    auto new_trg = common::NodeID{perm[current.get()]};
+                    auto current_trg = e.getTrg();
+                    auto new_trg = common::NodeID{inv_perm[current_trg.get()]};
                     e.setTrg(new_trg);
                 }
             }
@@ -255,32 +257,34 @@ public:
                                                   perm);
         }
 
-        return perm;
+        return std::pair{std::move(perm), std::move(inv_perm)};
     }
 
     // clang-format off
     template<class F>
     auto sortEdgesAccordingTo(F&& func) noexcept
-	  -> std::vector<std::size_t>
-	  requires std::regular_invocable<F, const OffsetArray&>
-	  && std::strict_weak_order<std::invoke_result_t<F, const OffsetArray&>,
-								common::EdgeID,
-								common::EdgeID>
+	    -> std::pair<std::vector<std::size_t>, std::vector<std::size_t>>
+	    requires std::regular_invocable<F, const OffsetArray&>
+	    && std::strict_weak_order<std::invoke_result_t<F, const OffsetArray&>,
+								  common::EdgeID,
+								  common::EdgeID>
     // clang-format on
     {
         const auto order = std::invoke(std::forward<F>(func), *this);
 
-        std::vector<std::size_t> permutation(this->numberOfEdges());
-        std::iota(std::begin(permutation),
-                  std::end(permutation),
+        std::vector<std::size_t> perm(this->numberOfEdges());
+        std::iota(std::begin(perm),
+                  std::end(perm),
                   0);
 
         //sort the edgeids according to the given order
-        std::sort(std::begin(permutation),
-                  std::end(permutation),
+        std::sort(std::begin(perm),
+                  std::end(perm),
                   [&](auto lhs, auto rhs) {
                       return order(common::NodeID{lhs}, common::NodeID{rhs});
                   });
+
+        auto inv_perm = util::inversePermutation(perm);
 
         //apply the permutation to the forward connections
         if constexpr(concepts::ForwardConnections<OffsetArray>) {
@@ -288,7 +292,7 @@ public:
                            std::end(this->forward_neigbours_),
                            std::begin(this->forward_neigbours_),
                            [&](auto id) {
-                               return common::EdgeID{permutation[id.get()]};
+                               return common::EdgeID{inv_perm[id.get()]};
                            });
         }
 
@@ -298,15 +302,15 @@ public:
                            std::end(this->backward_neigbours_),
                            std::begin(this->backward_neigbours_),
                            [&](auto id) {
-                               return common::EdgeID{permutation[id.get()]};
+                               return common::EdgeID{inv_perm[id.get()]};
                            });
         }
 
         //permutation will get copied into applypermutation because it will be consumed
         this->edges = util::applyPermutation(std::move(this->edges_),
-                                             permutation);
+                                             perm);
 
-        return permutation;
+        return std::pair{std::move(perm), std::move(inv_perm)};
     }
 };
 

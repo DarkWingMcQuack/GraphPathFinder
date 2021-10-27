@@ -18,8 +18,8 @@ concept NodesSortable = requires(Graph& graph, std::function<std::function<bool(
 								    common::NodeID>;
 
 	//sorts the nodes according to the function generated from calling f with graph g
-	//returns the permutation vector of the ordering
-	{graph.sortNodesAccordingTo(f)} -> std::same_as<std::vector<std::size_t>>;
+	//returns the permutation vector of the ordering as well as the inversepermutation vector
+	{graph.sortNodesAccordingTo(f)} -> std::same_as<std::pair<std::vector<std::size_t>, std::vector<std::size_t>>>;
 };
 
   
@@ -33,8 +33,8 @@ concept EdgesSortable = requires(Graph& graph, std::function<std::function<bool(
 								    common::EdgeID>;
 
 	//sorts the nodes according to the function generated from calling f with graph g
-	//returns the permutation vector of the ordering
-	{graph.sortEdgesAccordingTo(f)} -> std::same_as<std::vector<std::size_t>>;
+	//returns the permutation vector of the ordering as well as the inversepermutation vector
+	{graph.sortEdgesAccordingTo(f)} -> std::same_as<std::pair<std::vector<std::size_t>, std::vector<std::size_t>>>;
 };
 // clang-format on
 

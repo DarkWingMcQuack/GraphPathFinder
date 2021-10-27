@@ -112,21 +112,20 @@ private:
     auto downward() noexcept
         -> void
     {
-        for(const auto edge_id : graph_.backward_neigbours_) {
-            const auto* edge = graph_.getEdge(edge_id);
-            const auto src = edge->getSrc();
-            const auto trg = edge->getTrg();
-            const auto weight = edge->getWeight();
+        for(std::size_t i = 0; i < graph_.numberOfNodes(); ++i) {
+            for(const auto edge_id : graph_.getBackwardEdgeIDsOf(common::NodeID{i})) {
+                const auto* edge = graph_.getEdge(edge_id);
+                const auto src = edge->getSrc().get();
+                const auto trg = edge->getTrg().get();
+                const auto weight = edge->getWeight();
 
-            const auto src_lvl = graph_.getNodeLevelUnsafe(src);
-            const auto trg_lvl = graph_.getNodeLevelUnsafe(trg);
+                if(distances_[src] == common::INFINITY_WEIGHT) {
+                    continue;
+                }
 
-            fmt::print("src lvl: {}\n", src_lvl.get());
-            fmt::print("trg lvl: {}\n", trg_lvl.get());
-            fmt::print("---------------------------\n");
-
-            distances_[trg.get()] = std::min(distances_[trg.get()],
-                                             distances_[src.get()] + weight);
+                distances_[trg] = std::min(distances_[trg],
+                                           distances_[src] + weight);
+            }
         }
     }
 
@@ -139,10 +138,18 @@ private:
 
 // clang-format off
 template<class Node, class Edge>
-[[nodiscard]] inline auto prepareGraphForPHAST(graphs::OffsetArray<Node, Edge>&& g) noexcept
+[[nodiscard]] inline auto prepareGraphForPHAST(graphs::OffsetArray<Node, Edge> g) noexcept
     -> graphs::OffsetArray<Node, Edge>
 // clang-format on
 {
+    g.sortNodesAccordingTo([](const auto& graph) {
+        return [&](const auto lhs, const auto rhs) {
+            const auto lhs_lvl = graph.getNodeLevelUnsafe(lhs);
+            const auto rhs_lvl = graph.getNodeLevelUnsafe(rhs);
+            return lhs_lvl > rhs_lvl;
+        };
+    });
+
     g.deleteForwardEdgesIDsIf([](const auto& graph) {
         return [&](const auto id) {
             const auto* edge = graph.getEdge(id);
@@ -150,9 +157,10 @@ template<class Node, class Edge>
             const auto trg = edge->getTrg();
             const auto src_lvl = graph.getNodeLevelUnsafe(src);
             const auto trg_lvl = graph.getNodeLevelUnsafe(trg);
-            return src_lvl >= trg_lvl;
+            return src_lvl > trg_lvl;
         };
     });
+
 
     g.deleteBackwardEdgesIDsIf([](const auto& graph) {
         return [&](const auto id) {
@@ -161,15 +169,7 @@ template<class Node, class Edge>
             const auto trg = edge->getTrg();
             const auto src_lvl = graph.getNodeLevelUnsafe(src);
             const auto trg_lvl = graph.getNodeLevelUnsafe(trg);
-            return src_lvl >= trg_lvl;
-        };
-    });
-
-    g.sortNodesAccordingTo([](const auto& graph) {
-        return [&](const auto lhs, const auto rhs) {
-            const auto lhs_lvl = graph.getNodeLevelUnsafe(lhs);
-            const auto rhs_lvl = graph.getNodeLevelUnsafe(rhs);
-            return lhs_lvl >= rhs_lvl;
+            return src_lvl > trg_lvl;
         };
     });
 

@@ -54,8 +54,8 @@ public:
         static_assert(!concepts::HasLevel<Node> || concepts::WriteableNodeLevels<NonTrivialOffsetArrayNodes>);
     }
 
-    constexpr NonTrivialOffsetArrayNodes(NonTrivialOffsetArrayNodes<Graph, Node> &&) noexcept = default;
-    constexpr NonTrivialOffsetArrayNodes(const NonTrivialOffsetArrayNodes<Graph, Node> &) noexcept = default;
+    constexpr NonTrivialOffsetArrayNodes(NonTrivialOffsetArrayNodes &&) noexcept = default;
+    constexpr NonTrivialOffsetArrayNodes(const NonTrivialOffsetArrayNodes &) noexcept = default;
 
     constexpr auto operator=(NonTrivialOffsetArrayNodes &&) noexcept
         -> NonTrivialOffsetArrayNodes & = default;

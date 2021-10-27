@@ -1,9 +1,24 @@
 #pragma once
 
+#include <functional>
 #include <utility>
 #include <vector>
 
 namespace util {
+
+
+[[nodiscard]] inline auto isValidPermutation(const std::vector<std::size_t>& permutation) noexcept
+    -> bool
+{
+    std::vector b(permutation.size(), false);
+    for(auto i : permutation) {
+        b[i] = true;
+    }
+
+    return std::all_of(std::begin(b),
+                       std::end(b),
+                       [](auto b) { return b; });
+}
 
 template<class T>
 [[nodiscard]] auto applyPermutation(std::vector<T> vec,

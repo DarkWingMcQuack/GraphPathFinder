@@ -721,7 +721,7 @@ TEST(OffsetArrayTest, OffsetArrayNodeSortingTest)
 
     ASSERT_TRUE(graph_opt);
     auto graph = std::move(graph_opt.value());
-    auto perm = graph.sortNodesAccordingTo([](const auto &g) {
+    auto [perm, inv_perm] = graph.sortNodesAccordingTo([](const auto &g) {
         return [](auto lhs, auto rhs) {
             return lhs > rhs;
         };
@@ -751,28 +751,28 @@ TEST(OffsetArrayTest, OffsetArrayNodeSortingTest)
         }
     }
 
-    auto id = graph.getForwardEdgeIDBetween(common::NodeID{perm[0]}, common::NodeID{perm[1]}).value();
+    auto id = graph.getForwardEdgeIDBetween(common::NodeID{inv_perm[0]}, common::NodeID{inv_perm[1]}).value();
     EXPECT_EQ(graph.getEdgeWeight(id).value(), common::Weight{9});
 
-    id = graph.getForwardEdgeIDBetween(common::NodeID{perm[0]}, common::NodeID{perm[4]}).value();
+    id = graph.getForwardEdgeIDBetween(common::NodeID{inv_perm[0]}, common::NodeID{inv_perm[4]}).value();
     EXPECT_EQ(graph.getEdgeWeight(id).value(), common::Weight{7});
 
-    id = graph.getForwardEdgeIDBetween(common::NodeID{perm[2]}, common::NodeID{perm[0]}).value();
+    id = graph.getForwardEdgeIDBetween(common::NodeID{inv_perm[2]}, common::NodeID{inv_perm[0]}).value();
     EXPECT_EQ(graph.getEdgeWeight(id).value(), common::Weight{6});
 
-    id = graph.getForwardEdgeIDBetween(common::NodeID{perm[2]}, common::NodeID{perm[1]}).value();
+    id = graph.getForwardEdgeIDBetween(common::NodeID{inv_perm[2]}, common::NodeID{inv_perm[1]}).value();
     EXPECT_EQ(graph.getEdgeWeight(id).value(), common::Weight{5});
 
-    id = graph.getForwardEdgeIDBetween(common::NodeID{perm[2]}, common::NodeID{perm[4]}).value();
+    id = graph.getForwardEdgeIDBetween(common::NodeID{inv_perm[2]}, common::NodeID{inv_perm[4]}).value();
     EXPECT_EQ(graph.getEdgeWeight(id).value(), common::Weight{4});
 
-    id = graph.getForwardEdgeIDBetween(common::NodeID{perm[3]}, common::NodeID{perm[2]}).value();
+    id = graph.getForwardEdgeIDBetween(common::NodeID{inv_perm[3]}, common::NodeID{inv_perm[2]}).value();
     EXPECT_EQ(graph.getEdgeWeight(id).value(), common::Weight{3});
 
-    id = graph.getForwardEdgeIDBetween(common::NodeID{perm[4]}, common::NodeID{perm[1]}).value();
+    id = graph.getForwardEdgeIDBetween(common::NodeID{inv_perm[4]}, common::NodeID{inv_perm[1]}).value();
     EXPECT_EQ(graph.getEdgeWeight(id).value(), common::Weight{2});
 
-    id = graph.getForwardEdgeIDBetween(common::NodeID{perm[4]}, common::NodeID{perm[3]}).value();
+    id = graph.getForwardEdgeIDBetween(common::NodeID{inv_perm[4]}, common::NodeID{inv_perm[3]}).value();
     EXPECT_EQ(graph.getEdgeWeight(id).value(), common::Weight{1});
 }
 
@@ -784,7 +784,7 @@ TEST(OffsetArrayTest, CHOffsetArrayNodeSortingTest1)
     ASSERT_TRUE(graph_opt);
     auto graph = std::move(graph_opt.value());
 
-    auto perm = graph.sortNodesAccordingTo([](const auto &g) {
+    auto [perm, inv_perm] = graph.sortNodesAccordingTo([](const auto &g) {
         return [](auto lhs, auto rhs) {
             return lhs > rhs;
         };
@@ -796,11 +796,11 @@ TEST(OffsetArrayTest, CHOffsetArrayNodeSortingTest1)
     EXPECT_EQ(perm[3], 1);
     EXPECT_EQ(perm[4], 0);
 
-    EXPECT_EQ(graph.getNodeLevel(common::NodeID{perm[0]}), common::NodeLevel{3});
-    EXPECT_EQ(graph.getNodeLevel(common::NodeID{perm[1]}), common::NodeLevel{0});
-    EXPECT_EQ(graph.getNodeLevel(common::NodeID{perm[2]}), common::NodeLevel{2});
-    EXPECT_EQ(graph.getNodeLevel(common::NodeID{perm[3]}), common::NodeLevel{0});
-    EXPECT_EQ(graph.getNodeLevel(common::NodeID{perm[4]}), common::NodeLevel{1});
+    EXPECT_EQ(graph.getNodeLevel(common::NodeID{inv_perm[0]}), common::NodeLevel{3});
+    EXPECT_EQ(graph.getNodeLevel(common::NodeID{inv_perm[1]}), common::NodeLevel{0});
+    EXPECT_EQ(graph.getNodeLevel(common::NodeID{inv_perm[2]}), common::NodeLevel{2});
+    EXPECT_EQ(graph.getNodeLevel(common::NodeID{inv_perm[3]}), common::NodeLevel{0});
+    EXPECT_EQ(graph.getNodeLevel(common::NodeID{inv_perm[4]}), common::NodeLevel{1});
 
     for(std::size_t i = 0; i < graph.numberOfNodes(); i++) {
         auto ids = graph.getForwardEdgeIDsOf(common::NodeID{i});
@@ -830,62 +830,62 @@ TEST(OffsetArrayTest, CHOffsetArrayNodeSortingTest1)
         }
     }
 
-    EXPECT_TRUE(graph.checkIfEdgeExistsBetween(common::NodeID{perm[0]}, common::NodeID{perm[1]}));
-    EXPECT_TRUE(graph.checkIfEdgeExistsBetween(common::NodeID{perm[0]}, common::NodeID{perm[2]}));
-    EXPECT_TRUE(graph.checkIfEdgeExistsBetween(common::NodeID{perm[0]}, common::NodeID{perm[4]}));
-    EXPECT_TRUE(graph.checkIfEdgeExistsBetween(common::NodeID{perm[2]}, common::NodeID{perm[0]}));
-    EXPECT_TRUE(graph.checkIfEdgeExistsBetween(common::NodeID{perm[2]}, common::NodeID{perm[1]}));
-    EXPECT_TRUE(graph.checkIfEdgeExistsBetween(common::NodeID{perm[2]}, common::NodeID{perm[4]}));
-    EXPECT_TRUE(graph.checkIfEdgeExistsBetween(common::NodeID{perm[3]}, common::NodeID{perm[2]}));
-    EXPECT_TRUE(graph.checkIfEdgeExistsBetween(common::NodeID{perm[4]}, common::NodeID{perm[1]}));
-    EXPECT_TRUE(graph.checkIfEdgeExistsBetween(common::NodeID{perm[4]}, common::NodeID{perm[2]}));
-    EXPECT_TRUE(graph.checkIfEdgeExistsBetween(common::NodeID{perm[4]}, common::NodeID{perm[3]}));
+    EXPECT_TRUE(graph.checkIfEdgeExistsBetween(common::NodeID{inv_perm[0]}, common::NodeID{inv_perm[1]}));
+    EXPECT_TRUE(graph.checkIfEdgeExistsBetween(common::NodeID{inv_perm[0]}, common::NodeID{inv_perm[2]}));
+    EXPECT_TRUE(graph.checkIfEdgeExistsBetween(common::NodeID{inv_perm[0]}, common::NodeID{inv_perm[4]}));
+    EXPECT_TRUE(graph.checkIfEdgeExistsBetween(common::NodeID{inv_perm[2]}, common::NodeID{inv_perm[0]}));
+    EXPECT_TRUE(graph.checkIfEdgeExistsBetween(common::NodeID{inv_perm[2]}, common::NodeID{inv_perm[1]}));
+    EXPECT_TRUE(graph.checkIfEdgeExistsBetween(common::NodeID{inv_perm[2]}, common::NodeID{inv_perm[4]}));
+    EXPECT_TRUE(graph.checkIfEdgeExistsBetween(common::NodeID{inv_perm[3]}, common::NodeID{inv_perm[2]}));
+    EXPECT_TRUE(graph.checkIfEdgeExistsBetween(common::NodeID{inv_perm[4]}, common::NodeID{inv_perm[1]}));
+    EXPECT_TRUE(graph.checkIfEdgeExistsBetween(common::NodeID{inv_perm[4]}, common::NodeID{inv_perm[2]}));
+    EXPECT_TRUE(graph.checkIfEdgeExistsBetween(common::NodeID{inv_perm[4]}, common::NodeID{inv_perm[3]}));
 
-    EXPECT_FALSE(graph.checkIfEdgeExistsBetween(common::NodeID{perm[0]}, common::NodeID{perm[0]}));
-    EXPECT_FALSE(graph.checkIfEdgeExistsBetween(common::NodeID{perm[0]}, common::NodeID{perm[3]}));
-    EXPECT_FALSE(graph.checkIfEdgeExistsBetween(common::NodeID{perm[1]}, common::NodeID{perm[0]}));
-    EXPECT_FALSE(graph.checkIfEdgeExistsBetween(common::NodeID{perm[1]}, common::NodeID{perm[1]}));
-    EXPECT_FALSE(graph.checkIfEdgeExistsBetween(common::NodeID{perm[1]}, common::NodeID{perm[2]}));
-    EXPECT_FALSE(graph.checkIfEdgeExistsBetween(common::NodeID{perm[1]}, common::NodeID{perm[3]}));
-    EXPECT_FALSE(graph.checkIfEdgeExistsBetween(common::NodeID{perm[1]}, common::NodeID{perm[4]}));
-    EXPECT_FALSE(graph.checkIfEdgeExistsBetween(common::NodeID{perm[2]}, common::NodeID{perm[2]}));
-    EXPECT_FALSE(graph.checkIfEdgeExistsBetween(common::NodeID{perm[2]}, common::NodeID{perm[3]}));
-    EXPECT_FALSE(graph.checkIfEdgeExistsBetween(common::NodeID{perm[3]}, common::NodeID{perm[0]}));
-    EXPECT_FALSE(graph.checkIfEdgeExistsBetween(common::NodeID{perm[3]}, common::NodeID{perm[1]}));
-    EXPECT_FALSE(graph.checkIfEdgeExistsBetween(common::NodeID{perm[3]}, common::NodeID{perm[3]}));
-    EXPECT_FALSE(graph.checkIfEdgeExistsBetween(common::NodeID{perm[3]}, common::NodeID{perm[4]}));
-    EXPECT_FALSE(graph.checkIfEdgeExistsBetween(common::NodeID{perm[4]}, common::NodeID{perm[0]}));
-    EXPECT_FALSE(graph.checkIfEdgeExistsBetween(common::NodeID{perm[4]}, common::NodeID{perm[4]}));
+    EXPECT_FALSE(graph.checkIfEdgeExistsBetween(common::NodeID{inv_perm[0]}, common::NodeID{inv_perm[0]}));
+    EXPECT_FALSE(graph.checkIfEdgeExistsBetween(common::NodeID{inv_perm[0]}, common::NodeID{inv_perm[3]}));
+    EXPECT_FALSE(graph.checkIfEdgeExistsBetween(common::NodeID{inv_perm[1]}, common::NodeID{inv_perm[0]}));
+    EXPECT_FALSE(graph.checkIfEdgeExistsBetween(common::NodeID{inv_perm[1]}, common::NodeID{inv_perm[1]}));
+    EXPECT_FALSE(graph.checkIfEdgeExistsBetween(common::NodeID{inv_perm[1]}, common::NodeID{inv_perm[2]}));
+    EXPECT_FALSE(graph.checkIfEdgeExistsBetween(common::NodeID{inv_perm[1]}, common::NodeID{inv_perm[3]}));
+    EXPECT_FALSE(graph.checkIfEdgeExistsBetween(common::NodeID{inv_perm[1]}, common::NodeID{inv_perm[4]}));
+    EXPECT_FALSE(graph.checkIfEdgeExistsBetween(common::NodeID{inv_perm[2]}, common::NodeID{inv_perm[2]}));
+    EXPECT_FALSE(graph.checkIfEdgeExistsBetween(common::NodeID{inv_perm[2]}, common::NodeID{inv_perm[3]}));
+    EXPECT_FALSE(graph.checkIfEdgeExistsBetween(common::NodeID{inv_perm[3]}, common::NodeID{inv_perm[0]}));
+    EXPECT_FALSE(graph.checkIfEdgeExistsBetween(common::NodeID{inv_perm[3]}, common::NodeID{inv_perm[1]}));
+    EXPECT_FALSE(graph.checkIfEdgeExistsBetween(common::NodeID{inv_perm[3]}, common::NodeID{inv_perm[3]}));
+    EXPECT_FALSE(graph.checkIfEdgeExistsBetween(common::NodeID{inv_perm[3]}, common::NodeID{inv_perm[4]}));
+    EXPECT_FALSE(graph.checkIfEdgeExistsBetween(common::NodeID{inv_perm[4]}, common::NodeID{inv_perm[0]}));
+    EXPECT_FALSE(graph.checkIfEdgeExistsBetween(common::NodeID{inv_perm[4]}, common::NodeID{inv_perm[4]}));
 
 
-    auto id = graph.getForwardEdgeIDBetween(common::NodeID{perm[0]}, common::NodeID{perm[1]}).value();
+    auto id = graph.getForwardEdgeIDBetween(common::NodeID{inv_perm[0]}, common::NodeID{inv_perm[1]}).value();
     EXPECT_EQ(graph.getEdgeWeight(id).value(), common::Weight{9});
 
-    id = graph.getForwardEdgeIDBetween(common::NodeID{perm[0]}, common::NodeID{perm[2]}).value();
+    id = graph.getForwardEdgeIDBetween(common::NodeID{inv_perm[0]}, common::NodeID{inv_perm[2]}).value();
     EXPECT_EQ(graph.getEdgeWeight(id).value(), common::Weight{8});
 
-    id = graph.getForwardEdgeIDBetween(common::NodeID{perm[0]}, common::NodeID{perm[4]}).value();
+    id = graph.getForwardEdgeIDBetween(common::NodeID{inv_perm[0]}, common::NodeID{inv_perm[4]}).value();
     EXPECT_EQ(graph.getEdgeWeight(id).value(), common::Weight{7});
 
-    id = graph.getForwardEdgeIDBetween(common::NodeID{perm[2]}, common::NodeID{perm[0]}).value();
+    id = graph.getForwardEdgeIDBetween(common::NodeID{inv_perm[2]}, common::NodeID{inv_perm[0]}).value();
     EXPECT_EQ(graph.getEdgeWeight(id).value(), common::Weight{6});
 
-    id = graph.getForwardEdgeIDBetween(common::NodeID{perm[2]}, common::NodeID{perm[1]}).value();
+    id = graph.getForwardEdgeIDBetween(common::NodeID{inv_perm[2]}, common::NodeID{inv_perm[1]}).value();
     EXPECT_EQ(graph.getEdgeWeight(id).value(), common::Weight{5});
 
-    id = graph.getForwardEdgeIDBetween(common::NodeID{perm[2]}, common::NodeID{perm[4]}).value();
+    id = graph.getForwardEdgeIDBetween(common::NodeID{inv_perm[2]}, common::NodeID{inv_perm[4]}).value();
     EXPECT_EQ(graph.getEdgeWeight(id).value(), common::Weight{4});
 
-    id = graph.getForwardEdgeIDBetween(common::NodeID{perm[3]}, common::NodeID{perm[2]}).value();
+    id = graph.getForwardEdgeIDBetween(common::NodeID{inv_perm[3]}, common::NodeID{inv_perm[2]}).value();
     EXPECT_EQ(graph.getEdgeWeight(id).value(), common::Weight{3});
 
-    id = graph.getForwardEdgeIDBetween(common::NodeID{perm[4]}, common::NodeID{perm[1]}).value();
+    id = graph.getForwardEdgeIDBetween(common::NodeID{inv_perm[4]}, common::NodeID{inv_perm[1]}).value();
     EXPECT_EQ(graph.getEdgeWeight(id).value(), common::Weight{2});
 
-    id = graph.getForwardEdgeIDBetween(common::NodeID{perm[4]}, common::NodeID{perm[2]}).value();
+    id = graph.getForwardEdgeIDBetween(common::NodeID{inv_perm[4]}, common::NodeID{inv_perm[2]}).value();
     EXPECT_EQ(graph.getEdgeWeight(id).value(), common::Weight{4});
 
-    id = graph.getForwardEdgeIDBetween(common::NodeID{perm[4]}, common::NodeID{perm[3]}).value();
+    id = graph.getForwardEdgeIDBetween(common::NodeID{inv_perm[4]}, common::NodeID{inv_perm[3]}).value();
     EXPECT_EQ(graph.getEdgeWeight(id).value(), common::Weight{1});
 }
 
@@ -897,10 +897,10 @@ TEST(OffsetArrayTest, CHOffsetArrayNodeSortingTest2)
     ASSERT_TRUE(graph_opt);
     auto graph = std::move(graph_opt.value());
 
-    auto perm = graph.sortNodesAccordingTo([](const auto &graph) {
+    auto [perm, inv_perm] = graph.sortNodesAccordingTo([](const auto &g) {
         return [&](const auto lhs, const auto rhs) {
-            const auto lhs_lvl = graph.getNodeLevelUnsafe(lhs);
-            const auto rhs_lvl = graph.getNodeLevelUnsafe(rhs);
+            const auto lhs_lvl = g.getNodeLevelUnsafe(lhs);
+            const auto rhs_lvl = g.getNodeLevelUnsafe(rhs);
             return lhs_lvl > rhs_lvl;
         };
     });
@@ -911,17 +911,17 @@ TEST(OffsetArrayTest, CHOffsetArrayNodeSortingTest2)
     EXPECT_EQ(perm[3], 1);
     EXPECT_EQ(perm[4], 3);
 
-    EXPECT_EQ(graph.getForwardEdgeIDsOf(common::NodeID{perm[0]}).size(), 3);
-    EXPECT_EQ(graph.getForwardEdgeIDsOf(common::NodeID{perm[1]}).size(), 0);
-    EXPECT_EQ(graph.getForwardEdgeIDsOf(common::NodeID{perm[2]}).size(), 3);
-    EXPECT_EQ(graph.getForwardEdgeIDsOf(common::NodeID{perm[3]}).size(), 1);
-    EXPECT_EQ(graph.getForwardEdgeIDsOf(common::NodeID{perm[4]}).size(), 3);
+    EXPECT_EQ(graph.getForwardEdgeIDsOf(common::NodeID{inv_perm[0]}).size(), 3);
+    EXPECT_EQ(graph.getForwardEdgeIDsOf(common::NodeID{inv_perm[1]}).size(), 0);
+    EXPECT_EQ(graph.getForwardEdgeIDsOf(common::NodeID{inv_perm[2]}).size(), 3);
+    EXPECT_EQ(graph.getForwardEdgeIDsOf(common::NodeID{inv_perm[3]}).size(), 1);
+    EXPECT_EQ(graph.getForwardEdgeIDsOf(common::NodeID{inv_perm[4]}).size(), 3);
 
-    EXPECT_EQ(graph.getBackwardEdgeIDsOf(common::NodeID{perm[0]}).size(), 1);
-    EXPECT_EQ(graph.getBackwardEdgeIDsOf(common::NodeID{perm[1]}).size(), 3);
-    EXPECT_EQ(graph.getBackwardEdgeIDsOf(common::NodeID{perm[2]}).size(), 3);
-    EXPECT_EQ(graph.getBackwardEdgeIDsOf(common::NodeID{perm[3]}).size(), 1);
-    EXPECT_EQ(graph.getBackwardEdgeIDsOf(common::NodeID{perm[4]}).size(), 2);
+    EXPECT_EQ(graph.getBackwardEdgeIDsOf(common::NodeID{inv_perm[0]}).size(), 1);
+    EXPECT_EQ(graph.getBackwardEdgeIDsOf(common::NodeID{inv_perm[1]}).size(), 3);
+    EXPECT_EQ(graph.getBackwardEdgeIDsOf(common::NodeID{inv_perm[2]}).size(), 3);
+    EXPECT_EQ(graph.getBackwardEdgeIDsOf(common::NodeID{inv_perm[3]}).size(), 1);
+    EXPECT_EQ(graph.getBackwardEdgeIDsOf(common::NodeID{inv_perm[4]}).size(), 2);
 
     EXPECT_EQ(graph.getNodeLevelUnsafe(common::NodeID{0}), common::NodeLevel{3});
     EXPECT_EQ(graph.getNodeLevelUnsafe(common::NodeID{1}), common::NodeLevel{2});
@@ -929,32 +929,32 @@ TEST(OffsetArrayTest, CHOffsetArrayNodeSortingTest2)
     EXPECT_EQ(graph.getNodeLevelUnsafe(common::NodeID{3}), common::NodeLevel{0});
     EXPECT_EQ(graph.getNodeLevelUnsafe(common::NodeID{4}), common::NodeLevel{0});
 
-    EXPECT_TRUE(graph.checkIfEdgeExistsBetween(common::NodeID{perm[0]}, common::NodeID{perm[1]}));
-    EXPECT_TRUE(graph.checkIfEdgeExistsBetween(common::NodeID{perm[0]}, common::NodeID{perm[2]}));
-    EXPECT_TRUE(graph.checkIfEdgeExistsBetween(common::NodeID{perm[0]}, common::NodeID{perm[4]}));
-    EXPECT_TRUE(graph.checkIfEdgeExistsBetween(common::NodeID{perm[2]}, common::NodeID{perm[0]}));
-    EXPECT_TRUE(graph.checkIfEdgeExistsBetween(common::NodeID{perm[2]}, common::NodeID{perm[1]}));
-    EXPECT_TRUE(graph.checkIfEdgeExistsBetween(common::NodeID{perm[2]}, common::NodeID{perm[4]}));
-    EXPECT_TRUE(graph.checkIfEdgeExistsBetween(common::NodeID{perm[3]}, common::NodeID{perm[2]}));
-    EXPECT_TRUE(graph.checkIfEdgeExistsBetween(common::NodeID{perm[4]}, common::NodeID{perm[1]}));
-    EXPECT_TRUE(graph.checkIfEdgeExistsBetween(common::NodeID{perm[4]}, common::NodeID{perm[2]}));
-    EXPECT_TRUE(graph.checkIfEdgeExistsBetween(common::NodeID{perm[4]}, common::NodeID{perm[3]}));
+    EXPECT_TRUE(graph.checkIfEdgeExistsBetween(common::NodeID{inv_perm[0]}, common::NodeID{inv_perm[1]}));
+    EXPECT_TRUE(graph.checkIfEdgeExistsBetween(common::NodeID{inv_perm[0]}, common::NodeID{inv_perm[2]}));
+    EXPECT_TRUE(graph.checkIfEdgeExistsBetween(common::NodeID{inv_perm[0]}, common::NodeID{inv_perm[4]}));
+    EXPECT_TRUE(graph.checkIfEdgeExistsBetween(common::NodeID{inv_perm[2]}, common::NodeID{inv_perm[0]}));
+    EXPECT_TRUE(graph.checkIfEdgeExistsBetween(common::NodeID{inv_perm[2]}, common::NodeID{inv_perm[1]}));
+    EXPECT_TRUE(graph.checkIfEdgeExistsBetween(common::NodeID{inv_perm[2]}, common::NodeID{inv_perm[4]}));
+    EXPECT_TRUE(graph.checkIfEdgeExistsBetween(common::NodeID{inv_perm[3]}, common::NodeID{inv_perm[2]}));
+    EXPECT_TRUE(graph.checkIfEdgeExistsBetween(common::NodeID{inv_perm[4]}, common::NodeID{inv_perm[1]}));
+    EXPECT_TRUE(graph.checkIfEdgeExistsBetween(common::NodeID{inv_perm[4]}, common::NodeID{inv_perm[2]}));
+    EXPECT_TRUE(graph.checkIfEdgeExistsBetween(common::NodeID{inv_perm[4]}, common::NodeID{inv_perm[3]}));
 
-    EXPECT_FALSE(graph.checkIfEdgeExistsBetween(common::NodeID{perm[0]}, common::NodeID{perm[0]}));
-    EXPECT_FALSE(graph.checkIfEdgeExistsBetween(common::NodeID{perm[0]}, common::NodeID{perm[3]}));
-    EXPECT_FALSE(graph.checkIfEdgeExistsBetween(common::NodeID{perm[1]}, common::NodeID{perm[0]}));
-    EXPECT_FALSE(graph.checkIfEdgeExistsBetween(common::NodeID{perm[1]}, common::NodeID{perm[1]}));
-    EXPECT_FALSE(graph.checkIfEdgeExistsBetween(common::NodeID{perm[1]}, common::NodeID{perm[2]}));
-    EXPECT_FALSE(graph.checkIfEdgeExistsBetween(common::NodeID{perm[1]}, common::NodeID{perm[3]}));
-    EXPECT_FALSE(graph.checkIfEdgeExistsBetween(common::NodeID{perm[1]}, common::NodeID{perm[4]}));
-    EXPECT_FALSE(graph.checkIfEdgeExistsBetween(common::NodeID{perm[2]}, common::NodeID{perm[2]}));
-    EXPECT_FALSE(graph.checkIfEdgeExistsBetween(common::NodeID{perm[2]}, common::NodeID{perm[3]}));
-    EXPECT_FALSE(graph.checkIfEdgeExistsBetween(common::NodeID{perm[3]}, common::NodeID{perm[0]}));
-    EXPECT_FALSE(graph.checkIfEdgeExistsBetween(common::NodeID{perm[3]}, common::NodeID{perm[1]}));
-    EXPECT_FALSE(graph.checkIfEdgeExistsBetween(common::NodeID{perm[3]}, common::NodeID{perm[3]}));
-    EXPECT_FALSE(graph.checkIfEdgeExistsBetween(common::NodeID{perm[3]}, common::NodeID{perm[4]}));
-    EXPECT_FALSE(graph.checkIfEdgeExistsBetween(common::NodeID{perm[4]}, common::NodeID{perm[0]}));
-    EXPECT_FALSE(graph.checkIfEdgeExistsBetween(common::NodeID{perm[4]}, common::NodeID{perm[4]}));
+    EXPECT_FALSE(graph.checkIfEdgeExistsBetween(common::NodeID{inv_perm[0]}, common::NodeID{inv_perm[0]}));
+    EXPECT_FALSE(graph.checkIfEdgeExistsBetween(common::NodeID{inv_perm[0]}, common::NodeID{inv_perm[3]}));
+    EXPECT_FALSE(graph.checkIfEdgeExistsBetween(common::NodeID{inv_perm[1]}, common::NodeID{inv_perm[0]}));
+    EXPECT_FALSE(graph.checkIfEdgeExistsBetween(common::NodeID{inv_perm[1]}, common::NodeID{inv_perm[1]}));
+    EXPECT_FALSE(graph.checkIfEdgeExistsBetween(common::NodeID{inv_perm[1]}, common::NodeID{inv_perm[2]}));
+    EXPECT_FALSE(graph.checkIfEdgeExistsBetween(common::NodeID{inv_perm[1]}, common::NodeID{inv_perm[3]}));
+    EXPECT_FALSE(graph.checkIfEdgeExistsBetween(common::NodeID{inv_perm[1]}, common::NodeID{inv_perm[4]}));
+    EXPECT_FALSE(graph.checkIfEdgeExistsBetween(common::NodeID{inv_perm[2]}, common::NodeID{inv_perm[2]}));
+    EXPECT_FALSE(graph.checkIfEdgeExistsBetween(common::NodeID{inv_perm[2]}, common::NodeID{inv_perm[3]}));
+    EXPECT_FALSE(graph.checkIfEdgeExistsBetween(common::NodeID{inv_perm[3]}, common::NodeID{inv_perm[0]}));
+    EXPECT_FALSE(graph.checkIfEdgeExistsBetween(common::NodeID{inv_perm[3]}, common::NodeID{inv_perm[1]}));
+    EXPECT_FALSE(graph.checkIfEdgeExistsBetween(common::NodeID{inv_perm[3]}, common::NodeID{inv_perm[3]}));
+    EXPECT_FALSE(graph.checkIfEdgeExistsBetween(common::NodeID{inv_perm[3]}, common::NodeID{inv_perm[4]}));
+    EXPECT_FALSE(graph.checkIfEdgeExistsBetween(common::NodeID{inv_perm[4]}, common::NodeID{inv_perm[0]}));
+    EXPECT_FALSE(graph.checkIfEdgeExistsBetween(common::NodeID{inv_perm[4]}, common::NodeID{inv_perm[4]}));
 
     for(std::size_t i = 0; i < graph.numberOfNodes(); i++) {
         auto ids = graph.getForwardEdgeIDsOf(common::NodeID{i});
@@ -985,125 +985,125 @@ TEST(OffsetArrayTest, CHOffsetArrayNodeSortingTest2)
     }
 
 
-    auto id = graph.getForwardEdgeIDBetween(common::NodeID{perm[0]}, common::NodeID{perm[1]}).value();
+    auto id = graph.getForwardEdgeIDBetween(common::NodeID{inv_perm[0]}, common::NodeID{inv_perm[1]}).value();
     EXPECT_EQ(graph.getEdgeWeight(id).value(), common::Weight{9});
 
-    id = graph.getForwardEdgeIDBetween(common::NodeID{perm[0]}, common::NodeID{perm[2]}).value();
+    id = graph.getForwardEdgeIDBetween(common::NodeID{inv_perm[0]}, common::NodeID{inv_perm[2]}).value();
     EXPECT_EQ(graph.getEdgeWeight(id).value(), common::Weight{8});
 
-    id = graph.getForwardEdgeIDBetween(common::NodeID{perm[0]}, common::NodeID{perm[4]}).value();
+    id = graph.getForwardEdgeIDBetween(common::NodeID{inv_perm[0]}, common::NodeID{inv_perm[4]}).value();
     EXPECT_EQ(graph.getEdgeWeight(id).value(), common::Weight{7});
 
-    id = graph.getForwardEdgeIDBetween(common::NodeID{perm[2]}, common::NodeID{perm[0]}).value();
+    id = graph.getForwardEdgeIDBetween(common::NodeID{inv_perm[2]}, common::NodeID{inv_perm[0]}).value();
     EXPECT_EQ(graph.getEdgeWeight(id).value(), common::Weight{6});
 
-    id = graph.getForwardEdgeIDBetween(common::NodeID{perm[2]}, common::NodeID{perm[1]}).value();
+    id = graph.getForwardEdgeIDBetween(common::NodeID{inv_perm[2]}, common::NodeID{inv_perm[1]}).value();
     EXPECT_EQ(graph.getEdgeWeight(id).value(), common::Weight{5});
 
-    id = graph.getForwardEdgeIDBetween(common::NodeID{perm[2]}, common::NodeID{perm[4]}).value();
+    id = graph.getForwardEdgeIDBetween(common::NodeID{inv_perm[2]}, common::NodeID{inv_perm[4]}).value();
     EXPECT_EQ(graph.getEdgeWeight(id).value(), common::Weight{4});
 
-    id = graph.getForwardEdgeIDBetween(common::NodeID{perm[3]}, common::NodeID{perm[2]}).value();
+    id = graph.getForwardEdgeIDBetween(common::NodeID{inv_perm[3]}, common::NodeID{inv_perm[2]}).value();
     EXPECT_EQ(graph.getEdgeWeight(id).value(), common::Weight{3});
 
-    id = graph.getForwardEdgeIDBetween(common::NodeID{perm[4]}, common::NodeID{perm[1]}).value();
+    id = graph.getForwardEdgeIDBetween(common::NodeID{inv_perm[4]}, common::NodeID{inv_perm[1]}).value();
     EXPECT_EQ(graph.getEdgeWeight(id).value(), common::Weight{2});
 
-    id = graph.getForwardEdgeIDBetween(common::NodeID{perm[4]}, common::NodeID{perm[2]}).value();
+    id = graph.getForwardEdgeIDBetween(common::NodeID{inv_perm[4]}, common::NodeID{inv_perm[2]}).value();
     EXPECT_EQ(graph.getEdgeWeight(id).value(), common::Weight{4});
 
-    id = graph.getForwardEdgeIDBetween(common::NodeID{perm[4]}, common::NodeID{perm[3]}).value();
+    id = graph.getForwardEdgeIDBetween(common::NodeID{inv_perm[4]}, common::NodeID{inv_perm[3]}).value();
     EXPECT_EQ(graph.getEdgeWeight(id).value(), common::Weight{1});
 
 
-    id = graph.getForwardEdgeIDBetween(common::NodeID{perm[0]}, common::NodeID{perm[1]}).value();
-    EXPECT_EQ(graph.getEdge(id)->getSrc(), common::NodeID{perm[0]});
-    EXPECT_EQ(graph.getEdge(id)->getTrg(), common::NodeID{perm[1]});
+    id = graph.getForwardEdgeIDBetween(common::NodeID{inv_perm[0]}, common::NodeID{inv_perm[1]}).value();
+    EXPECT_EQ(graph.getEdge(id)->getSrc(), common::NodeID{inv_perm[0]});
+    EXPECT_EQ(graph.getEdge(id)->getTrg(), common::NodeID{inv_perm[1]});
 
-    id = graph.getBackwardEdgeIDBetween(common::NodeID{perm[1]}, common::NodeID{perm[0]}).value();
-    EXPECT_EQ(graph.getBackwardEdge(id)->getSrc(), common::NodeID{perm[1]});
-    EXPECT_EQ(graph.getBackwardEdge(id)->getTrg(), common::NodeID{perm[0]});
-
-
-    id = graph.getForwardEdgeIDBetween(common::NodeID{perm[0]}, common::NodeID{perm[2]}).value();
-    EXPECT_EQ(graph.getEdge(id)->getSrc(), common::NodeID{perm[0]});
-    EXPECT_EQ(graph.getEdge(id)->getTrg(), common::NodeID{perm[2]});
-
-    id = graph.getBackwardEdgeIDBetween(common::NodeID{perm[2]}, common::NodeID{perm[0]}).value();
-    EXPECT_EQ(graph.getBackwardEdge(id)->getSrc(), common::NodeID{perm[2]});
-    EXPECT_EQ(graph.getBackwardEdge(id)->getTrg(), common::NodeID{perm[0]});
+    id = graph.getBackwardEdgeIDBetween(common::NodeID{inv_perm[1]}, common::NodeID{inv_perm[0]}).value();
+    EXPECT_EQ(graph.getBackwardEdge(id)->getSrc(), common::NodeID{inv_perm[1]});
+    EXPECT_EQ(graph.getBackwardEdge(id)->getTrg(), common::NodeID{inv_perm[0]});
 
 
-    id = graph.getForwardEdgeIDBetween(common::NodeID{perm[0]}, common::NodeID{perm[4]}).value();
-    EXPECT_EQ(graph.getEdge(id)->getSrc(), common::NodeID{perm[0]});
-    EXPECT_EQ(graph.getEdge(id)->getTrg(), common::NodeID{perm[4]});
+    id = graph.getForwardEdgeIDBetween(common::NodeID{inv_perm[0]}, common::NodeID{inv_perm[2]}).value();
+    EXPECT_EQ(graph.getEdge(id)->getSrc(), common::NodeID{inv_perm[0]});
+    EXPECT_EQ(graph.getEdge(id)->getTrg(), common::NodeID{inv_perm[2]});
 
-    id = graph.getBackwardEdgeIDBetween(common::NodeID{perm[4]}, common::NodeID{perm[0]}).value();
-    EXPECT_EQ(graph.getBackwardEdge(id)->getSrc(), common::NodeID{perm[4]});
-    EXPECT_EQ(graph.getBackwardEdge(id)->getTrg(), common::NodeID{perm[0]});
-
-
-    id = graph.getForwardEdgeIDBetween(common::NodeID{perm[2]}, common::NodeID{perm[0]}).value();
-    EXPECT_EQ(graph.getEdge(id)->getSrc(), common::NodeID{perm[2]});
-    EXPECT_EQ(graph.getEdge(id)->getTrg(), common::NodeID{perm[0]});
-
-    id = graph.getBackwardEdgeIDBetween(common::NodeID{perm[0]}, common::NodeID{perm[2]}).value();
-    EXPECT_EQ(graph.getBackwardEdge(id)->getSrc(), common::NodeID{perm[0]});
-    EXPECT_EQ(graph.getBackwardEdge(id)->getTrg(), common::NodeID{perm[2]});
+    id = graph.getBackwardEdgeIDBetween(common::NodeID{inv_perm[2]}, common::NodeID{inv_perm[0]}).value();
+    EXPECT_EQ(graph.getBackwardEdge(id)->getSrc(), common::NodeID{inv_perm[2]});
+    EXPECT_EQ(graph.getBackwardEdge(id)->getTrg(), common::NodeID{inv_perm[0]});
 
 
-    id = graph.getForwardEdgeIDBetween(common::NodeID{perm[2]}, common::NodeID{perm[1]}).value();
-    EXPECT_EQ(graph.getEdge(id)->getSrc(), common::NodeID{perm[2]});
-    EXPECT_EQ(graph.getEdge(id)->getTrg(), common::NodeID{perm[1]});
+    id = graph.getForwardEdgeIDBetween(common::NodeID{inv_perm[0]}, common::NodeID{inv_perm[4]}).value();
+    EXPECT_EQ(graph.getEdge(id)->getSrc(), common::NodeID{inv_perm[0]});
+    EXPECT_EQ(graph.getEdge(id)->getTrg(), common::NodeID{inv_perm[4]});
 
-    id = graph.getBackwardEdgeIDBetween(common::NodeID{perm[1]}, common::NodeID{perm[2]}).value();
-    EXPECT_EQ(graph.getBackwardEdge(id)->getSrc(), common::NodeID{perm[1]});
-    EXPECT_EQ(graph.getBackwardEdge(id)->getTrg(), common::NodeID{perm[2]});
-
-
-    id = graph.getForwardEdgeIDBetween(common::NodeID{perm[2]}, common::NodeID{perm[4]}).value();
-    EXPECT_EQ(graph.getEdge(id)->getSrc(), common::NodeID{perm[2]});
-    EXPECT_EQ(graph.getEdge(id)->getTrg(), common::NodeID{perm[4]});
-
-    id = graph.getBackwardEdgeIDBetween(common::NodeID{perm[4]}, common::NodeID{perm[2]}).value();
-    EXPECT_EQ(graph.getBackwardEdge(id)->getSrc(), common::NodeID{perm[4]});
-    EXPECT_EQ(graph.getBackwardEdge(id)->getTrg(), common::NodeID{perm[2]});
+    id = graph.getBackwardEdgeIDBetween(common::NodeID{inv_perm[4]}, common::NodeID{inv_perm[0]}).value();
+    EXPECT_EQ(graph.getBackwardEdge(id)->getSrc(), common::NodeID{inv_perm[4]});
+    EXPECT_EQ(graph.getBackwardEdge(id)->getTrg(), common::NodeID{inv_perm[0]});
 
 
-    id = graph.getForwardEdgeIDBetween(common::NodeID{perm[3]}, common::NodeID{perm[2]}).value();
-    EXPECT_EQ(graph.getEdge(id)->getSrc(), common::NodeID{perm[3]});
-    EXPECT_EQ(graph.getEdge(id)->getTrg(), common::NodeID{perm[2]});
+    id = graph.getForwardEdgeIDBetween(common::NodeID{inv_perm[2]}, common::NodeID{inv_perm[0]}).value();
+    EXPECT_EQ(graph.getEdge(id)->getSrc(), common::NodeID{inv_perm[2]});
+    EXPECT_EQ(graph.getEdge(id)->getTrg(), common::NodeID{inv_perm[0]});
 
-    id = graph.getBackwardEdgeIDBetween(common::NodeID{perm[2]}, common::NodeID{perm[3]}).value();
-    EXPECT_EQ(graph.getBackwardEdge(id)->getSrc(), common::NodeID{perm[2]});
-    EXPECT_EQ(graph.getBackwardEdge(id)->getTrg(), common::NodeID{perm[3]});
-
-
-    id = graph.getForwardEdgeIDBetween(common::NodeID{perm[4]}, common::NodeID{perm[1]}).value();
-    EXPECT_EQ(graph.getEdge(id)->getSrc(), common::NodeID{perm[4]});
-    EXPECT_EQ(graph.getEdge(id)->getTrg(), common::NodeID{perm[1]});
-
-    id = graph.getBackwardEdgeIDBetween(common::NodeID{perm[1]}, common::NodeID{perm[4]}).value();
-    EXPECT_EQ(graph.getBackwardEdge(id)->getSrc(), common::NodeID{perm[1]});
-    EXPECT_EQ(graph.getBackwardEdge(id)->getTrg(), common::NodeID{perm[4]});
+    id = graph.getBackwardEdgeIDBetween(common::NodeID{inv_perm[0]}, common::NodeID{inv_perm[2]}).value();
+    EXPECT_EQ(graph.getBackwardEdge(id)->getSrc(), common::NodeID{inv_perm[0]});
+    EXPECT_EQ(graph.getBackwardEdge(id)->getTrg(), common::NodeID{inv_perm[2]});
 
 
-    id = graph.getForwardEdgeIDBetween(common::NodeID{perm[4]}, common::NodeID{perm[2]}).value();
-    EXPECT_EQ(graph.getEdge(id)->getSrc(), common::NodeID{perm[4]});
-    EXPECT_EQ(graph.getEdge(id)->getTrg(), common::NodeID{perm[2]});
+    id = graph.getForwardEdgeIDBetween(common::NodeID{inv_perm[2]}, common::NodeID{inv_perm[1]}).value();
+    EXPECT_EQ(graph.getEdge(id)->getSrc(), common::NodeID{inv_perm[2]});
+    EXPECT_EQ(graph.getEdge(id)->getTrg(), common::NodeID{inv_perm[1]});
 
-    id = graph.getBackwardEdgeIDBetween(common::NodeID{perm[2]}, common::NodeID{perm[4]}).value();
-    EXPECT_EQ(graph.getBackwardEdge(id)->getSrc(), common::NodeID{perm[2]});
-    EXPECT_EQ(graph.getBackwardEdge(id)->getTrg(), common::NodeID{perm[4]});
+    id = graph.getBackwardEdgeIDBetween(common::NodeID{inv_perm[1]}, common::NodeID{inv_perm[2]}).value();
+    EXPECT_EQ(graph.getBackwardEdge(id)->getSrc(), common::NodeID{inv_perm[1]});
+    EXPECT_EQ(graph.getBackwardEdge(id)->getTrg(), common::NodeID{inv_perm[2]});
 
 
-    id = graph.getForwardEdgeIDBetween(common::NodeID{perm[4]}, common::NodeID{perm[3]}).value();
-    EXPECT_EQ(graph.getEdge(id)->getSrc(), common::NodeID{perm[4]});
-    EXPECT_EQ(graph.getEdge(id)->getTrg(), common::NodeID{perm[3]});
+    id = graph.getForwardEdgeIDBetween(common::NodeID{inv_perm[2]}, common::NodeID{inv_perm[4]}).value();
+    EXPECT_EQ(graph.getEdge(id)->getSrc(), common::NodeID{inv_perm[2]});
+    EXPECT_EQ(graph.getEdge(id)->getTrg(), common::NodeID{inv_perm[4]});
 
-    id = graph.getBackwardEdgeIDBetween(common::NodeID{perm[3]}, common::NodeID{perm[4]}).value();
-    EXPECT_EQ(graph.getBackwardEdge(id)->getSrc(), common::NodeID{perm[3]});
-    EXPECT_EQ(graph.getBackwardEdge(id)->getTrg(), common::NodeID{perm[4]});
+    id = graph.getBackwardEdgeIDBetween(common::NodeID{inv_perm[4]}, common::NodeID{inv_perm[2]}).value();
+    EXPECT_EQ(graph.getBackwardEdge(id)->getSrc(), common::NodeID{inv_perm[4]});
+    EXPECT_EQ(graph.getBackwardEdge(id)->getTrg(), common::NodeID{inv_perm[2]});
+
+
+    id = graph.getForwardEdgeIDBetween(common::NodeID{inv_perm[3]}, common::NodeID{inv_perm[2]}).value();
+    EXPECT_EQ(graph.getEdge(id)->getSrc(), common::NodeID{inv_perm[3]});
+    EXPECT_EQ(graph.getEdge(id)->getTrg(), common::NodeID{inv_perm[2]});
+
+    id = graph.getBackwardEdgeIDBetween(common::NodeID{inv_perm[2]}, common::NodeID{inv_perm[3]}).value();
+    EXPECT_EQ(graph.getBackwardEdge(id)->getSrc(), common::NodeID{inv_perm[2]});
+    EXPECT_EQ(graph.getBackwardEdge(id)->getTrg(), common::NodeID{inv_perm[3]});
+
+
+    id = graph.getForwardEdgeIDBetween(common::NodeID{inv_perm[4]}, common::NodeID{inv_perm[1]}).value();
+    EXPECT_EQ(graph.getEdge(id)->getSrc(), common::NodeID{inv_perm[4]});
+    EXPECT_EQ(graph.getEdge(id)->getTrg(), common::NodeID{inv_perm[1]});
+
+    id = graph.getBackwardEdgeIDBetween(common::NodeID{inv_perm[1]}, common::NodeID{inv_perm[4]}).value();
+    EXPECT_EQ(graph.getBackwardEdge(id)->getSrc(), common::NodeID{inv_perm[1]});
+    EXPECT_EQ(graph.getBackwardEdge(id)->getTrg(), common::NodeID{inv_perm[4]});
+
+
+    id = graph.getForwardEdgeIDBetween(common::NodeID{inv_perm[4]}, common::NodeID{inv_perm[2]}).value();
+    EXPECT_EQ(graph.getEdge(id)->getSrc(), common::NodeID{inv_perm[4]});
+    EXPECT_EQ(graph.getEdge(id)->getTrg(), common::NodeID{inv_perm[2]});
+
+    id = graph.getBackwardEdgeIDBetween(common::NodeID{inv_perm[2]}, common::NodeID{inv_perm[4]}).value();
+    EXPECT_EQ(graph.getBackwardEdge(id)->getSrc(), common::NodeID{inv_perm[2]});
+    EXPECT_EQ(graph.getBackwardEdge(id)->getTrg(), common::NodeID{inv_perm[4]});
+
+
+    id = graph.getForwardEdgeIDBetween(common::NodeID{inv_perm[4]}, common::NodeID{inv_perm[3]}).value();
+    EXPECT_EQ(graph.getEdge(id)->getSrc(), common::NodeID{inv_perm[4]});
+    EXPECT_EQ(graph.getEdge(id)->getTrg(), common::NodeID{inv_perm[3]});
+
+    id = graph.getBackwardEdgeIDBetween(common::NodeID{inv_perm[3]}, common::NodeID{inv_perm[4]}).value();
+    EXPECT_EQ(graph.getBackwardEdge(id)->getSrc(), common::NodeID{inv_perm[3]});
+    EXPECT_EQ(graph.getBackwardEdge(id)->getTrg(), common::NodeID{inv_perm[4]});
 }
 
 TEST(OffsetArrayTest, CHOffsetArrayEdgeIdDeleteTest1)
