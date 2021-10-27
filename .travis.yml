@@ -1,0 +1,49 @@
+language: cpp
+
+dist: bionic
+
+compiler:
+  - gcc
+
+before_install:
+  - sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
+  - sudo apt-get update -qq
+
+before_script:
+  - mkdir build
+  - cd build
+  - cmake ..
+
+script:
+  - make
+  - ./test/unit_tests
+
+matrix:
+  include:
+    - compiler: gcc
+      addons:
+        apt:
+          sources:
+            - sourceline: 'ppa:ubuntu-toolchain-r/test'
+          packages:
+            - g++-10
+      env:
+        - CXX=g++-10
+        - CC=gcc-10
+
+
+      
+    # clang currently does not work
+    # - compiler: clang
+    #   addons:
+    #     apt:
+    #       sources:
+    #         - sourceline: 'ppa:ubuntu-toolchain-r/test'
+    #         - sourceline: 'deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-11 main'
+    #           key_url: 'https://apt.llvm.org/llvm-snapshot.gpg.key'
+    #       packages:
+    #         - clang-11
+    #         - g++-8
+    #   env:
+    #     - CXX=clang++-11
+    #     - CC=clang-11
