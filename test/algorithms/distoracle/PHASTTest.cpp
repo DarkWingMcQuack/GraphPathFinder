@@ -12,7 +12,7 @@
 #include <gtest/gtest.h>
 
 
-TEST(PHASTTest, SimplePHASTTest)
+TEST(PHASTTest, ToyAllToAllPHASTTest)
 {
     auto example_graph = data_dir + "ch-fmi-example.txt";
     auto graph_opt = parsing::parseFromFMIFile<graphs::FMINode<true>, graphs::FMIEdge<true>>(example_graph);
