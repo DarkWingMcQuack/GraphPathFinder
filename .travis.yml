@@ -31,6 +31,17 @@ matrix:
         - CXX=g++-10
         - CC=gcc-10
 
+    - compiler: gcc
+      addons:
+        apt:
+          sources:
+            - sourceline: 'ppa:ubuntu-toolchain-r/test'
+          packages:
+            - g++-11
+      env:
+        - CXX=g++-11
+        - CC=gcc-11
+
 
       
     # clang currently does not work
