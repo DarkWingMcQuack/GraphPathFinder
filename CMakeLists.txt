@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.14)
+cmake_minimum_required(VERSION 3.12)
 
 #get options and compiling env
 include(cmake/options.cmake)
@@ -18,9 +18,6 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 ############################
 include(cmake/fmt.cmake)
 include(cmake/tbb.cmake)
-# include(cmake/CLI11.cmake)
-# include(cmake/progress.cmake)
-# include(cmake/nlohmann.cmake)
 include(cmake/namedtype.cmake)
 include(cmake/gtest.cmake)
 
@@ -118,10 +115,7 @@ target_include_directories(GraphPathFinderLib INTERFACE
   ${CMAKE_CURRENT_SOURCE_DIR}/include
   fmt
   tbb
-  ${CLI11_INCLUDE_DIR}
   ${NAMEDTYPE_INCLUDE_DIR}
-  ${PROGRESS_CPP_INCLUDE_DIR}
-  ${NLOHMANN_INCLUDE_DIR}
   )
 
 #link against libarys
