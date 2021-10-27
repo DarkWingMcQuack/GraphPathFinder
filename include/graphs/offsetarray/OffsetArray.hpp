@@ -265,9 +265,9 @@ public:
     auto sortEdgesAccordingTo(F&& func) noexcept
 	    -> std::pair<std::vector<std::size_t>, std::vector<std::size_t>>
 	    requires std::regular_invocable<F, const OffsetArray&>
-	    && std::strict_weak_order<std::invoke_result_t<F, const OffsetArray&>,
-								  common::EdgeID,
-								  common::EdgeID>
+	          && std::strict_weak_order<std::invoke_result_t<F, const OffsetArray&>,
+								        common::EdgeID,
+								        common::EdgeID>
     // clang-format on
     {
         const auto order = std::invoke(std::forward<F>(func), *this);
@@ -281,7 +281,7 @@ public:
         std::sort(std::begin(perm),
                   std::end(perm),
                   [&](auto lhs, auto rhs) {
-                      return order(common::NodeID{lhs}, common::NodeID{rhs});
+                      return order(common::EdgeID{lhs}, common::EdgeID{rhs});
                   });
 
         auto inv_perm = util::inversePermutation(perm);
@@ -307,8 +307,20 @@ public:
         }
 
         //permutation will get copied into applypermutation because it will be consumed
-        this->edges = util::applyPermutation(std::move(this->edges_),
-                                             perm);
+        this->edges_ = util::applyPermutation(std::move(this->edges_),
+                                              perm);
+
+        //permute the shortcuts
+        if constexpr(concepts::CanHaveShortcuts<EdgeType>) {
+            for(auto& edge : this->edges_) {
+                if(!edge.isShortcut()) {
+                    continue;
+                }
+
+                const auto [first, second] = edge.getShortcutUnsafe();
+                edge.setShortcut(inv_perm[first.get()], inv_perm[second.get()]);
+            }
+        }
 
         return std::pair{std::move(perm), std::move(inv_perm)};
     }
