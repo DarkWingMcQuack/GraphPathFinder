@@ -25,6 +25,12 @@ public:
         return shortcut_.value();
     }
 
+    constexpr auto setShortcut(common::EdgeID first, common::EdgeID second) noexcept
+        -> void
+    {
+        shortcut_ = std::pair{first, second};
+    }
+
     constexpr auto isShortcut() const noexcept
         -> bool
     {
