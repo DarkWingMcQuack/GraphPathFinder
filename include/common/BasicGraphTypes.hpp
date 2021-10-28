@@ -3,6 +3,8 @@
 #include <NamedType/named_type.hpp>
 #include <charconv>
 #include <concepts>
+#include <cstdint>
+#include <limits>
 #include <string_view>
 
 namespace common {
