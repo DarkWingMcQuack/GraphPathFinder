@@ -239,8 +239,8 @@ private:
 // clang-format off
 template<class Graph>
 requires concepts::DeletableForwardConnections<Graph> &&
-concepts::DeletableBackwardConnections<Graph> &&
-concepts::NodesSortable<Graph>
+         concepts::DeletableBackwardConnections<Graph> &&
+         concepts::NodesSortable<Graph>
 // clang-format on
 [[nodiscard]] inline auto prepareGraphForHubLabelCalculator(Graph g) noexcept
     -> Graph
