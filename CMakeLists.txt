@@ -98,6 +98,9 @@ target_sources(GraphPathFinderLib
   ${CMAKE_CURRENT_LIST_DIR}/include/algorithms/distoracle/ch/CHDijkstraForwardHelper.hpp
   ${CMAKE_CURRENT_LIST_DIR}/include/algorithms/distoracle/ch/CHDijkstra.hpp
 
+  
+  ${CMAKE_CURRENT_LIST_DIR}/include/algorithms/distoracle/hublabels/HubLabelLookup.hpp
+
   ${CMAKE_CURRENT_LIST_DIR}/include/algorithms/distoracle/PHAST.hpp
   )
 
