@@ -15,3 +15,4 @@ function(add_cli_exe T)
 endfunction()
 
 add_cli_exe(dijkstra dijkstra.cpp)
+add_cli_exe(hublabels hublabels.cpp)
