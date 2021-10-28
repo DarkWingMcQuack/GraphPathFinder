@@ -1,6 +1,7 @@
 #pragma once
 
 #include <common/BasicGraphTypes.hpp>
+#include <optional>
 #include <span>
 
 namespace concepts {
