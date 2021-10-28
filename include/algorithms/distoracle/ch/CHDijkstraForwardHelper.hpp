@@ -3,6 +3,7 @@
 #include <algorithms/pathfinding/dijkstra/DijkstraQueue.hpp>
 #include <common/BasicGraphTypes.hpp>
 #include <common/EmptyBase.hpp>
+#include <optional>
 #include <queue>
 #include <span>
 #include <type_traits>

@@ -23,17 +23,20 @@ concept HasTarget = requires(const Edge& edge, Edge& e, common::NodeID trg)
 };
 
 template<typename Edge>
-concept HasWeight = requires(const Edge& e, common::Weight w){
+concept HasWeight = requires(const Edge& e, common::Weight w)
+{
     {e.getWeight()} -> std::convertible_to<common::Weight>;
 };
 
 template<typename Edge>
-concept HasWeightSetter = requires(Edge& mut_edge, common::Weight weight){
+concept HasWeightSetter = requires(Edge& mut_edge, common::Weight weight)
+{
     {mut_edge.setWeight(weight)} -> std::same_as<void>;
 };
 
 template<typename Edge>
-concept CanHaveShortcuts = requires(const Edge& const_edge, Edge& mut_edge, common::EdgeID id){
+concept CanHaveShortcuts = requires(const Edge& const_edge, Edge& mut_edge, common::EdgeID id)
+{
     {const_edge.getShortcut()} -> std::same_as<std::optional<std::pair<common::EdgeID, common::EdgeID>>>;
 
     {const_edge.getShortcutUnsafe()} -> std::same_as<std::pair<common::EdgeID, common::EdgeID>>;
