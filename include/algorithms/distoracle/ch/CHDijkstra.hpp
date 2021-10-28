@@ -45,7 +45,7 @@ public:
 
 
     template<bool SortGraphEdges = true>
-    constexpr CHDijkstra(Graph& graph) noexcept
+    constexpr CHDijkstra(const Graph& graph) noexcept
         : ForwardHelper(graph.numberOfNodes()),
           BackwardHelper(graph.numberOfNodes()),
           graph_(graph)
