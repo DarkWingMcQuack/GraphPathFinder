@@ -23,6 +23,8 @@ add_executable(unit_tests
 
   algorithms/distoracle/ch/CHDijkstraTest.cpp
 
+  algorithms/distoracle/hublabels/HubLabelTest.cpp
+
   algorithms/distoracle/PHASTTest.cpp
 
   utils/PermutationTest.cpp

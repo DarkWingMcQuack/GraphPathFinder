@@ -21,6 +21,15 @@ namespace algorithms::distoracle {
 class HubLabelLookup
 {
     template<class Graph>
+    // clang-format off
+	requires concepts::ForwardConnections<Graph>
+	&& concepts::BackwardConnections<Graph>
+	&& concepts::ReadableNodeLevels<Graph>
+	&& concepts::HasEdges<Graph>
+	&& concepts::HasBackwardEdges<Graph>
+	&& concepts::HasNodes<Graph>
+	&& concepts::HasTarget<typename Graph::EdgeType>
+    // clang-format on
     friend class HubLabelCalculator;
 
     using HubType = std::pair<common::NodeID, common::Weight>;
@@ -36,8 +45,8 @@ class HubLabelLookup
     }
 
 
-    [[nodiscard]] constexpr static auto distanceOracle(const std::vector<HubType>& out_l,
-                                                       const std::vector<HubType>& in_l) noexcept
+    [[nodiscard]] static auto distanceOracle(const std::vector<HubType>& out_l,
+                                             const std::vector<HubType>& in_l) noexcept
         -> common::Weight
     {
         const auto max_s_size = out_l.size();
@@ -46,15 +55,15 @@ class HubLabelLookup
         auto best_node = common::UNKNOWN_NODE_ID;
         auto best_dist = common::INFINITY_WEIGHT;
 
-        auto s_idx = 0;
-        auto t_idx = 0;
+        auto s_idx = 0ul;
+        auto t_idx = 0ul;
 
         while(s_idx < max_s_size and t_idx < max_t_size) {
             const auto src_hub = out_l[s_idx];
             const auto trg_hub = in_l[t_idx];
 
             if(src_hub.first == trg_hub.first) {
-                const auto tmp_dist = std::min(best_dist, src_hub.second + trg_hub.second);
+                const auto tmp_dist = src_hub.second + trg_hub.second;
                 if(tmp_dist < best_dist) {
                     best_dist = tmp_dist;
                     best_node = src_hub.first;
@@ -74,11 +83,11 @@ class HubLabelLookup
 public:
     constexpr static inline bool is_threadsafe = false;
 
-    [[nodiscard]] constexpr auto distanceBetween(common::NodeID source, common::NodeID target) noexcept
+    [[nodiscard]] auto distanceBetween(common::NodeID source, common::NodeID target) noexcept
         -> common::Weight
     {
+        const auto& in_l = in_labels_[target.get()];
         const auto& out_l = out_labels_[source.get()];
-        const auto& in_l = out_labels_[target.get()];
 
         return HubLabelLookup::distanceOracle(out_l, in_l);
     }
