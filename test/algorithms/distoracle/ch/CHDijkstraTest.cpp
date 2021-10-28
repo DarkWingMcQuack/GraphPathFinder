@@ -20,7 +20,7 @@ TEST(DistanceOracleCHDijkstraTest, MixedSourcesTest)
     ASSERT_TRUE(graph_opt);
     auto graph = std::move(graph_opt.value());
 
-	graph = algorithms::distoracle::prepareGraphForCHDijkstra(std::move(graph));
+    graph = algorithms::distoracle::prepareGraphForCHDijkstra(std::move(graph));
 
     algorithms::distoracle::CHDijkstra dijkstra{graph};
 
@@ -55,7 +55,7 @@ TEST(DistanceOracleCHDijkstraTest, SameSourcesTest)
     ASSERT_TRUE(graph_opt);
     auto graph = std::move(graph_opt.value());
 
-	graph = algorithms::distoracle::prepareGraphForCHDijkstra(std::move(graph));
+    graph = algorithms::distoracle::prepareGraphForCHDijkstra(std::move(graph));
 
     algorithms::distoracle::CHDijkstra dijkstra{graph};
 
@@ -83,4 +83,24 @@ TEST(DistanceOracleCHDijkstraTest, SameSourcesTest)
     EXPECT_EQ(dijkstra.distanceBetween(common::NodeID{4}, common::NodeID{1}), common::Weight{2});
     EXPECT_EQ(dijkstra.distanceBetween(common::NodeID{4}, common::NodeID{2}), common::Weight{4});
     EXPECT_EQ(dijkstra.distanceBetween(common::NodeID{4}, common::NodeID{3}), common::Weight{1});
+}
+
+
+TEST(DistanceOracleCHDijkstraTest, SourceAndTargetSameTest)
+{
+    auto example_graph = data_dir + "ch-fmi-example.txt";
+    auto graph_opt = parsing::parseFromFMIFile<graphs::FMINode<true>, graphs::FMIEdge<true>>(example_graph);
+
+    ASSERT_TRUE(graph_opt);
+    auto graph = std::move(graph_opt.value());
+
+    graph = algorithms::distoracle::prepareGraphForCHDijkstra(std::move(graph));
+
+    algorithms::distoracle::CHDijkstra dijkstra{graph};
+
+    for(std::size_t i = 0; i < graph.numberOfNodes(); i++) {
+        common::NodeID node{i};
+
+        EXPECT_EQ(dijkstra.distanceBetween(node, node), common::Weight{0});
+    }
 }
