@@ -14,9 +14,9 @@ set(CMAKE_ARGS
 
 ExternalProject_Add(gtest-project
   PREFIX deps/gtest
-  DOWNLOAD_NAME gtest-1.8.1.tar.gz
+  DOWNLOAD_NAME gtest-1.11.0.tar.gz
   DOWNLOAD_DIR ${CMAKE_BINARY_DIR}/downloads
-  URL https://github.com/google/googletest/archive/release-1.8.1.tar.gz
+  URL https://github.com/google/googletest/archive/release-1.11.0.tar.gz
   PATCH_COMMAND cmake -E make_directory <SOURCE_DIR>/win32-deps/include
   CMAKE_ARGS ${CMAKE_ARGS}
   # Overwtire build and install commands to force Release build on MSVC.
