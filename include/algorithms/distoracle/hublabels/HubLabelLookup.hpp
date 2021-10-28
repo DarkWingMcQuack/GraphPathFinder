@@ -35,15 +35,11 @@ class HubLabelLookup
                       "HubLabelLookup should fullfill the DistanceOracle concept");
     }
 
-public:
-    constexpr static inline bool is_threadsafe = false;
 
-    [[nodiscard]] constexpr auto distanceBetween(common::NodeID source, common::NodeID target) noexcept
+    [[nodiscard]] constexpr static auto distanceOracle(const std::vector<HubType>& out_l,
+                                                       const std::vector<HubType>& in_l) noexcept
         -> common::Weight
     {
-        const auto& out_l = out_labels_[source.get()];
-        const auto& in_l = out_labels_[target.get()];
-
         const auto max_s_size = out_l.size();
         const auto max_t_size = in_l.size();
 
@@ -73,6 +69,18 @@ public:
         }
 
         return best_dist;
+    }
+
+public:
+    constexpr static inline bool is_threadsafe = false;
+
+    [[nodiscard]] constexpr auto distanceBetween(common::NodeID source, common::NodeID target) noexcept
+        -> common::Weight
+    {
+        const auto& out_l = out_labels_[source.get()];
+        const auto& in_l = out_labels_[target.get()];
+
+        return HubLabelLookup::distanceOracle(out_l, in_l);
     }
 
 private:
