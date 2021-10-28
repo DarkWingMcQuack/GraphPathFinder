@@ -47,7 +47,6 @@ compile_commands.json
 *.out
 *.app
 
-data/
 
 # Python
 # Byte-compiled / optimized / DLL files
