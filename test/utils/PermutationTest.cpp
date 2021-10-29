@@ -140,3 +140,24 @@ TEST(PermutationTest, CombinePermutationTest1)
     EXPECT_EQ(combined[3], 2);
     EXPECT_EQ(combined[4], 4);
 }
+
+TEST(PermutationTest, CombinePermutationTest2)
+{
+    std::vector<std::size_t> permutation1{0, 3, 4, 1, 2};
+    const auto permutation2 = util::inversePermutation(permutation1);
+    const auto combined1 = util::combine(permutation1, permutation2);
+
+    EXPECT_EQ(combined1[0], 0);
+    EXPECT_EQ(combined1[1], 1);
+    EXPECT_EQ(combined1[2], 2);
+    EXPECT_EQ(combined1[3], 3);
+    EXPECT_EQ(combined1[4], 4);
+
+    const auto combined2 = util::combine(permutation2, permutation1);
+
+    EXPECT_EQ(combined2[0], 0);
+    EXPECT_EQ(combined2[1], 1);
+    EXPECT_EQ(combined2[2], 2);
+    EXPECT_EQ(combined2[3], 3);
+    EXPECT_EQ(combined2[4], 4);
+}
