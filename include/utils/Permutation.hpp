@@ -40,6 +40,21 @@ template<class T>
     return std::move(vec);
 }
 
+
+// permutations are a monoid, we can combine them
+[[nodiscard]] inline auto combine(const std::vector<std::size_t>& first,
+                                  const std::vector<std::size_t>& second) noexcept
+    -> std::vector<std::size_t>
+{
+    std::vector<std::size_t> combined(first.size());
+
+    for(std::size_t i = 0; i < first.size(); i++) {
+        combined[i] = second[first[i]];
+    }
+
+    return combined;
+}
+
 /**
   * given a permutation vector this method returns an the inverse permutation vector such that for all i:
   * i == inverse[permutate[i]] and i == permutate[inverse[i]]

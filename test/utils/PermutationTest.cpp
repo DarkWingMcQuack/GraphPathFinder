@@ -1,4 +1,5 @@
 //all the includes you want to use before the gtest include
+#include <fmt/ranges.h>
 #include <utils/Permutation.hpp>
 
 #include <gtest/gtest.h>
@@ -123,4 +124,19 @@ TEST(PermutationTest, InversePermutationTest3)
     EXPECT_EQ(inverse[permutation[8]], 8);
     EXPECT_EQ(inverse[permutation[9]], 9);
     EXPECT_EQ(inverse[permutation[10]], 10);
+}
+
+
+TEST(PermutationTest, CombinePermutationTest1)
+{
+    std::vector<std::size_t> permutation1{0, 3, 4, 1, 2};
+    std::vector<std::size_t> permutation2{0, 2, 4, 1, 3};
+
+    auto combined = util::combine(permutation1, permutation2);
+
+    EXPECT_EQ(combined[0], 0);
+    EXPECT_EQ(combined[1], 1);
+    EXPECT_EQ(combined[2], 3);
+    EXPECT_EQ(combined[3], 2);
+    EXPECT_EQ(combined[4], 4);
 }
