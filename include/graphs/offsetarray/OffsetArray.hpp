@@ -171,24 +171,34 @@ public:
 								        common::NodeID>
     // clang-format on
     {
-        const auto order = std::invoke(std::forward<F>(func), *this);
         const auto number_of_nodes = this->numberOfNodes();
-        const auto number_of_edges = this->numberOfEdges();
+        const auto f = std::invoke(std::forward<F>(func), *this);
+        const auto order = [&](auto lhs, auto rhs) {
+            return f(common::NodeID{lhs}, common::NodeID{rhs});
+        };
 
         std::vector<std::size_t> perm(number_of_nodes);
-        std::iota(std::begin(perm),
-                  std::end(perm),
-                  0);
-
-
-        std::sort(std::begin(perm),
-                  std::end(perm),
-                  [&](auto lhs, auto rhs) {
-                      return order(common::NodeID{lhs}, common::NodeID{rhs});
-                  });
+        std::iota(std::begin(perm), std::end(perm), 0);
+        std::sort(std::begin(perm), std::end(perm), order);
 
         //dont const because it will be moved out of the function
         auto inv_perm = util::inversePermutation(perm);
+
+        applyNodePermutation(perm, inv_perm);
+
+        return std::pair{std::move(perm), std::move(inv_perm)};
+    }
+
+    auto applyNodePermutation(std::vector<std::size_t> perm,
+                              const std::vector<std::size_t>& inv_perm) noexcept
+        -> bool
+    {
+        const auto number_of_nodes = this->numberOfNodes();
+        const auto number_of_edges = this->numberOfEdges();
+
+        if(number_of_nodes != perm.size() or number_of_nodes != inv_perm.size()) {
+            return false;
+        }
 
         //apply the permutation to the forward offsetarray
         if constexpr(concepts::ForwardConnections<OffsetArray>) {
@@ -251,13 +261,11 @@ public:
 
         //update the nodes_ array if available
         if constexpr(!std::is_same_v<NodeType, common::NodeID>) {
-            // perm is geting copied here because it will be consumed by the
-            // applypermutation function
             this->nodes_ = util::applyPermutation(std::move(this->nodes_),
-                                                  perm);
+                                                  std::move(perm));
         }
 
-        return std::pair{std::move(perm), std::move(inv_perm)};
+        return true;
     }
 
     // clang-format off
@@ -270,22 +278,30 @@ public:
 								        common::EdgeID>
     // clang-format on
     {
-        const auto order = std::invoke(std::forward<F>(func), *this);
+        const auto number_of_edges = this->numberOfEdges();
+        const auto f = std::invoke(std::forward<F>(func), *this);
+        const auto order = [&](auto lhs, auto rhs) {
+            return f(common::EdgeID{lhs}, common::EdgeID{rhs});
+        };
 
-        std::vector<std::size_t> perm(this->numberOfEdges());
-        std::iota(std::begin(perm),
-                  std::end(perm),
-                  0);
 
-        //sort the edgeids according to the given order
-        std::sort(std::begin(perm),
-                  std::end(perm),
-                  [&](auto lhs, auto rhs) {
-                      return order(common::EdgeID{lhs}, common::EdgeID{rhs});
-                  });
+        std::vector<std::size_t> perm(number_of_edges);
+        std::iota(std::begin(perm), std::end(perm), 0);
+        std::sort(std::begin(perm), std::end(perm), order);
 
         auto inv_perm = util::inversePermutation(perm);
 
+        return std::pair{std::move(perm), std::move(inv_perm)};
+    }
+
+    auto applyEdgePermutation(std::vector<std::size_t> perm,
+                              const std::vector<std::size_t>& inv_perm) noexcept
+        -> bool
+    {
+        const auto number_of_edges = this->numberOfEdges();
+        if(number_of_edges != perm.size() or number_of_edges != inv_perm.size()) {
+            return false;
+        }
         //apply the permutation to the forward connections
         if constexpr(concepts::ForwardConnections<OffsetArray>) {
             std::transform(std::begin(this->forward_neigbours_),
@@ -308,7 +324,7 @@ public:
 
         //permutation will get copied into applypermutation because it will be consumed
         this->edges_ = util::applyPermutation(std::move(this->edges_),
-                                              perm);
+                                              std::move(perm));
 
         //permute the shortcuts
         if constexpr(concepts::CanHaveShortcuts<EdgeType>) {
@@ -322,7 +338,7 @@ public:
             }
         }
 
-        return std::pair{std::move(perm), std::move(inv_perm)};
+        return true;
     }
 };
 
