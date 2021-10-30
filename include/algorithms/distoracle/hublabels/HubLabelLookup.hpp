@@ -36,7 +36,7 @@ class HubLabelLookup
 
     //private ctor because a HubLabelLookup should only be consructed via a HubLabelCalculator
     HubLabelLookup(std::vector<std::vector<HubType>> in_labels,
-                   std::vector<std::vector<HubType>> out_labels)
+                   std::vector<std::vector<HubType>> out_labels) noexcept
         : in_labels_(std::move(in_labels)),
           out_labels_(std::move(out_labels))
     {

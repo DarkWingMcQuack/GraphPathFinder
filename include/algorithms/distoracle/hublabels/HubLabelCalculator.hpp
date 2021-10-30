@@ -85,7 +85,7 @@ private:
 
         std::erase_if(hubs, [&](const auto &hub) {
             const auto trg = hub.first;
-            const auto label_dist = hub.second;
+            const auto hub_dist = hub.second;
             const auto real_dist = [&] {
                 if(node == trg) {
                     return common::Weight{0};
@@ -95,7 +95,7 @@ private:
                 return HubLabelLookup::distanceOracle(hubs, in_hubs);
             }();
 
-            return label_dist > real_dist;
+            return hub_dist > real_dist;
         });
     }
 
@@ -139,16 +139,15 @@ private:
         return hubs;
     }
 
-    constexpr auto
-    pruneInLabels(common::NodeID node,
-                  std::vector<HubLabelLookup::HubType> &hubs) const noexcept
+    constexpr auto pruneInLabels(common::NodeID node,
+                                 std::vector<HubLabelLookup::HubType> &hubs) const noexcept
         -> void
     {
         hubs.erase(std::unique(hubs.begin(), hubs.end()), hubs.end());
 
-        std::erase_if(hubs, [&](const auto &label) {
-            const auto trg = label.first;
-            const auto label_dist = label.second;
+        std::erase_if(hubs, [&](const auto &hub) {
+            const auto trg = hub.first;
+            const auto hub_dist = hub.second;
             const auto real_dist = [&] {
                 if(node == trg) {
                     return common::Weight{0};
@@ -158,15 +157,14 @@ private:
                 return HubLabelLookup::distanceOracle(out_hubs, hubs);
             }();
 
-            return label_dist > real_dist;
+            return hub_dist > real_dist;
         });
     }
 
-    [[nodiscard]] auto buildMaxNodePerLevelVector() const noexcept
+    [[nodiscard]] auto buildMaxNodePerLevelVector(std::size_t max_level) const noexcept
         -> std::vector<common::NodeID>
     {
-        const auto max_level = graph_.getNodeLevelUnsafe(common::NodeID{0});
-        std::vector<common::NodeID> max_node_of_level(max_level.get() + 1);
+        std::vector<common::NodeID> max_node_of_level(max_level + 1);
 
         for(std::size_t i = 0; i < graph_.numberOfNodes(); i++) {
             const auto node = common::NodeID{i};
@@ -199,10 +197,13 @@ public:
     [[nodiscard]] auto constructHubLabelLookupInParallel() noexcept
         -> HubLabelLookup
     {
-        const auto max_node_of_level = buildMaxNodePerLevelVector();
         const auto max_level = graph_.getNodeLevelUnsafe(common::NodeID{0}).get();
+        const auto max_node_of_level = buildMaxNodePerLevelVector(max_level);
+
         common::NodeID current_node{0};
 
+        //iterate over all nodes by their levels and process all nodes in
+        //the same level in parallel
         for(std::int64_t level = max_level; level >= 0; level--) {
 
             const auto node_range = common::range(current_node.get(),
