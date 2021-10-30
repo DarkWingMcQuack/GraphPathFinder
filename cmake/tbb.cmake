@@ -10,12 +10,12 @@ set(CMAKE_ARGS
   -DBUILD_SHARED_LIBS=OFF
   -DTBB_BUILD_STATIC=ON
   -DTBB_BUILD_SHARED=OFF
-  -DTBB_CI_BUILD=OFF
-  -DTBB_BUILD_TESTS=OFF)
+  -DTBB_EXAMPLES=OFF
+  -DTBB_TEST=OFF)
 
 ExternalProject_Add(tbb-project
   PREFIX deps/tbb
-  GIT_REPOSITORY https://github.com/wjakob/tbb.git
+  GIT_REPOSITORY https://github.com/oneapi-src/oneTBB
   PATCH_COMMAND cmake -E make_directory <SOURCE_DIR>/win32-deps/include
   UPDATE_COMMAND ""
   CMAKE_ARGS ${CMAKE_ARGS}
@@ -27,7 +27,13 @@ ExternalProject_Add(tbb-project
 
 ExternalProject_Get_Property(tbb-project INSTALL_DIR)
 add_library(tbb STATIC IMPORTED)
-set(TBB_LIBRARY ${INSTALL_DIR}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}tbb_static${CMAKE_STATIC_LIBRARY_SUFFIX})
+
+if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+  set(TBB_LIBRARY ${INSTALL_DIR}/${CMAKE_INSTALL_LIBDIR}/${CMAKE_STATIC_LIBRARY_PREFIX}tbb_debug${CMAKE_STATIC_LIBRARY_SUFFIX})
+else()
+  set(TBB_LIBRARY ${INSTALL_DIR}/${CMAKE_INSTALL_LIBDIR}/${CMAKE_STATIC_LIBRARY_PREFIX}tbb_release${CMAKE_STATIC_LIBRARY_SUFFIX})
+endif ()
+
 set(TBB_INCLUDE_DIR ${INSTALL_DIR}/include)
 file(MAKE_DIRECTORY ${TBB_INCLUDE_DIR})  # Must exist.
 set_property(TARGET tbb PROPERTY IMPORTED_LOCATION ${TBB_LIBRARY})
