@@ -1,4 +1,4 @@
-//all the includes you want to use before the gtest include
+// all the includes you want to use before the gtest include
 
 #include "../../globals.hpp"
 #include <fmt/ranges.h>
@@ -663,11 +663,11 @@ TEST(OffsetArrayTest, CHOffsetArrayNodeLevelTest)
     ASSERT_TRUE(graph_opt);
     auto graph = std::move(graph_opt.value());
 
-    EXPECT_EQ(graph.getNodeLevel(common::NodeID{0}), common::NodeLevel{3});
-    EXPECT_EQ(graph.getNodeLevel(common::NodeID{1}), common::NodeLevel{0});
-    EXPECT_EQ(graph.getNodeLevel(common::NodeID{2}), common::NodeLevel{2});
-    EXPECT_EQ(graph.getNodeLevel(common::NodeID{3}), common::NodeLevel{0});
-    EXPECT_EQ(graph.getNodeLevel(common::NodeID{4}), common::NodeLevel{1});
+    EXPECT_EQ(graph.getNodeLevelUnsafe(common::NodeID{0}), common::NodeLevel{3});
+    EXPECT_EQ(graph.getNodeLevelUnsafe(common::NodeID{1}), common::NodeLevel{0});
+    EXPECT_EQ(graph.getNodeLevelUnsafe(common::NodeID{2}), common::NodeLevel{2});
+    EXPECT_EQ(graph.getNodeLevelUnsafe(common::NodeID{3}), common::NodeLevel{0});
+    EXPECT_EQ(graph.getNodeLevelUnsafe(common::NodeID{4}), common::NodeLevel{1});
 }
 
 TEST(OffsetArrayTest, CHOffsetArrayNestedEdgeTest)
@@ -796,11 +796,11 @@ TEST(OffsetArrayTest, CHOffsetArrayNodeSortingTest1)
     EXPECT_EQ(perm[3], 1);
     EXPECT_EQ(perm[4], 0);
 
-    EXPECT_EQ(graph.getNodeLevel(common::NodeID{inv_perm[0]}), common::NodeLevel{3});
-    EXPECT_EQ(graph.getNodeLevel(common::NodeID{inv_perm[1]}), common::NodeLevel{0});
-    EXPECT_EQ(graph.getNodeLevel(common::NodeID{inv_perm[2]}), common::NodeLevel{2});
-    EXPECT_EQ(graph.getNodeLevel(common::NodeID{inv_perm[3]}), common::NodeLevel{0});
-    EXPECT_EQ(graph.getNodeLevel(common::NodeID{inv_perm[4]}), common::NodeLevel{1});
+    EXPECT_EQ(graph.getNodeLevelUnsafe(common::NodeID{inv_perm[0]}), common::NodeLevel{3});
+    EXPECT_EQ(graph.getNodeLevelUnsafe(common::NodeID{inv_perm[1]}), common::NodeLevel{0});
+    EXPECT_EQ(graph.getNodeLevelUnsafe(common::NodeID{inv_perm[2]}), common::NodeLevel{2});
+    EXPECT_EQ(graph.getNodeLevelUnsafe(common::NodeID{inv_perm[3]}), common::NodeLevel{0});
+    EXPECT_EQ(graph.getNodeLevelUnsafe(common::NodeID{inv_perm[4]}), common::NodeLevel{1});
 
     for(std::size_t i = 0; i < graph.numberOfNodes(); i++) {
         auto ids = graph.getForwardEdgeIDsOf(common::NodeID{i});

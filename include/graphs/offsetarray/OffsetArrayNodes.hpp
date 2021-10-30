@@ -129,6 +129,10 @@ class OffsetArrayNodes : public std::conditional_t<std::is_same_v<Node, common::
                                                    TrivialOffsetArrayNodes,
                                                    NonTrivialOffsetArrayNodes<Graph, Node>>
 {
+public:
+    constexpr OffsetArrayNodes(std::vector<Node> nodes) noexcept
+        requires(!std::is_same_v<Node, common::NodeID>)
+        : NonTrivialOffsetArrayNodes<Graph, Node>(std::move(nodes)) {}
 };
 
 

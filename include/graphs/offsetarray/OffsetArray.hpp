@@ -107,8 +107,8 @@ public:
     }
 
 
-    //currently clang has a bug of not allowing all three constructors at the same time
-    //once this is fixed thei check can be omitted
+    // currently clang has a bug of not allowing all three constructors at the same time
+    // once this is fixed thei check can be omitted
 #ifndef __clang__
     OffsetArray(std::vector<Node> nodes,
                 std::vector<Edge> edges) noexcept
@@ -177,11 +177,12 @@ public:
             return f(common::NodeID{lhs}, common::NodeID{rhs});
         };
 
+
         std::vector<std::size_t> perm(number_of_nodes);
         std::iota(std::begin(perm), std::end(perm), 0);
         std::sort(std::begin(perm), std::end(perm), order);
 
-        //dont const because it will be moved out of the function
+        // dont const because it will be moved out of the function
         auto inv_perm = util::inversePermutation(perm);
 
         applyNodePermutation(perm, inv_perm);
@@ -200,7 +201,7 @@ public:
             return false;
         }
 
-        //apply the permutation to the forward offsetarray
+        // apply the permutation to the forward offsetarray
         if constexpr(concepts::ForwardConnections<OffsetArray>) {
             std::vector<size_t> forward_offset(number_of_nodes + 1, 0);
             std::vector<common::EdgeID> forward_neigbours;
@@ -219,7 +220,7 @@ public:
             this->forward_neigbours_ = std::move(forward_neigbours);
         }
 
-        //apply the permutation to the backward offsetarray
+        // apply the permutation to the backward offsetarray
         if constexpr(concepts::BackwardConnections<OffsetArray>) {
             std::vector<size_t> backward_offset(number_of_nodes + 1, 0);
             std::vector<common::EdgeID> backward_neigbours;
@@ -239,18 +240,18 @@ public:
             this->backward_neigbours_ = std::move(backward_neigbours);
         }
 
-        //update the sources and targets of edges in the graph
+        // update the sources and targets of edges in the graph
         if constexpr(concepts::HasEdges<OffsetArray>) {
             for(auto& e : this->edges_) {
 
-                //update src if available
+                // update src if available
                 if constexpr(concepts::HasSource<EdgeType>) {
                     auto current_src = e.getSrc();
                     auto new_src = common::NodeID{inv_perm[current_src.get()]};
                     e.setSrc(new_src);
                 }
 
-                //update trg if available
+                // update trg if available
                 if constexpr(concepts::HasTarget<EdgeType>) {
                     auto current_trg = e.getTrg();
                     auto new_trg = common::NodeID{inv_perm[current_trg.get()]};
@@ -259,7 +260,7 @@ public:
             }
         }
 
-        //update the nodes_ array if available
+        // update the nodes_ array if available
         if constexpr(!std::is_same_v<NodeType, common::NodeID>) {
             this->nodes_ = util::applyPermutation(std::move(this->nodes_),
                                                   std::move(perm));
@@ -302,7 +303,8 @@ public:
         if(number_of_edges != perm.size() or number_of_edges != inv_perm.size()) {
             return false;
         }
-        //apply the permutation to the forward connections
+
+        // apply the permutation to the forward connections
         if constexpr(concepts::ForwardConnections<OffsetArray>) {
             std::transform(std::begin(this->forward_neigbours_),
                            std::end(this->forward_neigbours_),
@@ -312,7 +314,7 @@ public:
                            });
         }
 
-        //apply the permutation to the backward connections
+        // apply the permutation to the backward connections
         if constexpr(concepts::BackwardConnections<OffsetArray>) {
             std::transform(std::begin(this->backward_neigbours_),
                            std::end(this->backward_neigbours_),
@@ -322,11 +324,11 @@ public:
                            });
         }
 
-        //permutation will get copied into applypermutation because it will be consumed
+        // permutation will get copied into applypermutation because it will be consumed
         this->edges_ = util::applyPermutation(std::move(this->edges_),
                                               std::move(perm));
 
-        //permute the shortcuts
+        // permute the shortcuts
         if constexpr(concepts::CanHaveShortcuts<EdgeType>) {
             for(auto& edge : this->edges_) {
                 if(!edge.isShortcut()) {

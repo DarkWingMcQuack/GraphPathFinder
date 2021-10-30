@@ -15,7 +15,7 @@ template<class CRTP, bool UseStallOnDemand>
 class CHDijkstraBackwardHelper
 {
 public:
-    //deleted things should be public
+    // deleted things should be public
     constexpr CHDijkstraBackwardHelper(const CHDijkstraBackwardHelper&) noexcept = delete;
     constexpr auto operator=(const CHDijkstraBackwardHelper&) noexcept
         -> CHDijkstraBackwardHelper& = delete;
@@ -30,7 +30,7 @@ private:
     constexpr auto operator=(CHDijkstraBackwardHelper&&) noexcept
         -> CHDijkstraBackwardHelper& = default;
 
-    constexpr auto fillBackwardInfo(common::NodeID source) noexcept
+    auto fillBackwardInfo(common::NodeID source) noexcept
         -> void
     {
         if(last_source_ && last_source_.value().get() == source.get()) {

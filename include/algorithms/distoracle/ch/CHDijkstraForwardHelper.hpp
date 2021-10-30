@@ -31,7 +31,7 @@ private:
     constexpr auto operator=(CHDijkstraForwardHelper&&) noexcept
         -> CHDijkstraForwardHelper& = default;
 
-    constexpr auto fillForwardInfo(common::NodeID source) noexcept
+    auto fillForwardInfo(common::NodeID source) noexcept
         -> void
     {
         if(last_source_ && last_source_.value().get() == source.get()) {

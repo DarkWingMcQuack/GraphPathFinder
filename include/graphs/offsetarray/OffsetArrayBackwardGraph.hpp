@@ -34,7 +34,7 @@ public:
         const auto number_of_nodes = impl().numberOfNodes();
 
 
-        //build an adjacency list which then can be converted to an offset array
+        // build an adjacency list which then can be converted to an offset array
         std::vector<std::vector<common::EdgeID>> adjacency_list(number_of_nodes);
         for(std::size_t i = 0; i < number_of_edges; i++) {
             const auto *e = impl().getEdge(common::EdgeID{i});
@@ -42,13 +42,13 @@ public:
             adjacency_list[trg.get()].emplace_back(i);
         }
 
-        //resize the offset array
+        // resize the offset array
         backward_offset_.resize(number_of_nodes + 1, 0);
 
-        //reserve space for the flattened adjacency list
+        // reserve space for the flattened adjacency list
         backward_neigbours_.reserve(number_of_edges);
 
-        //build the offset array
+        // build the offset array
         for(std::size_t n = 0; n < number_of_nodes; n++) {
             const auto &neigs = adjacency_list[n];
 
@@ -104,16 +104,16 @@ public:
             return common::BackwardEdgeView<EdgeType>(edge);
         }
 
-        //TODO: think about a way to avoid this
+        // TODO: think about a way to avoid this
         return common::BackwardEdgeView<EdgeType>(nullptr);
     }
 
     constexpr auto getBackwardEdgeIDsOf(common::NodeID node) const noexcept
         -> std::span<const common::EdgeID>
     {
-        //if the node does not exist, return an empty span
+        // if the node does not exist, return an empty span
         if(!impl().nodeExists(node)) {
-            return std::span<const common::EdgeID>();
+            return {};
         }
 
         const auto start_offset = backward_offset_[node.get()];
@@ -128,7 +128,7 @@ public:
         -> std::span<common::EdgeID>
     {
         if(!impl().nodeExists(node)) {
-            return std::span<common::EdgeID>();
+            return {};
         }
 
         const auto start_offset = backward_offset_[node.get()];
