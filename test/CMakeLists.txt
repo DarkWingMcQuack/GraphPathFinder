@@ -3,6 +3,14 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 
+message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
+message(STATUS "Compiler: ${CMAKE_CXX_COMPILER}")
+
+include(../cmake/flags.cmake)
+include(../cmake/gtest.cmake)
+include(../cmake/linker.cmake)
+include(../cmake/ccache.cmake)
+
 # needed for multithreading
 find_package(Threads REQUIRED)
 
@@ -33,13 +41,13 @@ add_executable(unit_tests
 target_link_libraries(unit_tests LINK_PRIVATE
   gtest
   fmt
+  GraphPathFinderLib
   ${CMAKE_THREAD_LIBS_INIT})
 
 target_include_directories(
   unit_tests PUBLIC
   gtest
-  fmt
-  ${NAMEDTYPE_INCLUDE_DIR}
+  GraphPathFinderLib
   ${CMAKE_CURRENT_SOURCE_DIR}/../include
   )
 

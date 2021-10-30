@@ -1,4 +1,7 @@
 include(../cmake/CLI11.cmake)
+include(../cmake/flags.cmake)
+include(../cmake/linker.cmake)
+include(../cmake/ccache.cmake)
 
 function(add_cli_exe T)
   add_executable(${T} ${ARGN})

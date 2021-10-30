@@ -2,8 +2,6 @@ cmake_minimum_required(VERSION 3.12)
 
 #get options and compiling env
 include(cmake/options.cmake)
-include(cmake/linker.cmake)
-include(cmake/ccache.cmake)
 
 project(GraphPathFinder)
 project(GraphPathFinder LANGUAGES CXX)
@@ -19,19 +17,12 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 include(cmake/fmt.cmake)
 include(cmake/tbb.cmake)
 include(cmake/namedtype.cmake)
-include(cmake/gtest.cmake)
+include(cmake/expected.cmake)
 
-message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
-message(STATUS "Compiler: ${CMAKE_CXX_COMPILER}")
-
-if(CMAKE_BUILD_TYPE STREQUAL "Release")
-  set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
-endif()
 
 # needed for multithreading
 find_package(Threads REQUIRED)
 
-include(cmake/flags.cmake)
 
 #############################################
 ## library with all the logic which
@@ -110,6 +101,7 @@ target_sources(GraphPathFinderLib
 add_dependencies(GraphPathFinderLib fmt-project)
 add_dependencies(GraphPathFinderLib tbb-project)
 add_dependencies(GraphPathFinderLib namedtype-project)
+add_dependencies(GraphPathFinderLib expected-lite-project)
 
 # make headers available
 target_include_directories(GraphPathFinderLib INTERFACE
@@ -117,15 +109,14 @@ target_include_directories(GraphPathFinderLib INTERFACE
   fmt
   tbb
   ${NAMEDTYPE_INCLUDE_DIR}
+  ${EXPECTED_LITE_INCLUDE_DIR}
   )
 
 #link against libarys
 target_link_libraries(GraphPathFinderLib INTERFACE
+  ${CMAKE_THREAD_LIBS_INIT}
   fmt
   tbb)
-
-target_link_libraries(GraphPathFinderLib INTERFACE
-  ${CMAKE_THREAD_LIBS_INIT})
 
 
 if (BUILD_TESTS)
