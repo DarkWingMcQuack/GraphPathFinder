@@ -73,7 +73,13 @@ private:
                       "an offsetarray which is a forward graph should also be able to sort the forward connections");
 
         static_assert(!HasBackwardEdges || concepts::SortableBackwardConnections<OffsetArray>,
-                      "an offsetarray which is a backward graph should also be able to sort the forward connections");
+                      "an offsetarray which is a backward graph should also be able to sort the backward connections");
+
+        static_assert(!HasForwardEdges || concepts::ForwardConnections<OffsetArray>,
+                      "an offsetarray which is a forward graph should also have forward connections");
+
+        static_assert(!HasBackwardEdges || concepts::BackwardConnections<OffsetArray>,
+                      "an offsetarray which is a backward graph should also have backward connections");
 
         static_assert(concepts::EdgesSortable<OffsetArray>, "edges of an offsetarray should be sortable");
         static_assert(concepts::NodesSortable<OffsetArray>, "nodes of an offsetarray should be sortable");
@@ -292,6 +298,8 @@ public:
 
         auto inv_perm = util::inversePermutation(perm);
 
+        applyEdgePermutation(perm, inv_perm);
+
         return std::pair{std::move(perm), std::move(inv_perm)};
     }
 
@@ -305,17 +313,18 @@ public:
         }
 
         // apply the permutation to the forward connections
-        if constexpr(concepts::ForwardConnections<OffsetArray>) {
+        if constexpr(HasForwardEdges) {
             std::transform(std::begin(this->forward_neigbours_),
                            std::end(this->forward_neigbours_),
                            std::begin(this->forward_neigbours_),
                            [&](auto id) {
+                               // fmt::print("{} -> {}\n", id.get(), inv_perm[id.get()]);
                                return common::EdgeID{inv_perm[id.get()]};
                            });
         }
 
         // apply the permutation to the backward connections
-        if constexpr(concepts::BackwardConnections<OffsetArray>) {
+        if constexpr(HasBackwardEdges) {
             std::transform(std::begin(this->backward_neigbours_),
                            std::end(this->backward_neigbours_),
                            std::begin(this->backward_neigbours_),
@@ -324,7 +333,6 @@ public:
                            });
         }
 
-        // permutation will get copied into applypermutation because it will be consumed
         this->edges_ = util::applyPermutation(std::move(this->edges_),
                                               std::move(perm));
 
@@ -336,7 +344,8 @@ public:
                 }
 
                 const auto [first, second] = edge.getShortcutUnsafe();
-                edge.setShortcut(inv_perm[first.get()], inv_perm[second.get()]);
+                edge.setShortcut(common::EdgeID{inv_perm[first.get()]},
+                                 common::EdgeID{inv_perm[second.get()]});
             }
         }
 
