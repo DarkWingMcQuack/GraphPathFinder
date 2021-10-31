@@ -11,6 +11,7 @@
 #include <concepts/NodeLevels.hpp>
 #include <concepts/Nodes.hpp>
 #include <concepts/Permutable.hpp>
+#include <execution>
 #include <fmt/core.h>
 #include <numeric>
 #include <queue>
@@ -101,37 +102,37 @@ public:
                               const std::vector<std::size_t>& inv_perm) noexcept
         -> bool
     {
-        if(in_labels_.size() != perm.size() or out_labels_.size() != perm.size() or inv_perm.size() != perm.size()) {
+        // clang-format: off
+        if(in_labels_.size() != perm.size()
+           or out_labels_.size() != perm.size()
+           or inv_perm.size() != perm.size()) {
             return false;
         }
+        // clang-format: on
 
-        for(auto& in : in_labels_) {
-            std::transform(std::begin(in),
-                           std::end(in),
-                           std::begin(in),
-                           [&](const auto hub) {
-                               const auto [node, dist] = hub;
-                               const auto new_node = common::NodeID{inv_perm[node.get()]};
+        static const auto transform_f = [&](auto& l) {
+            std::transform(
+                std::begin(l),
+                std::end(l),
+                std::begin(l),
+                [&](const auto hub) {
+                    const auto [node, dist] = hub;
+                    const auto new_node = common::NodeID{inv_perm[node.get()]};
 
-                               return std::pair{new_node, dist};
-                           });
+                    return std::pair{new_node, dist};
+                });
+            std::sort(std::begin(l), std::end(l));
+        };
 
-            std::sort(std::begin(in), std::end(in));
-        }
+        std::for_each(std::execution::par,
+                      std::begin(in_labels_),
+                      std::end(in_labels_),
+                      transform_f);
 
-        for(auto& out : out_labels_) {
-            std::transform(std::begin(out),
-                           std::end(out),
-                           std::begin(out),
-                           [&](const auto hub) {
-                               const auto [node, dist] = hub;
-                               const auto new_node = common::NodeID{inv_perm[node.get()]};
-
-                               return std::pair{new_node, dist};
-                           });
-
-            std::sort(std::begin(out), std::end(out));
-        }
+        std::for_each(std::execution::par,
+                      std::begin(out_labels_),
+                      std::end(out_labels_),
+                      transform_f);
 
         in_labels_ = util::applyPermutation(std::move(in_labels_), perm);
         out_labels_ = util::applyPermutation(std::move(out_labels_), std::move(perm));
