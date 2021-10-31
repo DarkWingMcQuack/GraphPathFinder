@@ -2,7 +2,8 @@
 
 #include <common/EmptyBase.hpp>
 #include <concepts/Parseable.hpp>
-#include <concepts/SortableGraph.hpp>
+#include <concepts/Permutable.hpp>
+#include <concepts/Sortable.hpp>
 #include <graphs/offsetarray/OffsetArrayBackwardGraph.hpp>
 #include <graphs/offsetarray/OffsetArrayEdges.hpp>
 #include <graphs/offsetarray/OffsetArrayForwardGraph.hpp>
@@ -83,6 +84,8 @@ private:
 
         static_assert(concepts::EdgesSortable<OffsetArray>, "edges of an offsetarray should be sortable");
         static_assert(concepts::NodesSortable<OffsetArray>, "nodes of an offsetarray should be sortable");
+        static_assert(concepts::EdgesPermutable<OffsetArray>, "edges of an offsetarray should be permutable");
+        static_assert(concepts::NodesPermutable<OffsetArray>, "nodes of an offsetarray should be permutable");
     }
 
 public:

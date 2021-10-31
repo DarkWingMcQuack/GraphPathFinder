@@ -43,7 +43,8 @@ target_sources(GraphPathFinderLib
   ${CMAKE_CURRENT_LIST_DIR}/include/concepts/Parseable.hpp
   ${CMAKE_CURRENT_LIST_DIR}/include/concepts/Path.hpp
   ${CMAKE_CURRENT_LIST_DIR}/include/concepts/PathOracle.hpp
-  ${CMAKE_CURRENT_LIST_DIR}/include/concepts/SortableGraph.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/include/concepts/Sortable.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/include/concepts/Permutable.hpp
   ${CMAKE_CURRENT_LIST_DIR}/include/concepts/Utils.hpp
 
   ${CMAKE_CURRENT_LIST_DIR}/include/common/BackwardEdgeView.hpp

@@ -12,7 +12,7 @@
 #include <concepts/ForwardConnections.hpp>
 #include <concepts/NodeLevels.hpp>
 #include <concepts/Nodes.hpp>
-#include <concepts/SortableGraph.hpp>
+#include <concepts/Sortable.hpp>
 #include <execution>
 
 namespace algorithms::distoracle {
@@ -202,8 +202,8 @@ public:
 
         common::NodeID current_node{0};
 
-        //iterate over all nodes by their levels and process all nodes in
-        //the same level in parallel
+        // iterate over all nodes by their levels and process all nodes in
+        // the same level in parallel
         for(std::int64_t level = max_level; level >= 0; level--) {
 
             const auto node_range = common::range(current_node.get(),
