@@ -112,12 +112,14 @@ public:
 
         static const auto transform_f = [&](auto& l) {
             std::transform(
+                std::execution::unseq,
                 std::begin(l),
                 std::end(l),
                 std::begin(l),
                 [&](const auto hub) {
                     const auto [node, dist] = hub;
-                    const auto new_node = common::NodeID{inv_perm[node.get()]};
+					const auto new_position = inv_perm[node.get()];
+                    const auto new_node = common::NodeID{new_position};
 
                     return std::pair{new_node, dist};
                 });
