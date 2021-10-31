@@ -1,7 +1,9 @@
 #pragma once
 
+#include <common/Range.hpp>
 #include <concepts/Edges.hpp>
 #include <concepts/ForwardConnections.hpp>
+#include <execution>
 #include <vector>
 
 namespace graphs {
@@ -145,11 +147,15 @@ public:
     // clang-format on
     {
         const auto order = std::invoke(std::forward<F>(func), impl());
+        const auto range = common::range(impl().numberOfNodes());
 
-        for(std::size_t n = 0; n < impl().numberOfNodes(); n++) {
-            auto ids = getForwardEdgeIDsOf(common::NodeID{n});
-            std::sort(std::begin(ids), std::end(ids), order);
-        }
+        std::for_each(std::execution::par,
+                      std::begin(range),
+                      std::end(range),
+                      [&](const auto i) {
+                          auto ids = getForwardEdgeIDsOf(common::NodeID{i});
+                          std::sort(std::begin(ids), std::end(ids), order);
+                      });
     }
 
     // clang-format off
