@@ -2,7 +2,7 @@
 // all the includes you want to use before the gtest include
 
 #include "../../../globals.hpp"
-#include <algorithms/distoracle/ch/CHDijkstra.hpp>
+#include <algorithms/distoracle/dijkstra/Dijkstra.hpp>
 #include <algorithms/distoracle/hublabels/HubLabelCalculator.hpp>
 #include <algorithms/distoracle/hublabels/HubLabelLookup.hpp>
 #include <graphs/edges/FMIEdge.hpp>
@@ -26,7 +26,7 @@ TEST(DistanceOracleHubLabelTest, SequentialHubLabelToyTest)
 
     algorithms::distoracle::HubLabelCalculator calculator{graph};
     auto hl_lookup = calculator.constructHubLabelLookup();
-    algorithms::distoracle::CHDijkstra dijkstra{graph};
+    algorithms::distoracle::Dijkstra dijkstra{graph};
 
 
     for(std::size_t i = 0; i < graph.numberOfNodes(); i++) {
@@ -51,7 +51,7 @@ TEST(DistanceOracleHubLabelTest, ParallelHubLabelToyTest)
 
     algorithms::distoracle::HubLabelCalculator calculator{graph};
     auto hl_lookup = calculator.constructHubLabelLookupInParallel();
-    algorithms::distoracle::CHDijkstra dijkstra{graph};
+    algorithms::distoracle::Dijkstra dijkstra{graph};
 
 
     for(std::size_t i = 0; i < graph.numberOfNodes(); i++) {
@@ -71,28 +71,6 @@ TEST(DistanceOracleHubLabelTest, HubLabelNodePermutationTest)
 
     ASSERT_TRUE(graph_opt);
     auto graph = std::move(graph_opt.value());
-
-    graph.deleteForwardEdgesIDsIf([](const auto &graph) {
-        return [&](const auto id) {
-            const auto *edge = graph.getEdge(id);
-            const auto src = edge->getSrc();
-            const auto trg = edge->getTrg();
-            const auto src_lvl = graph.getNodeLevelUnsafe(src);
-            const auto trg_lvl = graph.getNodeLevelUnsafe(trg);
-            return src_lvl > trg_lvl;
-        };
-    });
-
-    graph.deleteBackwardEdgesIDsIf([](const auto &graph) {
-        return [&](const auto id) {
-            const auto edge = graph.getBackwardEdge(id);
-            const auto src = edge->getSrc();
-            const auto trg = edge->getTrg();
-            const auto src_lvl = graph.getNodeLevelUnsafe(src);
-            const auto trg_lvl = graph.getNodeLevelUnsafe(trg);
-            return src_lvl > trg_lvl;
-        };
-    });
 
     auto [perm, inv_perm] = graph.sortNodesAccordingTo([](const auto &graph) {
         return [&](const auto lhs, const auto rhs) {

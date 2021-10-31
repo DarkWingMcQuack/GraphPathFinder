@@ -45,6 +45,10 @@ private:
             const auto *edge = graph_.getEdge(edge_id);
             const auto trg = edge->getTrg();
 
+            if(trg >= node) {
+                continue;
+            }
+
             const auto weight = [&]() constexpr
             {
                 if constexpr(concepts::HasWeight<typename Graph::EdgeType>) {
@@ -107,6 +111,10 @@ private:
         for(const auto edge_id : graph_.getBackwardEdgeIDsOf(node)) {
             const auto edge = graph_.getBackwardEdge(edge_id);
             const auto trg = edge->getTrg();
+
+            if(trg >= node) {
+                continue;
+            }
 
             const auto weight = [&]() constexpr
             {
@@ -204,7 +212,7 @@ public:
 
         // iterate over all nodes by their levels and process all nodes in
         // the same level in parallel
-        for(rtd::int64_t level = max_level; level >= 0; level--) {
+        for(std::int64_t level = max_level; level >= 0; level--) {
 
             const auto start = current_node.get();
             const auto end = max_node_of_level[level].get() + 1;
@@ -247,28 +255,6 @@ requires concepts::DeletableForwardConnections<Graph> &&
 [[nodiscard]] inline auto prepareGraphForHubLabelCalculator(Graph g) noexcept
     -> Graph
 {
-    g.deleteForwardEdgesIDsIf([](const auto &graph) {
-        return [&](const auto id) {
-            const auto *edge = graph.getEdge(id);
-            const auto src = edge->getSrc();
-            const auto trg = edge->getTrg();
-            const auto src_lvl = graph.getNodeLevelUnsafe(src);
-            const auto trg_lvl = graph.getNodeLevelUnsafe(trg);
-            return src_lvl > trg_lvl;
-        };
-    });
-
-    g.deleteBackwardEdgesIDsIf([](const auto &graph) {
-        return [&](const auto id) {
-            const auto edge = graph.getBackwardEdge(id);
-            const auto src = edge->getSrc();
-            const auto trg = edge->getTrg();
-            const auto src_lvl = graph.getNodeLevelUnsafe(src);
-            const auto trg_lvl = graph.getNodeLevelUnsafe(trg);
-            return src_lvl > trg_lvl;
-        };
-    });
-
     g.sortNodesAccordingTo([](const auto &graph) {
         return [&](const auto lhs, const auto rhs) {
             const auto lhs_lvl = graph.getNodeLevelUnsafe(lhs);
