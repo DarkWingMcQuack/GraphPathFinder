@@ -10,7 +10,9 @@ set(CMAKE_ARGS
 ExternalProject_Add(namedtype-project
   PREFIX deps/namedtype
   DOWNLOAD_DIR ${CMAKE_BINARY_DIR}/downloads
-  GIT_REPOSITORY https://github.com/joboccara/NamedType
+  # GIT_REPOSITORY https://github.com/joboccara/NamedType
+  # use this fork until the comparison operator is fixed in the lib
+  GIT_REPOSITORY https://github.com/usefulcat/NamedType
   CMAKE_ARGS ${CMAKE_ARGS}
   PATCH_COMMAND cmake -E make_directory <SOURCE_DIR>/win32-deps/include
   BUILD_COMMAND cmake --build <BINARY_DIR> --config Release
