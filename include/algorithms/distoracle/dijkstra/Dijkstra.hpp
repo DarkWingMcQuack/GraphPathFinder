@@ -45,13 +45,12 @@ public:
     [[nodiscard]] auto distanceBetween(common::NodeID source, common::NodeID target) noexcept
         -> common::Weight
     {
-        if(last_source_.has_value()
-           and last_source_.value() == source
+        if(last_source_ == source
            and settled_[target.get()]) {
             return distances_[target.get()];
         }
 
-        if(!last_source_.has_value() or source != last_source_.value()) {
+        if(source != last_source_) {
             resetFor(source);
         }
 
@@ -88,7 +87,7 @@ public:
                 const auto neig_dist = distances_[neig.get()];
                 const auto new_dist = current_dist + distance;
 
-                if(common::INFINITY_WEIGHT.get() != current_dist.get() and neig_dist > new_dist) {
+                if(common::INFINITY_WEIGHT != current_dist and neig_dist > new_dist) {
                     touched_.emplace_back(neig);
                     distances_[neig.get()] = new_dist;
                     pq_.emplace(neig, new_dist);

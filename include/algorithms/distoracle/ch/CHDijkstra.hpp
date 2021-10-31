@@ -122,7 +122,7 @@ private:
             backward_idx++;
         }
 
-        if(best_dist.get() == common::INFINITY_WEIGHT.get()) {
+        if(best_dist == common::INFINITY_WEIGHT) {
             return std::nullopt;
         }
 
@@ -151,7 +151,7 @@ requires concepts::DeletableForwardConnections<Graph> &&
             const auto trg = edge->getTrg();
             const auto src_lvl = graph.getNodeLevelUnsafe(src);
             const auto trg_lvl = graph.getNodeLevelUnsafe(trg);
-            return src_lvl >= trg_lvl;
+            return src_lvl > trg_lvl;
         };
     });
 
@@ -162,7 +162,7 @@ requires concepts::DeletableForwardConnections<Graph> &&
             const auto trg = edge->getTrg();
             const auto src_lvl = graph.getNodeLevelUnsafe(src);
             const auto trg_lvl = graph.getNodeLevelUnsafe(trg);
-            return src_lvl >= trg_lvl;
+            return src_lvl > trg_lvl;
         };
     });
 

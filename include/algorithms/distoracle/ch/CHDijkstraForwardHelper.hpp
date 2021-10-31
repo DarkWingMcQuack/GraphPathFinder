@@ -34,7 +34,7 @@ private:
     auto fillForwardInfo(common::NodeID source) noexcept
         -> void
     {
-        if(last_source_ && last_source_.value().get() == source.get()) {
+        if(last_source_ == source) {
             return;
         }
 

@@ -72,13 +72,12 @@ public:
     auto distanceBetween(common::NodeID source, common::NodeID target) noexcept
         -> common::Weight
     {
-        if(last_source_.has_value()
-           and last_source_.value() == source
+        if(last_source_ == source
            and settled_[target.get()]) {
             return distances_[target.get()];
         }
 
-        if(!last_source_.has_value() or source != last_source_.value()) {
+        if(source != last_source_) {
             resetFor(source);
         }
 
