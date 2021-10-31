@@ -204,10 +204,11 @@ public:
 
         // iterate over all nodes by their levels and process all nodes in
         // the same level in parallel
-        for(std::int64_t level = max_level; level >= 0; level--) {
+        for(rtd::int64_t level = max_level; level >= 0; level--) {
 
-            const auto node_range = common::range(current_node.get(),
-                                                  max_node_of_level[level].get() + 1);
+            const auto start = current_node.get();
+            const auto end = max_node_of_level[level].get() + 1;
+            const auto node_range = common::range(start, end);
 
             std::for_each(std::execution::par,
                           std::begin(node_range),
@@ -224,7 +225,7 @@ public:
                               out_labels_[i] = std::move(out);
                           });
 
-            current_node = max_node_of_level[level] + common::NodeID{1};
+            current_node = common::NodeID{end};
         }
 
         return HubLabelLookup{std::move(in_labels_),
