@@ -10,11 +10,13 @@
 #include <concepts/ForwardConnections.hpp>
 #include <concepts/NodeLevels.hpp>
 #include <concepts/Nodes.hpp>
+#include <concepts/Permutable.hpp>
 #include <fmt/core.h>
 #include <numeric>
 #include <queue>
 #include <type_traits>
 #include <utility>
+#include <utils/Permutation.hpp>
 
 namespace algorithms::distoracle {
 
@@ -34,7 +36,7 @@ class HubLabelLookup
 
     using HubType = std::pair<common::NodeID, common::Weight>;
 
-    //private ctor because a HubLabelLookup should only be consructed via a HubLabelCalculator
+    // private ctor because a HubLabelLookup should only be consructed via a HubLabelCalculator
     HubLabelLookup(std::vector<std::vector<HubType>> in_labels,
                    std::vector<std::vector<HubType>> out_labels) noexcept
         : in_labels_(std::move(in_labels)),
@@ -42,6 +44,9 @@ class HubLabelLookup
     {
         static_assert(concepts::DistanceOracle<HubLabelLookup>,
                       "HubLabelLookup should fullfill the DistanceOracle concept");
+
+        static_assert(concepts::NodesPermutable<HubLabelLookup>,
+                      "HubLabelLookup should be able to permutate nodes");
     }
 
 
@@ -90,6 +95,48 @@ public:
         const auto& out_l = out_labels_[source.get()];
 
         return HubLabelLookup::distanceOracle(out_l, in_l);
+    }
+
+    auto applyNodePermutation(std::vector<std::size_t> perm,
+                              const std::vector<std::size_t>& inv_perm) noexcept
+        -> bool
+    {
+        if(in_labels_.size() != perm.size() or out_labels_.size() != perm.size() or inv_perm.size() != perm.size()) {
+            return false;
+        }
+
+        for(auto& in : in_labels_) {
+            std::transform(std::begin(in),
+                           std::end(in),
+                           std::begin(in),
+                           [&](const auto hub) {
+                               const auto [node, dist] = hub;
+                               const auto new_node = common::NodeID{inv_perm[node.get()]};
+
+                               return std::pair{new_node, dist};
+                           });
+
+            std::sort(std::begin(in), std::end(in));
+        }
+
+        for(auto& out : out_labels_) {
+            std::transform(std::begin(out),
+                           std::end(out),
+                           std::begin(out),
+                           [&](const auto hub) {
+                               const auto [node, dist] = hub;
+                               const auto new_node = common::NodeID{inv_perm[node.get()]};
+
+                               return std::pair{new_node, dist};
+                           });
+
+            std::sort(std::begin(out), std::end(out));
+        }
+
+        in_labels_ = util::applyPermutation(std::move(in_labels_), perm);
+        out_labels_ = util::applyPermutation(std::move(out_labels_), std::move(perm));
+
+        return true;
     }
 
 private:
