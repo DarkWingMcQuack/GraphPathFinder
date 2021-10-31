@@ -51,7 +51,7 @@ public:
             return distances_[target.get()];
         }
 
-        if(!last_source_.has_value() or source.get() != last_source_.value().get()) {
+        if(!last_source_.has_value() or source != last_source_.value()) {
             resetFor(source);
         }
 
@@ -70,7 +70,7 @@ public:
 
             const auto edge_ids = graph_.getForwardEdgeIDsOf(current_node);
 
-            for(auto id : edge_ids) {
+            for(const auto id : edge_ids) {
                 const auto* edge = graph_.getEdge(id);
                 const auto neig = edge->getTrg();
 

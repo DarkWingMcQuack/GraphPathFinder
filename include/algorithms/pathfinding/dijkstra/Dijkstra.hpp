@@ -59,7 +59,7 @@ public:
 
         //extract path starting from the target
         std::vector nodes{target};
-        while(nodes.back().get() != source.get()) {
+        while(nodes.back() != source) {
             nodes.emplace_back(before_[nodes.back().get()]);
         }
         //reverse the vector to get the actual path
@@ -78,7 +78,7 @@ public:
             return distances_[target.get()];
         }
 
-        if(!last_source_.has_value() or source.get() != last_source_.value().get()) {
+        if(!last_source_.has_value() or source != last_source_.value()) {
             resetFor(source);
         }
 
@@ -97,7 +97,7 @@ public:
 
             const auto edge_ids = graph_.getForwardEdgeIDsOf(current_node);
 
-            for(auto id : edge_ids) {
+            for(const auto id : edge_ids) {
                 const auto* edge = graph_.getEdge(id);
                 const auto neig = edge->getTrg();
 
@@ -115,7 +115,7 @@ public:
                 const auto neig_dist = distances_[neig.get()];
                 const auto new_dist = current_dist + distance;
 
-                if(common::INFINITY_WEIGHT.get() != current_dist.get() and neig_dist > new_dist) {
+                if(common::INFINITY_WEIGHT != current_dist and neig_dist > new_dist) {
                     touched_.emplace_back(neig);
                     distances_[neig.get()] = new_dist;
                     pq_.emplace(neig, new_dist);

@@ -182,7 +182,7 @@ public:
     {
         const auto number_of_nodes = this->numberOfNodes();
         const auto f = std::invoke(std::forward<F>(func), *this);
-        const auto order = [&](auto lhs, auto rhs) {
+        const auto order = [&](const auto lhs, const auto rhs) {
             return f(common::NodeID{lhs}, common::NodeID{rhs});
         };
 
@@ -290,7 +290,7 @@ public:
     {
         const auto number_of_edges = this->numberOfEdges();
         const auto f = std::invoke(std::forward<F>(func), *this);
-        const auto order = [&](auto lhs, auto rhs) {
+        const auto order = [&](const auto lhs, const auto rhs) {
             return f(common::EdgeID{lhs}, common::EdgeID{rhs});
         };
 
@@ -321,7 +321,6 @@ public:
                            std::end(this->forward_neigbours_),
                            std::begin(this->forward_neigbours_),
                            [&](auto id) {
-                               // fmt::print("{} -> {}\n", id.get(), inv_perm[id.get()]);
                                return common::EdgeID{inv_perm[id.get()]};
                            });
         }

@@ -160,7 +160,7 @@ public:
 						        		common::EdgeID>
     // clang-format on
     {
-        auto order = std::invoke(std::forward<F>(func), impl());
+        const auto order = std::invoke(std::forward<F>(func), impl());
         const auto range = common::range(impl().numberOfNodes());
 
         std::for_each(std::execution::par,
@@ -217,6 +217,7 @@ private:
     }
 
     friend Graph;
+    //PHAST needs access to the backward_offset_
     friend class algorithms::distoracle::PHAST<Node, Edge>;
 
     std::vector<common::EdgeID> backward_neigbours_;
