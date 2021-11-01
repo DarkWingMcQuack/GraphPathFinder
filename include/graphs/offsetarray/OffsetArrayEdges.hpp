@@ -3,6 +3,7 @@
 #include <common/BackwardEdgeView.hpp>
 #include <concepts/EdgeWeights.hpp>
 #include <concepts/Edges.hpp>
+#include <graphs/Path.hpp>
 #include <numeric>
 #include <vector>
 
@@ -91,6 +92,91 @@ public:
         if(const auto *edge = getEdge(id)) {
             return edge->setWeight(weight);
         }
+    }
+
+    auto buildPathFromEdges(const std::vector<common::EdgeID> &edges) const noexcept
+        -> std::optional<Path>
+    requires concepts::HasSource<Edge> && concepts::HasTarget<Edge> && concepts::CanHaveShortcuts<Edge>
+    {
+        std::vector<common::NodeID> nodes;
+        common::Weight weight{0};
+
+        if(edges.empty()) {
+            return Path{std::move(nodes), weight};
+        }
+
+        const auto first = getEdge(edges.front())->getSrc();
+        nodes.emplace_back(first);
+
+        for(const auto edge_id : edges) {
+
+            std::vector edge_stack{edge_id};
+            while(!edge_stack.empty()) {
+                const auto current = edge_stack.back();
+                edge_stack.pop_back();
+                const auto *edge = getEdge(current);
+
+                if(edge->isShortcut()) {
+                    const auto [first, second] = edge->getShortcutUnsafe();
+                    edge_stack.emplace_back(second);
+                    edge_stack.emplace_back(first);
+                    continue;
+                }
+
+                if(edge->getSrc() != nodes.back()) {
+                    return std::nullopt;
+                }
+
+                nodes.emplace_back(edge->getTrg());
+
+                weight += [&]() constexpr
+                {
+                    if constexpr(concepts::HasWeight<Edge>) {
+                        return edge->getWeight();
+                    }
+                    return common::Weight{1};
+                }
+                ();
+            }
+        }
+
+        return Path{std::move(nodes), weight};
+    }
+
+
+    auto buildPathFromEdges(const std::vector<common::EdgeID> &edges) const noexcept
+        -> std::optional<Path>
+    requires concepts::HasSource<Edge> && concepts::HasTarget<Edge> &&(!concepts::CanHaveShortcuts<Edge>)
+    {
+        std::vector<common::NodeID> nodes;
+        common::Weight weight{0};
+
+        if(edges.empty()) {
+            return Path{std::move(nodes), weight};
+        }
+
+        const auto first = getEdge(edges.front())->getSrc();
+        nodes.emplace_back(first);
+
+        for(const auto edge_id : edges) {
+            const auto *edge = getEdge(edge_id);
+
+            if(edge->getSrc() != nodes.back()) {
+                return std::nullopt;
+            }
+
+            nodes.emplace_back(edge->getTrg());
+            weight += [&]() constexpr
+            {
+                if constexpr(concepts::HasWeight<Edge>) {
+                    return edge->getWeight();
+                }
+                return common::Weight{1};
+            }
+            ();
+        }
+
+        return Path{std::move(nodes), weight};
     }
 
 
