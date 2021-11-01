@@ -1,6 +1,7 @@
 #pragma once
 
 #include <common/BasicGraphTypes.hpp>
+#include <optional>
 #include <vector>
 
 namespace graphs {
@@ -32,19 +33,19 @@ public:
         return cost_ > other.cost_;
     }
 
-    auto operator==(const Path& other) const noexcept
+    constexpr auto operator==(const Path& other) const noexcept
         -> bool
     {
         return nodes_ == other.nodes_;
     }
 
-    auto operator!=(const Path& other) const noexcept
+    constexpr auto operator!=(const Path& other) const noexcept
         -> bool
     {
         return nodes_ != other.nodes_;
     }
 
-    [[nodiscard]] auto getNumberOfNodes() const noexcept
+    [[nodiscard]] constexpr auto getNumberOfNodes() const noexcept
         -> std::size_t
     {
         return nodes_.size();
@@ -56,7 +57,7 @@ public:
         return cost_;
     }
 
-    [[nodiscard]] auto getSource() const noexcept
+    [[nodiscard]] constexpr auto getSource() const noexcept
         -> std::optional<common::NodeID>
     {
         if(nodes_.empty()) {
@@ -66,7 +67,7 @@ public:
         return nodes_.front();
     }
 
-    [[nodiscard]] auto getTarget() const noexcept
+    [[nodiscard]] constexpr auto getTarget() const noexcept
         -> std::optional<common::NodeID>
     {
         if(nodes_.empty()) {
