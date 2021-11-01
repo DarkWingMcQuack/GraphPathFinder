@@ -9,17 +9,13 @@ namespace graphs {
 class Path
 {
 public:
-    Path(std::vector<common::NodeID> nodes,
-         common::Weight cost)
-        : nodes_(std::move(nodes)),
-          cost_(cost) {}
+    Path(std::vector<common::NodeID> nodes, common::Weight cost)
+        : nodes_(std::move(nodes)), cost_(cost) {}
 
     Path(const Path&) noexcept = default;
     Path(Path&&) noexcept = default;
-    auto operator=(const Path&) noexcept
-        -> Path& = default;
-    auto operator=(Path&&) noexcept
-        -> Path& = default;
+    auto operator=(const Path&) noexcept -> Path& = default;
+    auto operator=(Path&&) noexcept -> Path& = default;
 
     [[nodiscard]] constexpr auto operator<(const Path& other) const noexcept
         -> bool
