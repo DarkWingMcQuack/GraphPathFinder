@@ -20,6 +20,7 @@ public:
     {
         static_assert(concepts::HasEdges<OffsetArrayEdges>);
         static_assert(!concepts::HasWeight<Edge> || concepts::WriteableEdgeWeights<OffsetArrayEdges>);
+        static_assert(!concepts::CanHaveShortcuts<Edge> || concepts::CanUnwrapShortcuts<OffsetArrayEdges>);
     }
 
     constexpr OffsetArrayEdges(OffsetArrayEdges &&) noexcept = default;

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <common/BasicGraphTypes.hpp>
+#include <graphs/Path.hpp>
 #include <optional>
 #include <span>
 
@@ -68,6 +69,12 @@ concept HasEdges = requires(const T& graph, common::EdgeID id)
 	 * @return the number of nodes
 	 */
 	{graph.numberOfEdges()} noexcept -> std::same_as<std::size_t>;
+};
+
+template<typename T>
+concept CanUnwrapShortcuts = requires(const T& graph, const std::vector<common::EdgeID>& ids)
+{
+    {graph.buildPathFromEdges(ids)} noexcept -> std::same_as<std::optional<graphs::Path>>;
 };
 
 // clang-format on

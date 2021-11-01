@@ -86,6 +86,9 @@ private:
         static_assert(concepts::NodesSortable<OffsetArray>, "nodes of an offsetarray should be sortable");
         static_assert(concepts::EdgesPermutable<OffsetArray>, "edges of an offsetarray should be permutable");
         static_assert(concepts::NodesPermutable<OffsetArray>, "nodes of an offsetarray should be permutable");
+
+        static_assert(!concepts::CanHaveShortcuts<Edge> || concepts::CanUnwrapShortcuts<OffsetArray>,
+                      "an offsetarray should be able to unwrap edges if they can have shortcuts");
     }
 
 public:
