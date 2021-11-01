@@ -21,31 +21,31 @@ public:
     auto operator=(Path&&) noexcept
         -> Path& = default;
 
-    constexpr auto operator<(const Path& other) const noexcept
+    [[nodiscard]] constexpr auto operator<(const Path& other) const noexcept
         -> bool
     {
         return cost_ < other.cost_;
     }
 
-    constexpr auto operator>(const Path& other) const noexcept
+    [[nodiscard]] constexpr auto operator>(const Path& other) const noexcept
         -> bool
     {
         return cost_ > other.cost_;
     }
 
-    constexpr auto operator==(const Path& other) const noexcept
+    auto operator==(const Path& other) const noexcept
         -> bool
     {
         return nodes_ == other.nodes_;
     }
 
-    constexpr auto operator!=(const Path& other) const noexcept
+    auto operator!=(const Path& other) const noexcept
         -> bool
     {
         return nodes_ != other.nodes_;
     }
 
-    [[nodiscard]] constexpr auto getNumberOfNodes() const noexcept
+    [[nodiscard]] auto getNumberOfNodes() const noexcept
         -> std::size_t
     {
         return nodes_.size();
@@ -57,7 +57,7 @@ public:
         return cost_;
     }
 
-    [[nodiscard]] constexpr auto getSource() const noexcept
+    [[nodiscard]] auto getSource() const noexcept
         -> std::optional<common::NodeID>
     {
         if(nodes_.empty()) {
@@ -67,7 +67,7 @@ public:
         return nodes_.front();
     }
 
-    [[nodiscard]] constexpr auto getTarget() const noexcept
+    [[nodiscard]] auto getTarget() const noexcept
         -> std::optional<common::NodeID>
     {
         if(nodes_.empty()) {
