@@ -77,6 +77,13 @@ public:
         return nodes_.back();
     }
 
+    [[nodiscard]] static auto empty() noexcept
+        -> Path
+    {
+        return Path{std::vector<common::NodeID>{}, common::Weight{0}};
+    }
+
+
 
 private:
     std::vector<common::NodeID> nodes_;
