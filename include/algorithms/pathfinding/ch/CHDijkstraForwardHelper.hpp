@@ -9,7 +9,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace algorithms::distoracle {
+namespace algorithms::pathfinding {
 
 template<class CRTP, bool UseStallOnDemand>
 class CHDijkstraForwardHelper
@@ -23,6 +23,7 @@ public:
 private:
     constexpr CHDijkstraForwardHelper(std::size_t number_of_nodes)
         : forward_distances_(number_of_nodes, common::INFINITY_WEIGHT),
+          forward_best_ingoing_(number_of_nodes, common::UNKNOWN_EDGE_ID),
           forward_already_settled_(number_of_nodes, false) {}
 
     constexpr CHDijkstraForwardHelper(CHDijkstraForwardHelper&&) noexcept = default;
@@ -33,7 +34,7 @@ private:
     auto fillForwardInfo(common::NodeID source) noexcept
         -> void
     {
-        if(last_source_ == source) {
+        if(forward_last_source_ == source) {
             return;
         }
 
@@ -74,6 +75,7 @@ private:
                     heap.emplace(neig, new_dist);
                     forward_distances_[neig.get()] = new_dist;
                     forward_touched_.emplace_back(neig);
+                    forward_best_ingoing_[neig.get()] = id;
                 }
             }
         }
@@ -110,12 +112,13 @@ private:
         for(const auto node : forward_touched_) {
             const auto n = node.get();
             forward_distances_[n] = common::INFINITY_WEIGHT;
+            forward_best_ingoing_[n] = common::UNKNOWN_EDGE_ID;
             forward_already_settled_[n] = false;
         }
         forward_settled_.clear();
         forward_touched_.clear();
 
-        last_source_ = node;
+        forward_last_source_ = node;
         forward_touched_.emplace_back(node);
         forward_distances_[node.get()] = common::Weight{0};
     }
@@ -130,7 +133,8 @@ private:
     friend CRTP;
     std::vector<common::Weight> forward_distances_;
     std::vector<common::NodeID> forward_touched_;
-    std::optional<common::NodeID> last_source_;
+    std::optional<common::NodeID> forward_last_source_;
+    std::vector<common::EdgeID> forward_best_ingoing_;
     std::vector<bool> forward_already_settled_;
     std::vector<common::NodeID> forward_settled_;
 };

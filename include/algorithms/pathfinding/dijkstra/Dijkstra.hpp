@@ -35,11 +35,11 @@ public:
           last_source_(std::nullopt),
           before_(graph.numberOfNodes(), common::UNKNOWN_NODE_ID)
     {
-        static_assert(concepts::PathOracle<Dijkstra<Graph>>,
-                      "Dijkstra should fullfill the  concept");
+        static_assert(concepts::PathOracle<Dijkstra>,
+                      "Dijkstra should fullfill the PathOracle concept");
 
-        static_assert(concepts::DistanceOracle<Dijkstra<Graph>>,
-                      "Dijkstra should fullfill the  concept");
+        static_assert(concepts::DistanceOracle<Dijkstra>,
+                      "Dijkstra should fullfill the DistanceOracle concept");
     }
 
     Dijkstra() = delete;

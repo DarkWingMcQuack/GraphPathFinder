@@ -84,6 +84,10 @@ target_sources(GraphPathFinderLib
   ${CMAKE_CURRENT_LIST_DIR}/include/algorithms/pathfinding/dijkstra/DijkstraQueue.hpp
   ${CMAKE_CURRENT_LIST_DIR}/include/algorithms/pathfinding/dijkstra/Dijkstra.hpp
 
+  ${CMAKE_CURRENT_LIST_DIR}/include/algorithms/pathfinding/ch/CHDijkstraBackwardHelper.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/include/algorithms/pathfinding/ch/CHDijkstraForwardHelper.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/include/algorithms/pathfinding/ch/CHDijkstra.hpp
+
   ${CMAKE_CURRENT_LIST_DIR}/include/algorithms/distoracle/dijkstra/Dijkstra.hpp
 
   ${CMAKE_CURRENT_LIST_DIR}/include/algorithms/distoracle/ch/CHDijkstraBackwardHelper.hpp

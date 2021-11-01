@@ -9,7 +9,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace algorithms::distoracle {
+namespace algorithms::pathfinding {
 
 template<class CRTP, bool UseStallOnDemand>
 class CHDijkstraBackwardHelper
@@ -23,6 +23,7 @@ public:
 private:
     constexpr CHDijkstraBackwardHelper(std::size_t number_of_nodes)
         : backward_distances_(number_of_nodes, common::INFINITY_WEIGHT),
+          backward_best_ingoing_(number_of_nodes, common::UNKNOWN_EDGE_ID),
           backward_already_settled_(number_of_nodes, false) {}
     constexpr CHDijkstraBackwardHelper(CHDijkstraBackwardHelper&&) noexcept = default;
 
@@ -32,7 +33,7 @@ private:
     auto fillBackwardInfo(common::NodeID source) noexcept
         -> void
     {
-        if(last_source_ == source) {
+        if(back_last_source_ == source) {
             return;
         }
 
@@ -71,6 +72,7 @@ private:
                     heap.emplace(neig, new_dist);
                     backward_distances_[neig.get()] = new_dist;
                     backward_touched_.emplace_back(neig);
+                    backward_best_ingoing_[neig.get()] = id;
                 }
             }
         }
@@ -107,12 +109,13 @@ private:
         for(const auto node : backward_touched_) {
             const auto n = node.get();
             backward_distances_[n] = common::INFINITY_WEIGHT;
+            backward_best_ingoing_[n] = common::UNKNOWN_EDGE_ID;
             backward_already_settled_[n] = false;
         }
         backward_settled_.clear();
         backward_touched_.clear();
 
-        last_source_ = node;
+        back_last_source_ = node;
         backward_touched_.emplace_back(node);
         backward_distances_[node.get()] = common::Weight{0};
     }
@@ -128,7 +131,8 @@ private:
     std::vector<common::NodeID> backward_settled_;
     std::vector<common::Weight> backward_distances_;
     std::vector<common::NodeID> backward_touched_;
-    std::optional<common::NodeID> last_source_;
+    std::optional<common::NodeID> back_last_source_;
+    std::vector<common::EdgeID> backward_best_ingoing_;
     std::vector<bool> backward_already_settled_;
 };
 

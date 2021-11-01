@@ -26,6 +26,7 @@ add_executable(unit_tests
   graphs/offsetarray/OffsetArrayTest.cpp
 
   algorithms/pathfinding/dijkstra/DijkstraTest.cpp
+  algorithms/pathfinding/ch/CHDijkstraTest.cpp
 
   algorithms/distoracle/dijkstra/DijkstraTest.cpp
 
