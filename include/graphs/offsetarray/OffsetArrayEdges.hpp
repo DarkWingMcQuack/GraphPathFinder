@@ -94,19 +94,22 @@ public:
         }
     }
 
+    // clang-format off
     auto buildPathFromEdges(const std::vector<common::EdgeID> &edges) const noexcept
         -> std::optional<Path>
-    requires concepts::HasSource<Edge> && concepts::HasTarget<Edge> && concepts::CanHaveShortcuts<Edge>
+    requires concepts::HasSource<Edge> &&
+	         concepts::HasTarget<Edge> &&
+	         concepts::CanHaveShortcuts<Edge>
+    // clang-format on
     {
-        std::vector<common::NodeID> nodes;
-        common::Weight weight{0};
-
         if(edges.empty()) {
-            return Path{std::move(nodes), weight};
+            return Path::empty();
         }
 
         const auto first = getEdge(edges.front())->getSrc();
-        nodes.emplace_back(first);
+
+        std::vector nodes{first};
+        common::Weight weight{0};
 
         for(const auto edge_id : edges) {
 
@@ -138,42 +141,6 @@ public:
                 }
                 ();
             }
-        }
-
-        return Path{std::move(nodes), weight};
-    }
-
-
-    auto buildPathFromEdges(const std::vector<common::EdgeID> &edges) const noexcept
-        -> std::optional<Path>
-    requires concepts::HasSource<Edge> && concepts::HasTarget<Edge> &&(!concepts::CanHaveShortcuts<Edge>)
-    {
-        std::vector<common::NodeID> nodes;
-        common::Weight weight{0};
-
-        if(edges.empty()) {
-            return Path{std::move(nodes), weight};
-        }
-
-        const auto first = getEdge(edges.front())->getSrc();
-        nodes.emplace_back(first);
-
-        for(const auto edge_id : edges) {
-            const auto *edge = getEdge(edge_id);
-
-            if(edge->getSrc() != nodes.back()) {
-                return std::nullopt;
-            }
-
-            nodes.emplace_back(edge->getTrg());
-            weight += [&]() constexpr
-            {
-                if constexpr(concepts::HasWeight<Edge>) {
-                    return edge->getWeight();
-                }
-                return common::Weight{1};
-            }
-            ();
         }
 
         return Path{std::move(nodes), weight};
