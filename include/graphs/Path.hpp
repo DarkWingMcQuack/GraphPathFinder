@@ -10,7 +10,7 @@ class Path
 {
 public:
     Path(std::vector<common::NodeID> nodes,
-         common::Weight cost = common::Weight{0})
+         common::Weight cost)
         : nodes_(std::move(nodes)),
           cost_(cost) {}
 
