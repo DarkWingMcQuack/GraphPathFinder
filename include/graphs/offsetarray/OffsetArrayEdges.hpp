@@ -18,13 +18,8 @@ public:
     constexpr OffsetArrayEdges(std::vector<Edge> edges) noexcept
         : edges_(std::move(edges))
     {
-
-        // clang-format off
-        static_assert(concepts::HasEdges<OffsetArrayEdges<Graph, Edge>>);
-        // Edges have weights -> Offsetarrayedges has writable edgeweights
-        static_assert(!concepts::HasWeight<Edge>
-					  || concepts::WriteableEdgeWeights<OffsetArrayEdges<Graph, Edge>>);
-        // clang-format on
+        static_assert(concepts::HasEdges<OffsetArrayEdges>);
+        static_assert(!concepts::HasWeight<Edge> || concepts::WriteableEdgeWeights<OffsetArrayEdges>);
     }
 
     constexpr OffsetArrayEdges(OffsetArrayEdges &&) noexcept = default;
