@@ -11,6 +11,9 @@ before_install:
   # - sudo apt install libstdc++-11-dev libstdc++-11-doc
 
 before_script:
+  - cd test/data
+  - tar -xvf stgtregbz.tar.gz
+  - cd ../..
   - mkdir build
   - cd build
   - cmake ..
