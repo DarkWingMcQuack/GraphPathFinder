@@ -59,7 +59,7 @@ add_test(
   NAME unit_tests
   COMMAND
   ${CMAKE_BINARY_DIR}/test/unit_tests
-  ${CMAKE_CURRENT_SOURCE_DIR}/data/
+  ${CMAKE_CURRENT_SOURCE_DIR}/../data/
   )
 
 

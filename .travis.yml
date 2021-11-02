@@ -10,16 +10,16 @@ before_install:
   - sudo apt-get update -qq
 
 before_script:
-  - cd test/data
+  - cd data
   - tar -xvf stgtregbz.tar.gz
-  - cd ../..
+  - cd ..
   - mkdir build
   - cd build
   - cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_TRAVIS_TEST=1 ..
 
 script:
   - make
-  - ./test/unit_tests ../test/data/
+  - ./test/unit_tests ../data/
 
 matrix:
   include:

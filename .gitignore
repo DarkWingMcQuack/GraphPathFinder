@@ -192,3 +192,5 @@ cython_debug/
 *.fls
 /test/data/stgtregbz.txt
 /test/data/ch-stgtregbz.txt
+/data/stgtregbz.txt
+/data/ch-stgtregbz.txt
