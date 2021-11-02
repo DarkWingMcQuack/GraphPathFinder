@@ -7,7 +7,6 @@ message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 message(STATUS "Compiler: ${CMAKE_CXX_COMPILER}")
 
 include(../cmake/flags.cmake)
-include(../cmake/benchmark.cmake)
 include(../cmake/ccache.cmake)
 
 # needed for multithreading
@@ -18,16 +17,12 @@ add_executable(benchmarks
   )
 
 target_link_libraries(benchmarks LINK_PRIVATE
-  benchmark
   fmt
   GraphPathFinderLib
   ${CMAKE_THREAD_LIBS_INIT})
 
 target_include_directories(
   benchmarks PUBLIC
-  benchmark
   GraphPathFinderLib
   ${CMAKE_CURRENT_SOURCE_DIR}/../include
   )
-
-add_dependencies(benchmark benchmark-project)

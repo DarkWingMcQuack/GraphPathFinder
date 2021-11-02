@@ -63,8 +63,8 @@ public:
                 return current_dist;
             }
 
-            //pop after the return, otherwise we loose a value
-            //when reusing the pq
+            // pop after the return, otherwise we loose a value
+            // when reusing the pq
             pq_.pop();
 
             const auto edge_ids = graph_.getForwardEdgeIDsOf(current_node);
@@ -73,7 +73,7 @@ public:
                 const auto* edge = graph_.getEdge(id);
                 const auto neig = edge->getTrg();
 
-                //use the edge weight if available otherwise every edge has a weight 1
+                // use the edge weight if available otherwise every edge has a weight 1
                 const auto distance = [&]() constexpr
                 {
                     if constexpr(concepts::HasWeight<typename Graph::EdgeType>) {
@@ -96,6 +96,51 @@ public:
         }
 
         return common::INFINITY_WEIGHT;
+    }
+
+    [[nodiscard]] auto distancesFrom(common::NodeID source) noexcept
+        -> const std::vector<common::Weight>&
+    {
+        if(source != last_source_) {
+            resetFor(source);
+        }
+
+        while(!pq_.empty()) {
+            const auto [current_node, current_dist] = pq_.top();
+
+            settled_[current_node.get()] = true;
+
+            pq_.pop();
+
+            const auto edge_ids = graph_.getForwardEdgeIDsOf(current_node);
+
+            for(const auto id : edge_ids) {
+                const auto* edge = graph_.getEdge(id);
+                const auto neig = edge->getTrg();
+
+                // use the edge weight if available otherwise every edge has a weight 1
+                const auto distance = [&]() constexpr
+                {
+                    if constexpr(concepts::HasWeight<typename Graph::EdgeType>) {
+                        return edge->getWeight();
+                    } else {
+                        return common::Weight{1};
+                    }
+                }
+                ();
+
+                const auto neig_dist = distances_[neig.get()];
+                const auto new_dist = current_dist + distance;
+
+                if(common::INFINITY_WEIGHT != current_dist and neig_dist > new_dist) {
+                    touched_.emplace_back(neig);
+                    distances_[neig.get()] = new_dist;
+                    pq_.emplace(neig, new_dist);
+                }
+            }
+        }
+
+        return distances_;
     }
 
 private:
