@@ -176,6 +176,8 @@ template<class Node, class Edge>
         };
     });
 
+    // TODO: maybe partition the edges such that all edges of
+    // the backwardoffsetarray are alligned in memory
     g.sortEdgesAccordingTo([](const auto& graph) {
         return [&](const auto lhs, const auto rhs) {
             const auto lhs_edge = graph.getBackwardEdge(lhs);
@@ -196,7 +198,6 @@ template<class Node, class Edge>
             return lhs_lvl > rhs_lvl;
         };
     });
-    // TODO: how to sort the edges and the offset arrays??
 
     return g;
 }
