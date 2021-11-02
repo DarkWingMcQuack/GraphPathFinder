@@ -44,11 +44,6 @@ private:
         for(const auto edge_id : graph_.getForwardEdgeIDsOf(node)) {
             const auto *edge = graph_.getEdge(edge_id);
             const auto trg = edge->getTrg();
-
-            if(trg >= node) {
-                continue;
-            }
-
             const auto weight = [&]() constexpr
             {
                 if constexpr(concepts::HasWeight<typename Graph::EdgeType>) {
@@ -71,11 +66,7 @@ private:
                            });
         }
 
-        std::sort(std::begin(hubs),
-                  std::end(hubs),
-                  [](const auto &lhs, const auto &rhs) {
-                      return lhs.first < rhs.first;
-                  });
+        std::sort(std::begin(hubs), std::end(hubs));
 
         return hubs;
     }
@@ -84,9 +75,6 @@ private:
                                   std::vector<HubLabelLookup::HubType> &hubs) const noexcept
         -> void
     {
-        hubs.erase(std::unique(hubs.begin(), hubs.end()),
-                   hubs.end());
-
         std::erase_if(hubs, [&](const auto &hub) {
             const auto trg = hub.first;
             const auto hub_dist = hub.second;
@@ -101,6 +89,8 @@ private:
 
             return hub_dist > real_dist;
         });
+
+        hubs.erase(std::unique(hubs.begin(), hubs.end()), hubs.end());
     }
 
     [[nodiscard]] auto constructInLabels(common::NodeID node) const noexcept
@@ -111,11 +101,6 @@ private:
         for(const auto edge_id : graph_.getBackwardEdgeIDsOf(node)) {
             const auto edge = graph_.getBackwardEdge(edge_id);
             const auto trg = edge->getTrg();
-
-            if(trg >= node) {
-                continue;
-            }
-
             const auto weight = [&]() constexpr
             {
                 if constexpr(concepts::HasWeight<typename Graph::EdgeType>) {
@@ -138,11 +123,7 @@ private:
                            });
         }
 
-        std::sort(std::begin(hubs),
-                  std::end(hubs),
-                  [](const auto &lhs, const auto &rhs) {
-                      return lhs.first < rhs.first;
-                  });
+        std::sort(std::begin(hubs), std::end(hubs));
 
         return hubs;
     }
@@ -151,8 +132,6 @@ private:
                                  std::vector<HubLabelLookup::HubType> &hubs) const noexcept
         -> void
     {
-        hubs.erase(std::unique(hubs.begin(), hubs.end()), hubs.end());
-
         std::erase_if(hubs, [&](const auto &hub) {
             const auto trg = hub.first;
             const auto hub_dist = hub.second;
@@ -167,6 +146,8 @@ private:
 
             return hub_dist > real_dist;
         });
+
+        hubs.erase(std::unique(hubs.begin(), hubs.end()), hubs.end());
     }
 
     [[nodiscard]] auto buildMaxNodePerLevelVector(std::size_t max_level) const noexcept
@@ -255,6 +236,29 @@ requires concepts::DeletableForwardConnections<Graph> &&
 [[nodiscard]] inline auto prepareGraphForHubLabelCalculator(Graph g) noexcept
     -> Graph
 {
+    g.deleteForwardEdgesIDsIf([](const auto &graph) {
+        return [&](const auto id) {
+            const auto *edge = graph.getEdge(id);
+            const auto src = edge->getSrc();
+            const auto trg = edge->getTrg();
+            const auto src_lvl = graph.getNodeLevelUnsafe(src);
+            const auto trg_lvl = graph.getNodeLevelUnsafe(trg);
+            return src_lvl > trg_lvl;
+        };
+    });
+
+
+    g.deleteBackwardEdgesIDsIf([](const auto &graph) {
+        return [&](const auto id) {
+            const auto edge = graph.getBackwardEdge(id);
+            const auto src = edge->getSrc();
+            const auto trg = edge->getTrg();
+            const auto src_lvl = graph.getNodeLevelUnsafe(src);
+            const auto trg_lvl = graph.getNodeLevelUnsafe(trg);
+            return src_lvl > trg_lvl;
+        };
+    });
+
     g.sortNodesAccordingTo([](const auto &graph) {
         return [&](const auto lhs, const auto rhs) {
             const auto lhs_lvl = graph.getNodeLevelUnsafe(lhs);
