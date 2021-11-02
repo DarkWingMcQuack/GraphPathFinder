@@ -3,6 +3,7 @@
 #include "parsing.hpp"
 #include "dijkstra.hpp"
 #include "chdijkstra.hpp"
+#include "hublabels.hpp"
 #include "phast.hpp"
 
 //parsing
@@ -19,9 +20,13 @@ BENCHMARK_REGISTER_F(DijkstraFixture, DijkstraInitializationBenchmark)->Unit(ben
 BENCHMARK_REGISTER_F(CHDijkstraFixture, CHDijkstraOneToOneDistanceQueryBenchmark)->Unit(benchmark::kMillisecond);
 BENCHMARK_REGISTER_F(CHDijkstraFixture, CHDijkstraInitializationBenchmark)->Unit(benchmark::kMillisecond);
 
-//phast
-BENCHMARK_REGISTER_F(PHASTFixture, PHASTOneToAllDistanceQueryBenchmark)->Unit(benchmark::kMillisecond);
-BENCHMARK_REGISTER_F(PHASTFixture, PHASTInitializationBenchmark)->Unit(benchmark::kMillisecond);
+//hublabels
+// BENCHMARK_REGISTER_F(HubLabelsFixture, HubLabelsOneToOneDistanceQueryBenchmark);
+// BENCHMARK_REGISTER_F(HubLabelsFixture, HubLabelsCalculationBenchmark)->Unit(benchmark::kSecond);
+
+// //phast
+// BENCHMARK_REGISTER_F(PHASTFixture, PHASTOneToAllDistanceQueryBenchmark)->Unit(benchmark::kMillisecond);
+// BENCHMARK_REGISTER_F(PHASTFixture, PHASTInitializationBenchmark)->Unit(benchmark::kMillisecond);
 
 
 BENCHMARK_MAIN();
