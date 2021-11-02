@@ -110,31 +110,36 @@ public:
         }
         // clang-format: on
 
-        static const auto transform_f = [&](auto& l) {
-            std::transform(
-                std::execution::unseq,
-                std::begin(l),
-                std::end(l),
-                std::begin(l),
-                [&](const auto hub) {
-                    const auto [node, dist] = hub;
-					const auto new_position = inv_perm[node.get()];
-                    const auto new_node = common::NodeID{new_position};
+        // curried function expecting a permutation vector to produce
+        // the function which updates the nodes in the in and out labels
+        static const auto transform_f =
+            [](const auto& inv_perm) {
+                return [&](auto& l) {
+                    std::transform(
+                        std::execution::unseq,
+                        std::begin(l),
+                        std::end(l),
+                        std::begin(l),
+                        [&](const auto hub) {
+                            const auto [node, dist] = hub;
+                            const auto new_position = inv_perm[node.get()];
+                            const auto new_node = common::NodeID{new_position};
 
-                    return std::pair{new_node, dist};
-                });
-            std::sort(std::begin(l), std::end(l));
-        };
+                            return std::pair{new_node, dist};
+                        });
+                    std::sort(std::begin(l), std::end(l));
+                };
+            };
 
         std::for_each(std::execution::par,
                       std::begin(in_labels_),
                       std::end(in_labels_),
-                      transform_f);
+                      transform_f(inv_perm));
 
         std::for_each(std::execution::par,
                       std::begin(out_labels_),
                       std::end(out_labels_),
-                      transform_f);
+                      transform_f(inv_perm));
 
         in_labels_ = util::applyPermutation(std::move(in_labels_), perm);
         out_labels_ = util::applyPermutation(std::move(out_labels_), std::move(perm));
