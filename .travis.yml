@@ -16,7 +16,7 @@ before_script:
   - cd ../..
   - mkdir build
   - cd build
-  - cmake ..
+  - cmake -DCMAKE_BUILD_TYPE=Release ..
 
 script:
   - make
