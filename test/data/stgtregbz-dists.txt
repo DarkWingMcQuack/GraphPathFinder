@@ -1,0 +1,147 @@
+Opening graph file /home/spark/tmp/Shopa/stgtregbz.fmi
+We will read 1132113 nodes and 2292887 edges
+Resident memory req should be: 148MB
+ExtendedInfo: 60MB
+
+NODES: 0% 10% 20% 30% 40% 50% 60% 70% 80% 90% 
+EDGES: 0% 10% 20% 30% 40% 50% 60% 70% 80% 90% 
+We augmented 191 zero-weight edges
+After first Offset creation
+Reverse weights ok!
+maxOutDegree: 6 avgOutDegree: 2.02532
+maxInDegree: 6 avgInDegree: 2.02532
+outEdgeCostSum: 5.67384e+08
+Read graph in 2.25152s
+DijkDist arb:1.79769e+308 1.79769e+308
+Resident space req per Dijk instance: 35MB
+***************
+New Query from 377371
+Computation took 219ms
+Distance from 377371 to 754742: 436627
+Distance from 377371 to 754743: 435351
+Distance from 377371 to 754744: 437063
+Distance from 377371 to 754745: 435471
+Distance from 377371 to 754746: 438107
+Distance from 377371 to 754747: 438051
+Distance from 377371 to 754748: 436052
+Distance from 377371 to 754749: 438168
+Distance from 377371 to 754750: 437887
+Distance from 377371 to 754751: 435675
+
+New Query from 377372
+Computation took 231ms
+Distance from 377372 to 754742: 436726
+Distance from 377372 to 754743: 435450
+Distance from 377372 to 754744: 437162
+Distance from 377372 to 754745: 435570
+Distance from 377372 to 754746: 438206
+Distance from 377372 to 754747: 438150
+Distance from 377372 to 754748: 436151
+Distance from 377372 to 754749: 438267
+Distance from 377372 to 754750: 437986
+Distance from 377372 to 754751: 435774
+
+New Query from 377373
+Computation took 230ms
+Distance from 377373 to 754742: 436791
+Distance from 377373 to 754743: 435515
+Distance from 377373 to 754744: 437227
+Distance from 377373 to 754745: 435635
+Distance from 377373 to 754746: 438271
+Distance from 377373 to 754747: 438215
+Distance from 377373 to 754748: 436216
+Distance from 377373 to 754749: 438332
+Distance from 377373 to 754750: 438051
+Distance from 377373 to 754751: 435839
+
+New Query from 377374
+Computation took 229ms
+Distance from 377374 to 754742: 436920
+Distance from 377374 to 754743: 435644
+Distance from 377374 to 754744: 437356
+Distance from 377374 to 754745: 435764
+Distance from 377374 to 754746: 438400
+Distance from 377374 to 754747: 438344
+Distance from 377374 to 754748: 436345
+Distance from 377374 to 754749: 438461
+Distance from 377374 to 754750: 438180
+Distance from 377374 to 754751: 435968
+
+New Query from 377375
+Computation took 230ms
+Distance from 377375 to 754742: 437028
+Distance from 377375 to 754743: 435752
+Distance from 377375 to 754744: 437464
+Distance from 377375 to 754745: 435872
+Distance from 377375 to 754746: 438508
+Distance from 377375 to 754747: 438452
+Distance from 377375 to 754748: 436453
+Distance from 377375 to 754749: 438569
+Distance from 377375 to 754750: 438288
+Distance from 377375 to 754751: 436076
+
+New Query from 377376
+Computation took 229ms
+Distance from 377376 to 754742: 437160
+Distance from 377376 to 754743: 435884
+Distance from 377376 to 754744: 437596
+Distance from 377376 to 754745: 436004
+Distance from 377376 to 754746: 438640
+Distance from 377376 to 754747: 438584
+Distance from 377376 to 754748: 436585
+Distance from 377376 to 754749: 438701
+Distance from 377376 to 754750: 438420
+Distance from 377376 to 754751: 436208
+
+New Query from 377377
+Computation took 232ms
+Distance from 377377 to 754742: 437280
+Distance from 377377 to 754743: 436004
+Distance from 377377 to 754744: 437716
+Distance from 377377 to 754745: 436124
+Distance from 377377 to 754746: 438760
+Distance from 377377 to 754747: 438704
+Distance from 377377 to 754748: 436705
+Distance from 377377 to 754749: 438821
+Distance from 377377 to 754750: 438540
+Distance from 377377 to 754751: 436328
+
+New Query from 377378
+Computation took 230ms
+Distance from 377378 to 754742: 437448
+Distance from 377378 to 754743: 436172
+Distance from 377378 to 754744: 437884
+Distance from 377378 to 754745: 436292
+Distance from 377378 to 754746: 438928
+Distance from 377378 to 754747: 438872
+Distance from 377378 to 754748: 436873
+Distance from 377378 to 754749: 438989
+Distance from 377378 to 754750: 438708
+Distance from 377378 to 754751: 436496
+
+New Query from 377379
+Computation took 234ms
+Distance from 377379 to 754742: 438049
+Distance from 377379 to 754743: 436773
+Distance from 377379 to 754744: 438485
+Distance from 377379 to 754745: 436893
+Distance from 377379 to 754746: 439529
+Distance from 377379 to 754747: 439473
+Distance from 377379 to 754748: 437474
+Distance from 377379 to 754749: 439590
+Distance from 377379 to 754750: 439309
+Distance from 377379 to 754751: 437097
+
+New Query from 377380
+Computation took 232ms
+Distance from 377380 to 754742: 438198
+Distance from 377380 to 754743: 436922
+Distance from 377380 to 754744: 438634
+Distance from 377380 to 754745: 437042
+Distance from 377380 to 754746: 439678
+Distance from 377380 to 754747: 439622
+Distance from 377380 to 754748: 437623
+Distance from 377380 to 754749: 439739
+Distance from 377380 to 754750: 439458
+Distance from 377380 to 754751: 437246
+
