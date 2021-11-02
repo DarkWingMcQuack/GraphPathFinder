@@ -192,7 +192,7 @@ public:
 
         std::vector<std::size_t> perm(number_of_nodes);
         std::iota(std::begin(perm), std::end(perm), 0);
-        std::sort(std::begin(perm), std::end(perm), order);
+        std::sort(std::execution::par, std::begin(perm), std::end(perm), order);
 
         // dont const because it will be moved out of the function
         auto inv_perm = util::inversePermutation(perm);
@@ -300,7 +300,7 @@ public:
 
         std::vector<std::size_t> perm(number_of_edges);
         std::iota(std::begin(perm), std::end(perm), 0);
-        std::sort(std::begin(perm), std::end(perm), order);
+        std::sort(std::execution::par, std::begin(perm), std::end(perm), order);
 
         auto inv_perm = util::inversePermutation(perm);
 
