@@ -157,7 +157,7 @@ auto main(int argc, char* argv[])
         auto [srcs, trgs] = createData(100, graph.numberOfNodes());
         return benchmarkOneToOne(srcs, trgs, dijk);
     }();
-    fmt::print("Dijkstra: {}ms\n", dijkstra);
+    fmt::print("Dijkstra: {} ms\n", dijkstra);
 
     auto ch_dijkstra = [] {
         auto graph = createCHDijkstraGraph(ch_graph);
@@ -165,19 +165,19 @@ auto main(int argc, char* argv[])
         auto [srcs, trgs] = createData(1000, graph.numberOfNodes());
         return benchmarkOneToOne(srcs, trgs, dijk);
     }();
-    fmt::print("CH-Dijkstra: {}ms\n", ch_dijkstra);
+    fmt::print("CH-Dijkstra: {} μs\n", ch_dijkstra*1000.);
 
     auto [lookup_creation, lookup] = [] {
         auto graph = createHubLabelGraph(ch_graph);
         return benchmarkHublabelCreation(graph);
     }();
-    fmt::print("HL Construction: {}s\n", lookup_creation / 1000.);
+    fmt::print("HL Construction: {} s\n", lookup_creation / 1000.);
 
     auto hublabels = [lookup = std::move(lookup)] {
         auto [srcs, trgs] = createData(1000, lookup.numberOfNodes());
         return benchmarkOneToOne(srcs, trgs, lookup);
     }();
-    fmt::print("HL: {}μs\n", hublabels * 1000);
+    fmt::print("HL: {} μs\n", hublabels * 1000.);
 
     fmt::print("-------------------One to All-------------------\n");
     auto phast = [] {
@@ -186,7 +186,7 @@ auto main(int argc, char* argv[])
         auto [srcs, trgs] = createData(100, graph.numberOfNodes());
         return benchmarkOneToMany(srcs, phast);
     }();
-    fmt::print("PHAST: {}ms\n", phast);
+    fmt::print("PHAST: {} ms\n", phast);
 
     auto dijkstra_one_to_all = [] {
         auto graph = createDijkstraGraph(simple_graph);
@@ -194,7 +194,7 @@ auto main(int argc, char* argv[])
         auto [srcs, trgs] = createData(100, graph.numberOfNodes());
         return benchmarkOneToMany(srcs, dijkstra);
     }();
-    fmt::print("Dijkstra: {}ms\n", dijkstra_one_to_all);
+    fmt::print("Dijkstra: {} ms\n", dijkstra_one_to_all);
 
     return 0;
 }
