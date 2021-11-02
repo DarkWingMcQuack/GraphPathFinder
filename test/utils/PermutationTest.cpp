@@ -1,4 +1,4 @@
-//all the includes you want to use before the gtest include
+// all the includes you want to use before the gtest include
 #include <fmt/ranges.h>
 #include <utils/Permutation.hpp>
 
@@ -54,6 +54,26 @@ TEST(PermutationTest, ApplyPermutationTest3)
     EXPECT_EQ(data[8], 8);
     EXPECT_EQ(data[9], 7);
     EXPECT_EQ(data[10], 10);
+}
+
+TEST(PermutationTest, ApplyPermutationTest4)
+{
+    std::vector<std::size_t> permutation{5, 4, 0, 1, 2, 3, 6, 9, 8, 7, 10};
+    std::vector data{std::vector{0, 1}, {1, 2}, {2, 3}, {3, 4}, {4, 5}, {5, 6}, {6, 7}, {7, 8}, {8, 9}, {9, 10}, {10, 11}};
+
+    data = util::applyPermutation(std::move(data), permutation);
+
+    EXPECT_EQ(data[0], (std::vector{5, 6}));
+    EXPECT_EQ(data[1], (std::vector{4, 5}));
+    EXPECT_EQ(data[2], (std::vector{0, 1}));
+    EXPECT_EQ(data[3], (std::vector{1, 2}));
+    EXPECT_EQ(data[4], (std::vector{2, 3}));
+    EXPECT_EQ(data[5], (std::vector{3, 4}));
+    EXPECT_EQ(data[6], (std::vector{6, 7}));
+    EXPECT_EQ(data[7], (std::vector{9, 10}));
+    EXPECT_EQ(data[8], (std::vector{8, 9}));
+    EXPECT_EQ(data[9], (std::vector{7, 8}));
+    EXPECT_EQ(data[10], (std::vector{10, 11}));
 }
 
 TEST(PermutationTest, InversePermutationTest1)
@@ -161,3 +181,5 @@ TEST(PermutationTest, CombinePermutationTest2)
     EXPECT_EQ(combined2[3], 3);
     EXPECT_EQ(combined2[4], 4);
 }
+
+
