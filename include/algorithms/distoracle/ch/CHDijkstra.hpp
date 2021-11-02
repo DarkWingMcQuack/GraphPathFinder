@@ -140,7 +140,7 @@ template<class Graph>
 requires concepts::DeletableForwardConnections<Graph> &&
          concepts::DeletableBackwardConnections<Graph>
 // clang-format on
-[[nodiscard]] constexpr inline auto prepareGraphForCHDijkstra(Graph&& g) noexcept
+[[nodiscard]] constexpr inline auto prepareGraphForCHDijkstra(Graph g) noexcept
     -> Graph
 {
     //the graph should only return valid edges for the forward and backward search
