@@ -118,7 +118,7 @@ private:
             const auto trg = edge->getTrg().get();
             const auto weight = edge->getWeight();
 
-            //skip if src is not reachable from current node
+            // skip if src is not reachable from current node
             if(distances_[src] == common::INFINITY_WEIGHT) {
                 continue;
             }
@@ -164,6 +164,31 @@ template<class Node, class Edge>
         };
     });
 
+    g.sortBackwardEdgeIDsAccordingTo([](const auto& graph) {
+        return [&](const auto lhs, const auto rhs) {
+            const auto lhs_edge = graph.getBackwardEdge(lhs);
+            const auto rhs_edge = graph.getBackwardEdge(rhs);
+            const auto lhs_trg = lhs_edge->getTrg();
+            const auto rhs_trg = rhs_edge->getTrg();
+            const auto lhs_trg_lvl = graph.getNodeLevelUnsafe(lhs_trg);
+            const auto rhs_trg_lvl = graph.getNodeLevelUnsafe(rhs_trg);
+            return lhs_trg_lvl > rhs_trg_lvl;
+        };
+    });
+
+    g.sortEdgesAccordingTo([](const auto& graph) {
+        return [&](const auto lhs, const auto rhs) {
+            const auto lhs_edge = graph.getBackwardEdge(lhs);
+            const auto rhs_edge = graph.getBackwardEdge(rhs);
+            const auto lhs_trg = lhs_edge->getTrg();
+            const auto rhs_trg = rhs_edge->getTrg();
+            const auto lhs_trg_lvl = graph.getNodeLevelUnsafe(lhs_trg);
+            const auto rhs_trg_lvl = graph.getNodeLevelUnsafe(rhs_trg);
+
+            return lhs_trg_lvl > rhs_trg_lvl;
+        };
+    });
+
     g.sortNodesAccordingTo([](const auto& graph) {
         return [&](const auto lhs, const auto rhs) {
             const auto lhs_lvl = graph.getNodeLevelUnsafe(lhs);
@@ -171,7 +196,7 @@ template<class Node, class Edge>
             return lhs_lvl > rhs_lvl;
         };
     });
-    //TODO: how to sort the edges and the offset arrays??
+    // TODO: how to sort the edges and the offset arrays??
 
     return g;
 }
