@@ -190,3 +190,5 @@ cython_debug/
 *.aux
 *.fdb_latexmk
 *.fls
+/test/data/stgtregbz.txt
+/test/data/ch-stgtregbz.txt
