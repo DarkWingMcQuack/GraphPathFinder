@@ -39,6 +39,10 @@ add_executable(unit_tests
   utils/PermutationTest.cpp
   )
 
+if (BUILD_TRAVIS_TEST)
+  set_target_properties(unit_tests PROPERTIES COMPILE_DEFINITIONS "ONLY_TRAVIS_TESTS")
+endif (BUILD_TRAVIS_TEST)
+
 target_link_libraries(unit_tests LINK_PRIVATE
   gtest
   fmt

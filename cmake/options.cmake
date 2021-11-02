@@ -10,4 +10,5 @@ if(USE_CLANG)
 endif(USE_CLANG)
 
 option(BUILD_TESTS "build tests" ON)
+option(BUILD_TRAVIS_TEST "builds tests for travis leaving those with huge memory requirements of" OFF)
 option(BUILD_EXAMPLES "build examples" ON)

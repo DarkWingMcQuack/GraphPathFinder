@@ -130,69 +130,72 @@ TEST(DistanceOracleHubLabelTest, HubLabelNodePermutationTest)
     EXPECT_EQ(hl_lookup.distanceBetween(common::NodeID{4}, common::NodeID{3}), common::Weight{1});
 }
 
-// TEST(DistanceOracleHubLabelTest, StgRegbzTest)
-// {
-//     auto example_graph = data_dir + "ch-stgtregbz.txt";
-//     auto graph_opt = parsing::parseFromFMIFile<graphs::FMINode<true>, graphs::FMIEdge<true>>(example_graph);
 
-//     ASSERT_TRUE(graph_opt);
-//     auto graph = std::move(graph_opt.value());
+#ifndef ONLY_TRAVIS_TESTS
 
-//     graph.deleteForwardEdgesIDsIf([](const auto &graph) {
-//         return [&](const auto id) {
-//             const auto *edge = graph.getEdge(id);
-//             const auto src = edge->getSrc();
-//             const auto trg = edge->getTrg();
-//             const auto src_lvl = graph.getNodeLevelUnsafe(src);
-//             const auto trg_lvl = graph.getNodeLevelUnsafe(trg);
-//             return src_lvl > trg_lvl;
-//         };
-//     });
+TEST(DistanceOracleHubLabelTest, StgRegbzTest)
+{
+    auto example_graph = data_dir + "ch-stgtregbz.txt";
+    auto graph_opt = parsing::parseFromFMIFile<graphs::FMINode<true>, graphs::FMIEdge<true>>(example_graph);
 
-//     graph.deleteBackwardEdgesIDsIf([](const auto &graph) {
-//         return [&](const auto id) {
-//             const auto edge = graph.getBackwardEdge(id);
-//             const auto src = edge->getSrc();
-//             const auto trg = edge->getTrg();
-//             const auto src_lvl = graph.getNodeLevelUnsafe(src);
-//             const auto trg_lvl = graph.getNodeLevelUnsafe(trg);
-//             return src_lvl > trg_lvl;
-//         };
-//     });
+    ASSERT_TRUE(graph_opt);
+    auto graph = std::move(graph_opt.value());
 
-//     auto [perm, inv_perm] = graph.sortNodesAccordingTo([](const auto &graph) {
-//         return [&](const auto lhs, const auto rhs) {
-//             const auto lhs_lvl = graph.getNodeLevelUnsafe(lhs);
-//             const auto rhs_lvl = graph.getNodeLevelUnsafe(rhs);
-//             return lhs_lvl > rhs_lvl;
-//         };
-//     });
+    graph.deleteForwardEdgesIDsIf([](const auto &graph) {
+        return [&](const auto id) {
+            const auto *edge = graph.getEdge(id);
+            const auto src = edge->getSrc();
+            const auto trg = edge->getTrg();
+            const auto src_lvl = graph.getNodeLevelUnsafe(src);
+            const auto trg_lvl = graph.getNodeLevelUnsafe(trg);
+            return src_lvl > trg_lvl;
+        };
+    });
+
+    graph.deleteBackwardEdgesIDsIf([](const auto &graph) {
+        return [&](const auto id) {
+            const auto edge = graph.getBackwardEdge(id);
+            const auto src = edge->getSrc();
+            const auto trg = edge->getTrg();
+            const auto src_lvl = graph.getNodeLevelUnsafe(src);
+            const auto trg_lvl = graph.getNodeLevelUnsafe(trg);
+            return src_lvl > trg_lvl;
+        };
+    });
+
+    auto [perm, inv_perm] = graph.sortNodesAccordingTo([](const auto &graph) {
+        return [&](const auto lhs, const auto rhs) {
+            const auto lhs_lvl = graph.getNodeLevelUnsafe(lhs);
+            const auto rhs_lvl = graph.getNodeLevelUnsafe(rhs);
+            return lhs_lvl > rhs_lvl;
+        };
+    });
 
 
-//     algorithms::distoracle::HubLabelCalculator calculator{graph};
+    algorithms::distoracle::HubLabelCalculator calculator{graph};
 
-//     auto hl_lookup = calculator.constructHubLabelLookupInParallel();
+    auto hl_lookup = calculator.constructHubLabelLookupInParallel();
 
-//     std::ifstream input_file(data_dir + "stgtregbz-dists.txt",
-//                              std::ios::in);
+    std::ifstream input_file(data_dir + "stgtregbz-dists.txt",
+                             std::ios::in);
 
-//     std::string line;
-//     std::size_t src_s;
-//     std::size_t trg_s;
-//     std::int64_t dist_s;
-//     while(std::getline(input_file, line)) {
-//         std::stringstream ss{line};
-//         ss >> src_s >> trg_s >> dist_s;
+    std::string line;
+    std::size_t src_s;
+    std::size_t trg_s;
+    std::int64_t dist_s;
+    while(std::getline(input_file, line)) {
+        std::stringstream ss{line};
+        ss >> src_s >> trg_s >> dist_s;
 
-//         common::NodeID src{inv_perm[src_s]};
-//         common::NodeID trg{inv_perm[trg_s]};
-//         common::Weight dist{dist_s};
+        common::NodeID src{inv_perm[src_s]};
+        common::NodeID trg{inv_perm[trg_s]};
+        common::Weight dist{dist_s};
 
-//         const auto hl_dist = hl_lookup.distanceBetween(src, trg);
+        const auto hl_dist = hl_lookup.distanceBetween(src, trg);
 
-//         EXPECT_EQ(hl_dist, dist);
-//     }
-// }
+        EXPECT_EQ(hl_dist, dist);
+    }
+}
 
 TEST(DistanceOracleHubLabelTest, StgRegbzPermutationTest)
 {
@@ -261,3 +264,5 @@ TEST(DistanceOracleHubLabelTest, StgRegbzPermutationTest)
         EXPECT_EQ(hl_dist, dist);
     }
 }
+
+#endif
