@@ -8,7 +8,6 @@ message(STATUS "Compiler: ${CMAKE_CXX_COMPILER}")
 
 include(../cmake/flags.cmake)
 include(../cmake/gtest.cmake)
-include(../cmake/linker.cmake)
 include(../cmake/ccache.cmake)
 
 # needed for multithreading
