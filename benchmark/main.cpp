@@ -13,19 +13,19 @@ BENCHMARK(SimpleStgGraphParsing)->Unit(benchmark::kSecond);
 BENCHMARK(CHStgGraphParsing)->Unit(benchmark::kSecond);
 
 BENCHMARK(DijkstraInitialization)->Unit(benchmark::kMillisecond);
-BENCHMARK(DijkstraOneToOne)->Unit(benchmark::kMillisecond);
-BENCHMARK(DijkstraOneToAll)->Unit(benchmark::kMillisecond);
+BENCHMARK(DijkstraOneToOne)->Unit(benchmark::kMillisecond)->Iterations(100);
+BENCHMARK(DijkstraOneToAll)->Unit(benchmark::kMillisecond)->Iterations(50);
 
-BENCHMARK(CHDijkstraGraphPreparation)->Unit(benchmark::kMillisecond);
+BENCHMARK(CHDijkstraGraphPreparation)->Unit(benchmark::kMillisecond)->Iterations(10);
 BENCHMARK(CHDijkstraInitialization)->Unit(benchmark::kMillisecond);
-BENCHMARK(CHDijkstraOneToOne)->Unit(benchmark::kMicrosecond);
+BENCHMARK(CHDijkstraOneToOne)->Unit(benchmark::kMicrosecond)->Iterations(10000);
 
-BENCHMARK(HubLabelsGraphPreparation)->Unit(benchmark::kMillisecond);
+BENCHMARK(HubLabelsGraphPreparation)->Unit(benchmark::kMillisecond)->Iterations(10);
 BENCHMARK(HubLabelsComputation)->Unit(benchmark::kSecond);
 BENCHMARK(HubLabelsOneToOne)->Unit(benchmark::kMicrosecond);
 
-BENCHMARK(PHASTGraphPreparation)->Unit(benchmark::kMillisecond);
+BENCHMARK(PHASTGraphPreparation)->Unit(benchmark::kMillisecond)->Iterations(10);
 BENCHMARK(PHASTInitialization)->Unit(benchmark::kMillisecond);
-BENCHMARK(PHASTOneToAll)->Unit(benchmark::kMillisecond);
+BENCHMARK(PHASTOneToAll)->Unit(benchmark::kMillisecond)->Iterations(50);
 
 BENCHMARK_MAIN();
