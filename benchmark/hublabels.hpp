@@ -36,8 +36,8 @@ inline auto HubLabelsOneToOne(benchmark::State& state)
     -> void
 {
     const char* const example_graph = "../data/ch-stgtregbz.txt";
-	//needs to be static otherwise it gets recalculated every iteration
-	//fixture is not possible because it segfaults(and it is not my problem)
+    // needs to be static otherwise it gets recalculated every iteration
+    // fixture is not possible because it segfaults(and it is not my problem)
     static auto graph = [&] {
         auto g = parsing::parseFromFMIFile<graphs::FMINode<true>, graphs::FMIEdge<true>>(example_graph).value();
         return algorithms::distoracle::prepareGraphForHubLabelCalculator(std::move(g));
@@ -48,7 +48,7 @@ inline auto HubLabelsOneToOne(benchmark::State& state)
 
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::uniform_int_distribution<std::size_t> distr(0, lookup.numberOfNodes());
+    std::uniform_int_distribution<std::size_t> distr(0, lookup.numberOfNodes() - 1);
 
     while(state.KeepRunning()) {
         state.PauseTiming();

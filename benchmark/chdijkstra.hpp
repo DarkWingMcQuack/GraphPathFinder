@@ -41,7 +41,7 @@ inline auto CHDijkstraOneToOne(benchmark::State& state)
 
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::uniform_int_distribution<std::size_t> distr(0, graph.numberOfNodes());
+    std::uniform_int_distribution<std::size_t> distr(0, graph.numberOfNodes() - 1);
     algorithms::distoracle::CHDijkstra dijk{graph};
 
     while(state.KeepRunning()) {
