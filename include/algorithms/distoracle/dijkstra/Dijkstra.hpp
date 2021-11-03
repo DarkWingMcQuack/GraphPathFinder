@@ -101,6 +101,7 @@ public:
     [[nodiscard]] auto distancesFrom(common::NodeID source) noexcept
         -> const std::vector<common::Weight>&
     {
+
         if(source != last_source_) {
             resetFor(source);
         }
