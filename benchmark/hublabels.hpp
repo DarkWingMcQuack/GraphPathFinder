@@ -8,51 +8,54 @@
 #include <parsing/offsetarray/Parser.hpp>
 #include <random>
 
-
-class HubLabelsFixture : public ::benchmark::Fixture
+inline auto HubLabelsGraphPreparation(benchmark::State& state)
+    -> void
 {
-public:
     const char* const example_graph = "../data/ch-stgtregbz.txt";
-    std::optional<algorithms::distoracle::HubLabelLookup> lookup;
-    std::vector<common::NodeID> srcs;
-    std::vector<common::NodeID> trgs;
-    std::size_t counter = 0;
+    for(auto _ : state) {
+        state.PauseTiming();
+        auto graph = parsing::parseFromFMIFile<graphs::FMINode<true>, graphs::FMIEdge<true>>(example_graph).value();
+        state.ResumeTiming();
+        benchmark::DoNotOptimize(algorithms::distoracle::prepareGraphForHubLabelCalculator(std::move(graph)));
+    }
+}
 
-    HubLabelsFixture()
-    {
+inline auto HubLabelsComputation(benchmark::State& state)
+    -> void
+{
+    const char* const example_graph = "../data/ch-stgtregbz.txt";
+    auto graph = parsing::parseFromFMIFile<graphs::FMINode<true>, graphs::FMIEdge<true>>(example_graph).value();
+    graph = algorithms::distoracle::prepareGraphForHubLabelCalculator(std::move(graph));
+    for(auto _ : state) {
+        algorithms::distoracle::HubLabelCalculator calculator{graph};
+        benchmark::DoNotOptimize(calculator.constructHubLabelLookupInParallel());
+    }
+}
+
+inline auto HubLabelsOneToOne(benchmark::State& state)
+    -> void
+{
+    const char* const example_graph = "../data/ch-stgtregbz.txt";
+	//needs to be static otherwise it gets recalculated every iteration
+	//fixture is not possible because it segfaults(and it is not my problem)
+    static auto graph = [&] {
         auto g = parsing::parseFromFMIFile<graphs::FMINode<true>, graphs::FMIEdge<true>>(example_graph).value();
-        g = algorithms::distoracle::prepareGraphForHubLabelCalculator(std::move(g));
-        algorithms::distoracle::HubLabelCalculator calculator{g};
-        lookup = calculator.constructHubLabelLookup();
+        return algorithms::distoracle::prepareGraphForHubLabelCalculator(std::move(g));
+    }();
 
-        std::random_device rd;
-        std::mt19937 gen(rd());
-        std::uniform_int_distribution<std::size_t> distr(0, g.numberOfNodes());
+    static algorithms::distoracle::HubLabelCalculator calculator{graph};
+    static const auto lookup = calculator.constructHubLabelLookupInParallel();
 
-        for(std::size_t i = 0; i < 100; i++) {
-            srcs.emplace_back(distr(gen));
-            trgs.emplace_back(distr(gen));
-        }
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<std::size_t> distr(0, lookup.numberOfNodes());
+
+    while(state.KeepRunning()) {
+        state.PauseTiming();
+        common::NodeID s{distr(gen)};
+        common::NodeID t{distr(gen)};
+        state.ResumeTiming();
+
+        benchmark::DoNotOptimize(lookup.distanceBetween(s, t));
     }
-};
-
-
-BENCHMARK_DEFINE_F(HubLabelsFixture, HubLabelsCalculationBenchmark)
-(benchmark::State& state)
-{
-    auto g = parsing::parseFromFMIFile<graphs::FMINode<true>, graphs::FMIEdge<true>>(example_graph).value();
-    g = algorithms::distoracle::prepareGraphForHubLabelCalculator(std::move(g));
-    algorithms::distoracle::HubLabelCalculator calculator{g};
-    for(auto _ : state) {
-        benchmark::DoNotOptimize(calculator.constructHubLabelLookup());
-    }
-};
-
-BENCHMARK_DEFINE_F(HubLabelsFixture, HubLabelsOneToOneDistanceQueryBenchmark)
-(benchmark::State& state)
-{
-    for(auto _ : state) {
-        benchmark::DoNotOptimize(lookup->distanceBetween(srcs[counter], trgs[counter]));
-        counter = (counter + 1) % 100;
-    }
-};
+}

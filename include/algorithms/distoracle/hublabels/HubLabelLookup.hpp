@@ -89,13 +89,19 @@ class HubLabelLookup
 public:
     constexpr static inline bool is_threadsafe = false;
 
-    [[nodiscard]] auto distanceBetween(common::NodeID source, common::NodeID target) noexcept
+    [[nodiscard]] auto distanceBetween(common::NodeID source, common::NodeID target) const noexcept
         -> common::Weight
     {
         const auto& in_l = in_labels_[target.get()];
         const auto& out_l = out_labels_[source.get()];
 
         return HubLabelLookup::distanceOracle(out_l, in_l);
+    }
+
+    [[nodiscard]] auto numberOfNodes() const noexcept
+        -> std::size_t
+    {
+        return in_labels_.size();
     }
 
     auto applyNodePermutation(std::vector<std::size_t> perm,

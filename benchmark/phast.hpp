@@ -8,44 +8,49 @@
 #include <random>
 
 
-class PHASTFixture : public ::benchmark::Fixture
+inline auto PHASTGraphPreparation(benchmark::State& state)
+    -> void
 {
-public:
     const char* const example_graph = "../data/ch-stgtregbz.txt";
-    graphs::OffsetArray<graphs::FMINode<true>, graphs::FMIEdge<true>> graph;
-    algorithms::distoracle::PHAST<graphs::FMINode<true>, graphs::FMIEdge<true>> phast;
-    std::vector<common::NodeID> srcs;
-    std::size_t counter = 0;
-
-    PHASTFixture()
-        : graph{parsing::parseFromFMIFile<graphs::FMINode<true>, graphs::FMIEdge<true>>(example_graph).value()},
-          phast{graph}
-    {
-        graph = algorithms::distoracle::prepareGraphForPHAST(std::move(graph));
-        std::random_device rd;
-        std::mt19937 gen(rd());
-        std::uniform_int_distribution<std::size_t> distr(0, graph.numberOfNodes());
-
-        for(std::size_t i = 0; i < 100; i++) {
-            srcs.emplace_back(distr(gen));
-        }
+    for(auto _ : state) {
+        state.PauseTiming();
+        auto graph = parsing::parseFromFMIFile<graphs::FMINode<true>, graphs::FMIEdge<true>>(example_graph).value();
+        state.ResumeTiming();
+        benchmark::DoNotOptimize(algorithms::distoracle::prepareGraphForPHAST(std::move(graph)));
     }
-};
+}
 
-
-BENCHMARK_DEFINE_F(PHASTFixture, PHASTInitializationBenchmark)
-(benchmark::State& state)
+inline auto PHASTInitialization(benchmark::State& state)
+    -> void
 {
-    for(auto i : state) {
-        benchmark::DoNotOptimize(algorithms::distoracle::PHAST{graph});
-    }
-};
+    const char* const example_graph = "../data/ch-stgtregbz.txt";
+    auto graph = parsing::parseFromFMIFile<graphs::FMINode<true>, graphs::FMIEdge<true>>(example_graph).value();
+    graph = algorithms::distoracle::prepareGraphForPHAST(std::move(graph));
 
-BENCHMARK_DEFINE_F(PHASTFixture, PHASTOneToAllDistanceQueryBenchmark)
-(benchmark::State& state)
-{
-    for(auto i : state) {
-        benchmark::DoNotOptimize(phast.distancesFrom(srcs[counter]));
-        counter = (counter + 1) % 100;
+    while(state.KeepRunning()) {
+        algorithms::distoracle::PHAST phast{graph};
+        (void)phast;
     }
-};
+}
+
+inline auto PHASTOneToAll(benchmark::State& state)
+    -> void
+{
+    const char* const example_graph = "../data/ch-stgtregbz.txt";
+    auto graph = parsing::parseFromFMIFile<graphs::FMINode<true>, graphs::FMIEdge<true>>(example_graph).value();
+    graph = algorithms::distoracle::prepareGraphForPHAST(std::move(graph));
+    algorithms::distoracle::PHAST phast{graph};
+
+
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<std::size_t> distr(0, graph.numberOfNodes());
+
+    while(state.KeepRunning()) {
+        state.PauseTiming();
+        common::NodeID s{distr(gen)};
+        state.ResumeTiming();
+
+        benchmark::DoNotOptimize(phast.distancesFrom(s));
+    }
+}

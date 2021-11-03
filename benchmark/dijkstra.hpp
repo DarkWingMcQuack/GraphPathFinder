@@ -8,45 +8,54 @@
 #include <random>
 
 
-class DijkstraFixture : public ::benchmark::Fixture
+inline auto DijkstraInitialization(benchmark::State& state)
+    -> void
 {
-public:
     const char* const example_graph = "../data/stgtregbz.txt";
-    graphs::OffsetArray<graphs::FMINode<false>, graphs::FMIEdge<false>> graph;
-    algorithms::distoracle::Dijkstra<graphs::OffsetArray<graphs::FMINode<false>, graphs::FMIEdge<false>>> dijk;
-    std::vector<common::NodeID> srcs;
-    std::vector<common::NodeID> trgs;
-    std::size_t counter = 0;
-
-    DijkstraFixture()
-        : graph{parsing::parseFromFMIFile<graphs::FMINode<false>, graphs::FMIEdge<false>>(example_graph).value()},
-          dijk{graph}
-    {
-        std::random_device rd;
-        std::mt19937 gen(rd());
-        std::uniform_int_distribution<std::size_t> distr(0, graph.numberOfNodes());
-
-        for(std::size_t i = 0; i < 100; i++) {
-            srcs.emplace_back(distr(gen));
-            trgs.emplace_back(distr(gen));
-        }
+    auto graph = parsing::parseFromFMIFile<graphs::FMINode<false>, graphs::FMIEdge<false>>(example_graph).value();
+    for(auto _ : state) {
+        algorithms::distoracle::Dijkstra dijk{graph};
+        (void)dijk;
     }
-};
+}
 
-
-BENCHMARK_DEFINE_F(DijkstraFixture, DijkstraInitializationBenchmark)
-(benchmark::State& state)
+inline auto DijkstraOneToOne(benchmark::State& state)
+    -> void
 {
-    for(auto i : state) {
-        benchmark::DoNotOptimize(algorithms::distoracle::Dijkstra{graph});
-    }
-};
+    const char* const example_graph = "../data/stgtregbz.txt";
+    auto graph = parsing::parseFromFMIFile<graphs::FMINode<false>, graphs::FMIEdge<false>>(example_graph).value();
 
-BENCHMARK_DEFINE_F(DijkstraFixture, DijkstraOneToOneDistanceQueryBenchmark)
-(benchmark::State& state)
-{
-    for(auto i : state) {
-        benchmark::DoNotOptimize(dijk.distanceBetween(srcs[counter], trgs[counter]));
-        counter = (counter + 1) % 100;
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<std::size_t> distr(0, graph.numberOfNodes());
+    algorithms::distoracle::Dijkstra dijk{graph};
+
+    while(state.KeepRunning()) {
+        state.PauseTiming();
+        common::NodeID s{distr(gen)};
+        common::NodeID t{distr(gen)};
+        state.ResumeTiming();
+
+        benchmark::DoNotOptimize(dijk.distanceBetween(s, t));
     }
-};
+}
+
+inline auto DijkstraOneToAll(benchmark::State& state)
+    -> void
+{
+    const char* const example_graph = "../data/stgtregbz.txt";
+    auto graph = parsing::parseFromFMIFile<graphs::FMINode<false>, graphs::FMIEdge<false>>(example_graph).value();
+
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<std::size_t> distr(0, graph.numberOfNodes());
+    algorithms::distoracle::Dijkstra dijk{graph};
+
+    while(state.KeepRunning()) {
+        state.PauseTiming();
+        common::NodeID s{distr(gen)};
+        state.ResumeTiming();
+
+        benchmark::DoNotOptimize(dijk.distancesFrom(s));
+    }
+}
