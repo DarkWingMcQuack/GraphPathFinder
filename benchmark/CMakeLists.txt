@@ -8,6 +8,7 @@ message(STATUS "Compiler: ${CMAKE_CXX_COMPILER}")
 
 include(../cmake/flags.cmake)
 include(../cmake/ccache.cmake)
+include(../cmake/benchmark.cmake)
 
 # needed for multithreading
 find_package(Threads REQUIRED)
@@ -18,11 +19,13 @@ add_executable(benchmarks
 
 target_link_libraries(benchmarks LINK_PRIVATE
   fmt
+  benchmark
   GraphPathFinderLib
   ${CMAKE_THREAD_LIBS_INIT})
 
 target_include_directories(
   benchmarks PUBLIC
+  benchmark
   GraphPathFinderLib
   ${CMAKE_CURRENT_SOURCE_DIR}/../include
   )
