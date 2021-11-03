@@ -29,3 +29,5 @@ target_include_directories(
   GraphPathFinderLib
   ${CMAKE_CURRENT_SOURCE_DIR}/../include
   )
+
+add_dependencies(benchmarks benchmark-project)
