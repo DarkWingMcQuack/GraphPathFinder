@@ -15,7 +15,7 @@ before_script:
   - cd ..
   - mkdir build
   - cd build
-  - cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_TRAVIS_TEST=1 -DBUILD_BENCHMARKS=OFF ..
+  - cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_TRAVIS_TEST=1 -DBUILD_BENCHMARKS=OFF -DBUILD_EXAMPLES=OFF ..
 
 script:
   - make
