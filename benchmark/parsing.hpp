@@ -4,7 +4,7 @@
 #include <graphs/nodes/FMINode.hpp>
 #include <parsing/offsetarray/Parser.hpp>
 
-void SimpleToyGraphParsing(benchmark::State& state)
+inline void SimpleToyGraphParsing(benchmark::State& state)
 {
     const auto* const example_graph = "../data/fmi-example.txt";
     for(auto _ : state) {
@@ -12,7 +12,7 @@ void SimpleToyGraphParsing(benchmark::State& state)
     }
 }
 
-void CHToyGraphParsing(benchmark::State& state)
+inline void CHToyGraphParsing(benchmark::State& state)
 {
     const auto* const example_graph = "../data/ch-fmi-example.txt";
     for(auto _ : state) {
@@ -20,7 +20,7 @@ void CHToyGraphParsing(benchmark::State& state)
     }
 }
 
-void SimpleStgGraphParsing(benchmark::State& state)
+inline void SimpleStgGraphParsing(benchmark::State& state)
 {
     const auto* const example_graph = "../data/stgtregbz.txt";
     for(auto _ : state) {
@@ -28,7 +28,7 @@ void SimpleStgGraphParsing(benchmark::State& state)
     }
 }
 
-void CHStgGraphParsing(benchmark::State& state)
+inline void CHStgGraphParsing(benchmark::State& state)
 {
     const auto* const example_graph = "../data/ch-stgtregbz.txt";
     for(auto _ : state) {
