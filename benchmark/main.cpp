@@ -11,6 +11,10 @@ BENCHMARK(SimpleToyGraphParsing)->Unit(benchmark::kMillisecond);
 BENCHMARK(CHToyGraphParsing)->Unit(benchmark::kMillisecond);
 BENCHMARK(SimpleStgGraphParsing)->Unit(benchmark::kSecond);
 BENCHMARK(CHStgGraphParsing)->Unit(benchmark::kSecond);
+BENCHMARK(FMINodeWithoutLevelParsing);
+BENCHMARK(FMINodeWithLevelParsing);
+BENCHMARK(FMIEdgeWithoutShortcutParsing);
+BENCHMARK(FMIEdgeWithShortcutParsing);
 
 BENCHMARK(DijkstraInitialization)->Unit(benchmark::kMillisecond);
 BENCHMARK(DijkstraOneToOne)->Unit(benchmark::kMillisecond)->Iterations(100);
