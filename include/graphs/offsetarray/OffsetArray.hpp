@@ -394,7 +394,7 @@ private:
                           const auto& rhs_src = rhs_edge.getSrc();
                           return lhs_src < rhs_src;
                       });
-            return util::inversePermutation(perm);
+            return perm;
         }();
 
 
@@ -440,7 +440,7 @@ private:
                           const auto& rhs_trg = rhs_edge.getTrg();
                           return lhs_trg < rhs_trg;
                       });
-            return util::inversePermutation(perm);
+            return perm;
         }();
 
         std::size_t idx = 0;

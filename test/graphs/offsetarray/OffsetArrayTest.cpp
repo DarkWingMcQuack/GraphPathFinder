@@ -1703,6 +1703,21 @@ TEST(OffsetArrayTest, OffsetArrayEdgeAdditionTest)
     EXPECT_TRUE(graph.checkIfEdgeExistsBetween(common::NodeID{1}, common::NodeID{1}));
     EXPECT_TRUE(graph.checkIfEdgeExistsBetween(common::NodeID{1}, common::NodeID{2}));
 
+    EXPECT_TRUE(graph.checkIfEdgeExistsBackwardBetween(common::NodeID{1}, common::NodeID{0}));
+    EXPECT_TRUE(graph.checkIfEdgeExistsBackwardBetween(common::NodeID{2}, common::NodeID{0}));
+    EXPECT_TRUE(graph.checkIfEdgeExistsBackwardBetween(common::NodeID{4}, common::NodeID{0}));
+    EXPECT_TRUE(graph.checkIfEdgeExistsBackwardBetween(common::NodeID{0}, common::NodeID{2}));
+    EXPECT_TRUE(graph.checkIfEdgeExistsBackwardBetween(common::NodeID{1}, common::NodeID{2}));
+    EXPECT_TRUE(graph.checkIfEdgeExistsBackwardBetween(common::NodeID{4}, common::NodeID{2}));
+    EXPECT_TRUE(graph.checkIfEdgeExistsBackwardBetween(common::NodeID{2}, common::NodeID{3}));
+    EXPECT_TRUE(graph.checkIfEdgeExistsBackwardBetween(common::NodeID{1}, common::NodeID{4}));
+    EXPECT_TRUE(graph.checkIfEdgeExistsBackwardBetween(common::NodeID{3}, common::NodeID{4}));
+    EXPECT_TRUE(graph.checkIfEdgeExistsBackwardBetween(common::NodeID{0}, common::NodeID{0}));
+    EXPECT_TRUE(graph.checkIfEdgeExistsBackwardBetween(common::NodeID{3}, common::NodeID{0}));
+    EXPECT_TRUE(graph.checkIfEdgeExistsBackwardBetween(common::NodeID{0}, common::NodeID{1}));
+    EXPECT_TRUE(graph.checkIfEdgeExistsBackwardBetween(common::NodeID{1}, common::NodeID{1}));
+    EXPECT_TRUE(graph.checkIfEdgeExistsBackwardBetween(common::NodeID{2}, common::NodeID{1}));
+
     EXPECT_FALSE(graph.checkIfEdgeExistsBetween(common::NodeID{1}, common::NodeID{3}));
     EXPECT_FALSE(graph.checkIfEdgeExistsBetween(common::NodeID{1}, common::NodeID{4}));
     EXPECT_FALSE(graph.checkIfEdgeExistsBetween(common::NodeID{2}, common::NodeID{2}));
@@ -1714,4 +1729,5 @@ TEST(OffsetArrayTest, OffsetArrayEdgeAdditionTest)
     EXPECT_FALSE(graph.checkIfEdgeExistsBetween(common::NodeID{4}, common::NodeID{0}));
     EXPECT_FALSE(graph.checkIfEdgeExistsBetween(common::NodeID{4}, common::NodeID{2}));
     EXPECT_FALSE(graph.checkIfEdgeExistsBetween(common::NodeID{4}, common::NodeID{4}));
+
 }
