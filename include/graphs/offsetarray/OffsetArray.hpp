@@ -415,7 +415,6 @@ private:
                 idx++;
             }
 
-
             forward_offset[i + 1] = forward_neigbours.size();
         }
 
@@ -456,13 +455,12 @@ private:
             std::copy(std::begin(ids), std::end(ids),
                       std::back_inserter(backward_neigbours));
 
-            backward_offset[i + 1] = backward_neigbours.size();
-
-
             while(idx < number_of_new_edges and new_edges[inv_perm[idx]].getTrg() == current) {
                 backward_neigbours.emplace_back(number_of_edges + inv_perm[idx]);
                 idx++;
             }
+
+            backward_offset[i + 1] = backward_neigbours.size();
         }
         this->backward_offset_ = std::move(backward_offset);
         this->backward_neigbours_ = std::move(backward_neigbours);
