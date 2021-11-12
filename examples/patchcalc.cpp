@@ -116,6 +116,8 @@ auto main(int argc, char* argv[])
             continue;
         }
 
+        fmt::print("barrier {}\n", barrier.get());
+
         const auto patch = patch_grower.grow(std::vector{src},
                                              barrier,
                                              std::vector{trg});
