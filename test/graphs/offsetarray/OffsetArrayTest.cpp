@@ -1666,3 +1666,52 @@ TEST(OffsetArrayTest, CHOffsetArrayEdgeSortingTest2)
     EXPECT_EQ(edge->getSrc(), common::NodeID{4});
     EXPECT_EQ(edge->getTrg(), common::NodeID{3});
 }
+
+
+TEST(OffsetArrayTest, OffsetArrayEdgeAdditionTest)
+{
+    auto example_graph = data_dir + "fmi-example.txt";
+    auto graph_opt = parsing::parseFromFMIFile<graphs::FMINode<false>, graphs::FMIEdge<false>>(example_graph);
+
+    ASSERT_TRUE(graph_opt);
+    auto graph = std::move(graph_opt.value());
+
+	std::vector new_edges{
+	  graphs::FMIEdge<false>::parse("0 0 1 3 50").value(),
+	  graphs::FMIEdge<false>::parse("1 0 1 3 50").value(),
+	  graphs::FMIEdge<false>::parse("0 3 1 3 50").value(),
+	  graphs::FMIEdge<false>::parse("1 1 1 3 50").value(),
+	  graphs::FMIEdge<false>::parse("1 2 1 3 50").value()
+	};
+
+	graph.addEdges(std::move(new_edges));
+
+	ASSERT_EQ(graph.numberOfEdges(), 14);
+
+    EXPECT_TRUE(graph.checkIfEdgeExistsBetween(common::NodeID{0}, common::NodeID{1}));
+    EXPECT_TRUE(graph.checkIfEdgeExistsBetween(common::NodeID{0}, common::NodeID{2}));
+    EXPECT_TRUE(graph.checkIfEdgeExistsBetween(common::NodeID{0}, common::NodeID{4}));
+    EXPECT_TRUE(graph.checkIfEdgeExistsBetween(common::NodeID{2}, common::NodeID{0}));
+    EXPECT_TRUE(graph.checkIfEdgeExistsBetween(common::NodeID{2}, common::NodeID{1}));
+    EXPECT_TRUE(graph.checkIfEdgeExistsBetween(common::NodeID{2}, common::NodeID{4}));
+    EXPECT_TRUE(graph.checkIfEdgeExistsBetween(common::NodeID{3}, common::NodeID{2}));
+    EXPECT_TRUE(graph.checkIfEdgeExistsBetween(common::NodeID{4}, common::NodeID{1}));
+    EXPECT_TRUE(graph.checkIfEdgeExistsBetween(common::NodeID{4}, common::NodeID{3}));
+    EXPECT_TRUE(graph.checkIfEdgeExistsBetween(common::NodeID{0}, common::NodeID{0}));
+    EXPECT_TRUE(graph.checkIfEdgeExistsBetween(common::NodeID{0}, common::NodeID{3}));
+    EXPECT_TRUE(graph.checkIfEdgeExistsBetween(common::NodeID{1}, common::NodeID{0}));
+    EXPECT_TRUE(graph.checkIfEdgeExistsBetween(common::NodeID{1}, common::NodeID{1}));
+    EXPECT_TRUE(graph.checkIfEdgeExistsBetween(common::NodeID{1}, common::NodeID{2}));
+
+    EXPECT_FALSE(graph.checkIfEdgeExistsBetween(common::NodeID{1}, common::NodeID{3}));
+    EXPECT_FALSE(graph.checkIfEdgeExistsBetween(common::NodeID{1}, common::NodeID{4}));
+    EXPECT_FALSE(graph.checkIfEdgeExistsBetween(common::NodeID{2}, common::NodeID{2}));
+    EXPECT_FALSE(graph.checkIfEdgeExistsBetween(common::NodeID{2}, common::NodeID{3}));
+    EXPECT_FALSE(graph.checkIfEdgeExistsBetween(common::NodeID{3}, common::NodeID{0}));
+    EXPECT_FALSE(graph.checkIfEdgeExistsBetween(common::NodeID{3}, common::NodeID{1}));
+    EXPECT_FALSE(graph.checkIfEdgeExistsBetween(common::NodeID{3}, common::NodeID{3}));
+    EXPECT_FALSE(graph.checkIfEdgeExistsBetween(common::NodeID{3}, common::NodeID{4}));
+    EXPECT_FALSE(graph.checkIfEdgeExistsBetween(common::NodeID{4}, common::NodeID{0}));
+    EXPECT_FALSE(graph.checkIfEdgeExistsBetween(common::NodeID{4}, common::NodeID{2}));
+    EXPECT_FALSE(graph.checkIfEdgeExistsBetween(common::NodeID{4}, common::NodeID{4}));
+}

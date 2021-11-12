@@ -86,6 +86,7 @@ private:
         static_assert(concepts::NodesSortable<OffsetArray>, "nodes of an offsetarray should be sortable");
         static_assert(concepts::EdgesPermutable<OffsetArray>, "edges of an offsetarray should be permutable");
         static_assert(concepts::NodesPermutable<OffsetArray>, "nodes of an offsetarray should be permutable");
+        static_assert(concepts::CanAddEdges<OffsetArray>, "an offsetarray should be able to add edges");
 
         static_assert(!concepts::CanHaveShortcuts<Edge> || concepts::CanUnwrapShortcuts<OffsetArray>,
                       "an offsetarray should be able to unwrap edges if they can have shortcuts");
@@ -355,6 +356,116 @@ public:
         }
 
         return true;
+    }
+
+    auto addEdges(std::vector<Edge> new_edges) noexcept
+        -> void
+    {
+        if constexpr(HasForwardEdges) {
+            addEdgesForward(new_edges);
+        }
+
+        if constexpr(HasBackwardEdges) {
+            addEdgesBackward(new_edges);
+        }
+
+        this->edges_.reserve(this->edges_.size() + new_edges.size());
+        this->edges_.insert(std::end(this->edges_),
+                            std::make_move_iterator(std::begin(new_edges)),
+                            std::make_move_iterator(std::end(new_edges)));
+    }
+
+private:
+    auto addEdgesForward(const std::vector<Edge>& new_edges) noexcept
+        -> void requires HasForwardEdges
+    {
+        const auto number_of_nodes = this->numberOfNodes();
+        const auto number_of_edges = this->numberOfEdges();
+        const auto number_of_new_edges = new_edges.size();
+
+        const auto inv_perm = [&] {
+            std::vector<std::size_t> perm(new_edges.size(), 0);
+            std::iota(std::begin(perm), std::end(perm), 0);
+            std::sort(std::begin(perm), std::end(perm),
+                      [&](const auto lhs, const auto rhs) {
+                          const auto& lhs_edge = new_edges[lhs];
+                          const auto& rhs_edge = new_edges[rhs];
+                          const auto& lhs_src = lhs_edge.getSrc();
+                          const auto& rhs_src = rhs_edge.getSrc();
+                          return lhs_src < rhs_src;
+                      });
+            return util::inversePermutation(perm);
+        }();
+
+
+        std::size_t idx = 0;
+        std::vector<size_t> forward_offset(number_of_nodes + 1, 0);
+        std::vector<common::EdgeID> forward_neigbours;
+        forward_neigbours.reserve(number_of_edges + number_of_new_edges);
+
+        for(size_t i = 0; i < number_of_nodes; i++) {
+            const auto current = common::NodeID{i};
+            const auto ids = this->getForwardEdgeIDsOf(current);
+
+            std::copy(std::begin(ids), std::end(ids),
+                      std::back_inserter(forward_neigbours));
+
+            while(idx < number_of_new_edges and new_edges[inv_perm[idx]].getSrc() == current) {
+                forward_neigbours.emplace_back(number_of_edges + inv_perm[idx]);
+                idx++;
+            }
+
+
+            forward_offset[i + 1] = forward_neigbours.size();
+        }
+
+        this->forward_offset_ = std::move(forward_offset);
+        this->forward_neigbours_ = std::move(forward_neigbours);
+    }
+
+    auto addEdgesBackward(const std::vector<Edge>& new_edges) noexcept
+        -> void requires HasBackwardEdges
+    {
+        const auto number_of_nodes = this->numberOfNodes();
+        const auto number_of_edges = this->numberOfEdges();
+        const auto number_of_new_edges = new_edges.size();
+
+        const auto inv_perm = [&] {
+            std::vector<std::size_t> perm(new_edges.size(), 0);
+            std::iota(std::begin(perm), std::end(perm), 0);
+            std::sort(std::begin(perm), std::end(perm),
+                      [&](const auto lhs, const auto rhs) {
+                          const auto& lhs_edge = new_edges[lhs];
+                          const auto& rhs_edge = new_edges[rhs];
+                          const auto& lhs_trg = lhs_edge.getTrg();
+                          const auto& rhs_trg = rhs_edge.getTrg();
+                          return lhs_trg < rhs_trg;
+                      });
+            return util::inversePermutation(perm);
+        }();
+
+        std::size_t idx = 0;
+        std::vector<size_t> backward_offset(number_of_nodes + 1, 0);
+        std::vector<common::EdgeID> backward_neigbours;
+        backward_neigbours.reserve(number_of_edges + number_of_new_edges);
+
+        for(size_t i = 0; i < number_of_nodes; i++) {
+            const auto current = common::NodeID{i};
+            const auto ids = this->getBackwardEdgeIDsOf(current);
+
+            std::copy(std::begin(ids), std::end(ids),
+                      std::back_inserter(backward_neigbours));
+
+            backward_offset[i + 1] = backward_neigbours.size();
+
+
+            while(idx < number_of_new_edges and new_edges[inv_perm[idx]].getTrg() == current) {
+                backward_neigbours.emplace_back(number_of_edges + inv_perm[idx]);
+                idx++;
+            }
+        }
+        this->backward_offset_ = std::move(backward_offset);
+        this->backward_neigbours_ = std::move(backward_neigbours);
     }
 };
 
