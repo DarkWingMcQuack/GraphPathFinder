@@ -56,9 +56,6 @@ public:
 
         while(!pq_.empty()) {
             const auto [current_node, current_dist] = pq_.top();
-
-            settled_[current_node.get()] = true;
-
             if(current_node == target) {
                 return current_dist;
             }
@@ -93,6 +90,8 @@ public:
                     pq_.emplace(neig, new_dist);
                 }
             }
+
+            settled_[current_node.get()] = true;
         }
 
         return common::INFINITY_WEIGHT;
@@ -108,9 +107,6 @@ public:
 
         while(!pq_.empty()) {
             const auto [current_node, current_dist] = pq_.top();
-
-            settled_[current_node.get()] = true;
-
             pq_.pop();
 
             const auto edge_ids = graph_.getForwardEdgeIDsOf(current_node);
@@ -139,6 +135,8 @@ public:
                     pq_.emplace(neig, new_dist);
                 }
             }
+
+            settled_[current_node.get()] = true;
         }
 
         return distances_;
