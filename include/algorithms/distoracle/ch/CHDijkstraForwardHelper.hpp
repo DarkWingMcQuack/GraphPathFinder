@@ -64,7 +64,7 @@ private:
 
             forward_settled_.emplace_back(current_node);
 
-            for(const auto id : edge_ids) {
+            for(const auto& id : edge_ids) {
                 const auto edge = graph.getEdge(id);
                 const auto neig = edge->getTrg();
                 const auto cost = edge->getWeight();
@@ -86,7 +86,7 @@ private:
                                const std::span<const common::EdgeID>& edge_ids) const noexcept
         -> bool
     {
-        for(const auto id : edge_ids) {
+        for(const auto& id : edge_ids) {
             const auto* edge = getGraph().getEdge(id);
             const auto neig = edge->getTrg();
             const auto cost = edge->getWeight();
@@ -107,7 +107,7 @@ private:
     constexpr auto resetForwardFor(common::NodeID node) noexcept
         -> void
     {
-        for(const auto node : forward_touched_) {
+        for(const auto& node : forward_touched_) {
             const auto n = node.get();
             forward_distances_[n] = common::INFINITY_WEIGHT;
             forward_already_settled_[n] = false;

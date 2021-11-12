@@ -32,7 +32,7 @@ public:
     [[nodiscard]] auto distancesFrom(common::NodeID src) noexcept
         -> const std::vector<common::Weight>&
     {
-        if(last_src_.has_value() and last_src_.value() == src) {
+        if(last_src_ == src) {
             return distances_;
         }
 
@@ -71,11 +71,10 @@ private:
             }
 
 
-            for(const auto id : edge_ids) {
+            for(const auto& id : edge_ids) {
                 const auto edge = graph_.getEdge(id);
                 const auto neig = edge->getTrg();
                 const auto cost = edge->getWeight();
-
                 const auto new_dist = cost + cost_to_current;
 
                 if(new_dist < distances_[neig.get()]) {
@@ -90,11 +89,10 @@ private:
                                const std::span<const common::EdgeID>& edge_ids) const noexcept
         -> bool
     {
-        for(const auto id : edge_ids) {
+        for(const auto& id : edge_ids) {
             const auto& edge = graph_.getEdge(id);
             const auto neig = edge->getTrg();
             const auto cost = edge->getWeight();
-
             const auto current_dist_to_neig = distances_[neig.get()];
 
             if(current_dist_to_neig == common::INFINITY_WEIGHT) {
@@ -112,7 +110,7 @@ private:
     auto downward() noexcept
         -> void
     {
-        for(const auto edge_id : graph_.backward_neigbours_) {
+        for(const auto& edge_id : graph_.backward_neigbours_) {
             const auto* edge = graph_.getEdge(edge_id);
             const auto src = edge->getSrc().get();
             const auto trg = edge->getTrg().get();

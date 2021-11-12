@@ -62,7 +62,7 @@ private:
 
             backward_settled_.emplace_back(current_node);
 
-            for(const auto id : edge_ids) {
+            for(const auto& id : edge_ids) {
                 const auto edge = getGraph().getBackwardEdge(id);
                 const auto neig = edge->getTrg();
                 const auto cost = edge->getWeight();
@@ -85,7 +85,7 @@ private:
                                              const std::span<const common::EdgeID>& edge_ids) const noexcept
         -> bool
     {
-        for(const auto id : edge_ids) {
+        for(const auto& id : edge_ids) {
             const auto& edge = getGraph().getBackwardEdge(id);
             const auto neig = edge->getTrg();
             const auto cost = edge->getWeight();
@@ -106,7 +106,7 @@ private:
     constexpr auto resetBackwardFor(common::NodeID node) noexcept
         -> void
     {
-        for(const auto node : backward_touched_) {
+        for(const auto& node : backward_touched_) {
             const auto n = node.get();
             backward_distances_[n] = common::INFINITY_WEIGHT;
             backward_best_ingoing_[n] = common::UNKNOWN_EDGE_ID;
