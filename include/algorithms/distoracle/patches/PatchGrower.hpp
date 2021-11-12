@@ -199,7 +199,7 @@ private:
         -> std::optional<common::NodeID>
     {
         for(std::size_t i = 0; i < as_source_tested_.size(); i++) {
-            if(!as_source_tested_[i]) {
+            if(!as_source_tested_[i] and !is_target_[i]) {
                 return common::NodeID{i};
             }
         }
@@ -210,8 +210,8 @@ private:
     [[nodiscard]] auto getNextTargetUntestedNode() const noexcept
         -> std::optional<common::NodeID>
     {
-        for(std::size_t i = 0; i < as_source_tested_.size(); i++) {
-            if(!as_target_tested_[i]) {
+        for(std::size_t i = 0; i < as_target_tested_.size(); i++) {
+            if(!as_target_tested_[i] and !is_source_[i]) {
                 return common::NodeID{i};
             }
         }
