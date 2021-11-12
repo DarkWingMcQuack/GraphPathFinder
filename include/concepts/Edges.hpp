@@ -77,6 +77,18 @@ concept CanUnwrapShortcuts = requires(const T& graph, const std::vector<common::
     {graph.buildPathFromEdges(ids)} noexcept -> std::same_as<std::optional<graphs::Path>>;
 };
 
+template<typename T>
+concept CanAddEdges = requires(T& graph,  std::vector<typename T::EdgeType> edges)
+{
+    typename T::EdgeType;   // require edge type
+
+	/*
+	 * adds edges to T
+	 * TODO: make this noexcept when it can be implemented noexcept for the Offsetarray
+	 */
+	{graph.addEdges(edges)} -> std::same_as<void>;
+};
+
 // clang-format on
 
 } // namespace concepts
