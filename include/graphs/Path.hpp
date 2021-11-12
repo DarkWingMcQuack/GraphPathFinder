@@ -29,13 +29,20 @@ public:
         return cost_ > other.cost_;
     }
 
-    auto operator==(const Path& other) const noexcept
+    [[nodiscard]] auto operator==(const Path& other) const noexcept
         -> bool
     {
         return nodes_ == other.nodes_;
     }
 
-    auto operator!=(const Path& other) const noexcept
+    [[nodiscard]] auto operator[](int idx) const noexcept
+        -> const common::NodeID&
+    {
+        return nodes_[idx];
+    }
+
+
+    [[nodiscard]] auto operator!=(const Path& other) const noexcept
         -> bool
     {
         return nodes_ != other.nodes_;
@@ -78,7 +85,6 @@ public:
     {
         return Path{std::vector<common::NodeID>{}, common::Weight{0}};
     }
-
 
 
 private:
