@@ -237,8 +237,19 @@ private:
             all_to_barrier_[idx] = common::INFINITY_WEIGHT;
             barrier_to_all_[idx] = common::INFINITY_WEIGHT;
         }
-
         touched_.clear();
+
+        for(const auto& node : sources_patch_) {
+            const auto idx = node.get();
+            as_source_tested_[idx] = true;
+            is_source_[idx] = true;
+        }
+
+        for(const auto& node : targets_patch_) {
+            const auto idx = node.get();
+            as_target_tested_[idx] = true;
+            is_target_[idx] = true;
+        }
     }
 
     [[nodiscard]] auto createPatch() const noexcept
