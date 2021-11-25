@@ -12,6 +12,7 @@
 #include <utility>
 
 namespace algorithms::distoracle {
+
 class Patch
 {
 public:
@@ -69,6 +70,7 @@ public:
     }
 
 private:
+    friend class PatchLookup;
     std::vector<std::pair<common::NodeID, common::Weight>> sources_;
     common::NodeID barrier_;
     std::vector<std::pair<common::NodeID, common::Weight>> targets_;
