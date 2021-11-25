@@ -97,22 +97,14 @@ private:
                     continue;
                 }
 
-                // if it is a trg we explore further but do not reconsider the node
-                if(is_source_[trg_idx]) {
-                    queue.emplace(trg, dist + common::Weight{1});
-                    s.emplace(trg);
-                    continue;
-                }
+                queue.emplace(trg, dist + common::Weight{1});
+                s.emplace(trg);
 
-                // if it is not a trg but was already considered we do not explore
-                // and we do not consider the node again
                 if(as_source_tested_[trg_idx]) {
                     continue;
                 }
 
                 stack.emplace_back(trg);
-                s.emplace(trg);
-                queue.emplace(trg, dist + common::Weight{1});
             }
         }
 
@@ -124,15 +116,13 @@ private:
             // check if all incomming neigours are also a source
             // if so the node current is also a source
             // if all outgoing
-            const auto easy_addable =
-                checkEasySourceAddability(current) or !checkEasyTargetAddability(current);
+            const auto easy_addable = checkEasySourceAddability(current);
 
             // if it is easy addable or the heavy calculation is successfull
             // then current is a target
             if(easy_addable or calculateSourceAddability(current)) {
                 is_source_[idx] = true;
-                sources_patch_.emplace_back(node);
-                all_to_barrier_[idx] = oracle_.distanceBetween(node, barrier_);
+                sources_patch_.emplace_back(current);
             }
 
             // mark current as touched and as tested
@@ -154,8 +144,8 @@ private:
             const auto [current_node, dist] = queue.top();
             queue.pop();
 
-            const auto incomming = graph_.getForwardEdgeIDsOf(current_node);
-            for(const auto& id : incomming) {
+            const auto outgoing = graph_.getForwardEdgeIDsOf(current_node);
+            for(const auto& id : outgoing) {
                 const auto* edge = graph_.getEdge(id);
                 const auto trg = edge->getTrg();
                 const auto trg_idx = trg.get();
@@ -165,15 +155,9 @@ private:
                     continue;
                 }
 
-                // if it is a trg we explore further but do not reconsider the node
-                if(is_target_[trg_idx]) {
-                    queue.emplace(trg, dist + common::Weight{1});
-                    s.emplace(trg);
-                    continue;
-                }
+                queue.emplace(trg, dist + common::Weight{1});
+                s.emplace(trg);
 
-                // if it is not a trg but was already considered we do not explore
-                // and we do not consider the node again
                 if(as_target_tested_[trg_idx]) {
                     continue;
                 }
@@ -188,15 +172,13 @@ private:
         for(unsigned i = stack.size(); i-- > 0;) {
             const auto current = stack[i];
             const auto idx = current.get();
-            const auto easy_addable =
-                checkEasyTargetAddability(current) or !checkEasySourceAddability(current);
 
+            const auto easy_addable = checkEasyTargetAddability(current);
             // if it is easy addable or the heavy calculation is successfull
             // then current is a target
             if(easy_addable or calculateTargetAddability(current)) {
                 is_target_[idx] = true;
-                targets_patch_.emplace_back(node);
-                barrier_to_all_[idx] = oracle_.distanceBetween(barrier_, node);
+                targets_patch_.emplace_back(current);
             }
 
             // mark current as touched and as tested
@@ -209,13 +191,15 @@ private:
         -> bool
     {
         const auto incomming = graph_.getBackwardEdgeIDsOf(node);
-        return std::all_of(std::begin(incomming),
+        return std::any_of(std::begin(incomming),
                            std::end(incomming),
                            [&](const auto& id) {
                                const auto edge = graph_.getBackwardEdge(id);
                                const auto trg = edge->getTrg();
                                const auto trg_idx = trg.get();
-                               return is_source_[trg_idx];
+                               const auto to_barrier_over_node =
+                                   all_to_barrier_[trg_idx] == edge->getWeight() + all_to_barrier_[node.get()];
+                               return to_barrier_over_node and is_source_[trg_idx];
                            });
     }
 
@@ -223,13 +207,16 @@ private:
         -> bool
     {
         const auto outgoing = graph_.getForwardEdgeIDsOf(node);
-        return std::all_of(std::begin(outgoing),
+        return std::any_of(std::begin(outgoing),
                            std::end(outgoing),
                            [&](const auto& id) {
                                const auto* edge = graph_.getEdge(id);
                                const auto trg = edge->getTrg();
                                const auto trg_idx = trg.get();
-                               return is_target_[trg_idx];
+                               const auto from_barrier_over_node =
+                                   barrier_to_all_[trg_idx] == edge->getWeight() + barrier_to_all_[node.get()];
+
+                               return from_barrier_over_node and is_target_[trg_idx];
                            });
     }
 
@@ -310,8 +297,6 @@ private:
             as_target_tested_[idx] = false;
             is_source_[idx] = false;
             is_target_[idx] = false;
-            all_to_barrier_[idx] = common::INFINITY_WEIGHT;
-            barrier_to_all_[idx] = common::INFINITY_WEIGHT;
         }
         touched_.clear();
 
