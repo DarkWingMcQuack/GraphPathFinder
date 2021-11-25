@@ -28,6 +28,18 @@ public:
         return sources_.size() * targets_.size();
     }
 
+    [[nodiscard]] auto numberOfSources() const noexcept
+        -> std::size_t
+    {
+        return sources_.size();
+    }
+
+    [[nodiscard]] auto numberOfTargets() const noexcept
+        -> std::size_t
+    {
+        return targets_.size();
+    }
+
 private:
     std::vector<std::pair<common::NodeID, common::Weight>> sources_;
     common::NodeID barrier_;
