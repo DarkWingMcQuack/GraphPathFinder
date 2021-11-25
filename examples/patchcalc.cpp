@@ -49,7 +49,7 @@ auto getNumber(std::size_t max) -> common::NodeID
     std::cin >> n; // input the length
 
     if(n > max) {
-        fmt::print("number to large, needs to be <={}", max);
+        fmt::print("number to large, needs to be <={}\n", max);
         return getNumber(max);
     }
 
