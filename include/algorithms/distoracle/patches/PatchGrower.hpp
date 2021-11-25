@@ -42,8 +42,7 @@ public:
           all_to_barrier_(graph_.numberOfNodes(), common::INFINITY_WEIGHT),
           barrier_to_all_(graph_.numberOfNodes(), common::INFINITY_WEIGHT),
           visited_(graph_.numberOfNodes(), false)
-    {
-    }
+    {}
 
     [[nodiscard]] auto grow(std::vector<common::NodeID> sources,
                             common::NodeID barrier,
@@ -77,12 +76,16 @@ private:
     auto growSource(common::NodeID node, std::size_t max_size) noexcept
         -> void
     {
-        const auto candidates = exploreSrcCandidates(node, max_size);
+        const auto candidates = srcCandidates(node, max_size);
 
         // iterate backwards over the explored nodes
         for(unsigned i = candidates.size(); i-- > 0;) {
             const auto current = candidates[i];
             const auto idx = current.get();
+
+            if(as_source_tested_[idx] or is_target_[idx]) {
+                continue;
+            }
 
             // mark current as touched and as tested
             as_source_tested_[idx] = true;
@@ -104,12 +107,16 @@ private:
     auto growTarget(common::NodeID node, std::size_t max_size) noexcept
         -> void
     {
-        const auto candidates = exploreTrgCandidates(node, max_size);
+        const auto candidates = trgCandidates(node, max_size);
 
         // iterate backwards over the explored nodes
         for(unsigned i = candidates.size(); i-- > 0;) {
             const auto current = candidates[i];
             const auto idx = current.get();
+
+            if(as_target_tested_[idx] or is_source_[idx]) {
+                continue;
+            }
 
             // mark current as touched and as tested
             as_target_tested_[idx] = true;
@@ -128,7 +135,7 @@ private:
         }
     }
 
-    [[nodiscard]] auto exploreSrcCandidates(common::NodeID node, std::size_t max_size) noexcept
+    [[nodiscard]] auto srcCandidates(common::NodeID node, std::size_t max_size) noexcept
         -> std::vector<common::NodeID>
     {
         std::vector stack{node};
@@ -158,6 +165,10 @@ private:
                     continue;
                 }
 
+                if(is_target_[trg_idx]) {
+                    continue;
+                }
+
                 stack.emplace_back(trg);
             }
         }
@@ -170,7 +181,7 @@ private:
         return stack;
     }
 
-    [[nodiscard]] auto exploreTrgCandidates(common::NodeID node, std::size_t max_size) noexcept
+    [[nodiscard]] auto trgCandidates(common::NodeID node, std::size_t max_size) noexcept
         -> std::vector<common::NodeID>
     {
         std::vector stack{node};
@@ -200,6 +211,10 @@ private:
                     continue;
                 }
 
+                if(is_source_[trg_idx]) {
+                    continue;
+                }
+
                 stack.emplace_back(trg);
             }
         }
@@ -216,6 +231,7 @@ private:
         -> bool
     {
         const auto incomming = graph_.getBackwardEdgeIDsOf(node);
+        const auto node_to_b = all_to_barrier_[node.get()];
         return std::any_of(std::begin(incomming),
                            std::end(incomming),
                            [&](const auto& id) {
@@ -223,7 +239,7 @@ private:
                                const auto trg = edge->getTrg();
                                const auto trg_idx = trg.get();
                                const auto to_barrier_over_node =
-                                   all_to_barrier_[trg_idx] == edge->getWeight() + all_to_barrier_[node.get()];
+                                   all_to_barrier_[trg_idx] == edge->getWeight() + node_to_b;
                                return to_barrier_over_node and is_source_[trg_idx];
                            });
     }
@@ -232,6 +248,7 @@ private:
         -> bool
     {
         const auto outgoing = graph_.getForwardEdgeIDsOf(node);
+        const auto b_to_node = barrier_to_all_[node.get()];
         return std::any_of(std::begin(outgoing),
                            std::end(outgoing),
                            [&](const auto& id) {
@@ -239,7 +256,7 @@ private:
                                const auto trg = edge->getTrg();
                                const auto trg_idx = trg.get();
                                const auto from_barrier_over_node =
-                                   barrier_to_all_[trg_idx] == edge->getWeight() + barrier_to_all_[node.get()];
+                                   barrier_to_all_[trg_idx] == edge->getWeight() + b_to_node;
 
                                return from_barrier_over_node and is_target_[trg_idx];
                            });
