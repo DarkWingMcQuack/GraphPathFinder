@@ -113,21 +113,20 @@ private:
             const auto current = stack[i];
             const auto idx = current.get();
 
-            // check if all incomming neigours are also a source
-            // if so the node current is also a source
-            // if all outgoing
-            const auto easy_addable = checkEasySourceAddability(current);
-
-            // if it is easy addable or the heavy calculation is successfull
-            // then current is a target
-            if(easy_addable or calculateSourceAddability(current)) {
-                is_source_[idx] = true;
-                sources_patch_.emplace_back(current);
-            }
-
             // mark current as touched and as tested
             as_source_tested_[idx] = true;
             touched_.emplace_back(current);
+
+            if(checkEasyTargetAddability(current)) {
+                continue;
+            }
+
+            // if it is easy addable or the heavy calculation is successfull
+            // then current is a target
+            if(checkEasySourceAddability(current) or calculateSourceAddability(current)) {
+                is_source_[idx] = true;
+                sources_patch_.emplace_back(current);
+            }
         }
     }
 
@@ -173,17 +172,20 @@ private:
             const auto current = stack[i];
             const auto idx = current.get();
 
-            const auto easy_addable = checkEasyTargetAddability(current);
-            // if it is easy addable or the heavy calculation is successfull
-            // then current is a target
-            if(easy_addable or calculateTargetAddability(current)) {
-                is_target_[idx] = true;
-                targets_patch_.emplace_back(current);
-            }
-
             // mark current as touched and as tested
             as_target_tested_[idx] = true;
             touched_.emplace_back(current);
+
+            if(checkEasySourceAddability(current)) {
+                continue;
+            }
+
+            // if it is easy addable or the heavy calculation is successfull
+            // then current is a target
+            if(checkEasyTargetAddability(current) or calculateTargetAddability(current)) {
+                is_target_[idx] = true;
+                targets_patch_.emplace_back(current);
+            }
         }
     }
 
