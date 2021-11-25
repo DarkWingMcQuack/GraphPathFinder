@@ -40,7 +40,8 @@ public:
           is_target_(graph_.numberOfNodes(), false),
           barrier_(common::UNKNOWN_NODE_ID),
           all_to_barrier_(graph_.numberOfNodes(), common::INFINITY_WEIGHT),
-          barrier_to_all_(graph_.numberOfNodes(), common::INFINITY_WEIGHT)
+          barrier_to_all_(graph_.numberOfNodes(), common::INFINITY_WEIGHT),
+          visited_(graph_.numberOfNodes(), false)
     {
     }
 
@@ -76,41 +77,11 @@ private:
     auto growSource(common::NodeID node, std::size_t max_size) noexcept
         -> void
     {
-        std::set<common::NodeID> s;
-        std::vector stack{node};
-        pathfinding::DijkstraQueue queue;
-        queue.emplace(node, common::Weight{0});
-
-        // fill the stack with at most max_size nodes which should be considered for adding
-        while(stack.size() < max_size and !queue.empty()) {
-            const auto [current_node, dist] = queue.top();
-            queue.pop();
-
-            const auto incomming = graph_.getBackwardEdgeIDsOf(current_node);
-            for(const auto& id : incomming) {
-                const auto edge = graph_.getBackwardEdge(id);
-                const auto trg = edge->getTrg();
-                const auto trg_idx = trg.get();
-
-                // if we already found the node we do not need to consider or to explore it anymore
-                if(s.contains(trg)) {
-                    continue;
-                }
-
-                queue.emplace(trg, dist + common::Weight{1});
-                s.emplace(trg);
-
-                if(as_source_tested_[trg_idx]) {
-                    continue;
-                }
-
-                stack.emplace_back(trg);
-            }
-        }
+        const auto candidates = exploreSrcCandidates(node, max_size);
 
         // iterate backwards over the explored nodes
-        for(unsigned i = stack.size(); i-- > 0;) {
-            const auto current = stack[i];
+        for(unsigned i = candidates.size(); i-- > 0;) {
+            const auto current = candidates[i];
             const auto idx = current.get();
 
             // mark current as touched and as tested
@@ -133,43 +104,11 @@ private:
     auto growTarget(common::NodeID node, std::size_t max_size) noexcept
         -> void
     {
-        std::set<common::NodeID> s;
-        std::vector stack{node};
-        pathfinding::DijkstraQueue queue;
-        queue.emplace(node, common::Weight{0});
-
-        // fill the stack with at most max_size nodes which should be considered for adding
-        while(stack.size() < max_size and !queue.empty()) {
-            const auto [current_node, dist] = queue.top();
-            queue.pop();
-
-            const auto outgoing = graph_.getForwardEdgeIDsOf(current_node);
-            for(const auto& id : outgoing) {
-                const auto* edge = graph_.getEdge(id);
-                const auto trg = edge->getTrg();
-                const auto trg_idx = trg.get();
-
-                // if we already found the node we do not need to consider or to explore it anymore
-                if(s.contains(trg)) {
-                    continue;
-                }
-
-                queue.emplace(trg, dist + common::Weight{1});
-                s.emplace(trg);
-
-                if(as_target_tested_[trg_idx]) {
-                    continue;
-                }
-
-                stack.emplace_back(trg);
-                s.emplace(trg);
-                queue.emplace(trg, dist + common::Weight{1});
-            }
-        }
+        const auto candidates = exploreTrgCandidates(node, max_size);
 
         // iterate backwards over the explored nodes
-        for(unsigned i = stack.size(); i-- > 0;) {
-            const auto current = stack[i];
+        for(unsigned i = candidates.size(); i-- > 0;) {
+            const auto current = candidates[i];
             const auto idx = current.get();
 
             // mark current as touched and as tested
@@ -187,6 +126,90 @@ private:
                 targets_patch_.emplace_back(current);
             }
         }
+    }
+
+    [[nodiscard]] auto exploreSrcCandidates(common::NodeID node, std::size_t max_size) noexcept
+        -> std::vector<common::NodeID>
+    {
+        std::vector stack{node};
+        pathfinding::DijkstraQueue queue;
+        queue.emplace(node, common::Weight{0});
+
+        // fill the stack with at most max_size nodes which should be considered for adding
+        while(stack.size() < max_size and !queue.empty()) {
+            const auto [current_node, dist] = queue.top();
+            queue.pop();
+
+            const auto incomming = graph_.getBackwardEdgeIDsOf(current_node);
+            for(const auto& id : incomming) {
+                const auto edge = graph_.getBackwardEdge(id);
+                const auto trg = edge->getTrg();
+                const auto trg_idx = trg.get();
+
+                if(visited_[trg_idx]) {
+                    continue;
+                }
+
+                visited_[trg_idx] = true;
+                touched2_.emplace_back(trg_idx);
+                queue.emplace(trg, dist + common::Weight{1});
+
+                if(as_source_tested_[trg_idx]) {
+                    continue;
+                }
+
+                stack.emplace_back(trg);
+            }
+        }
+
+        for(const auto& n : touched2_) {
+            visited_[n] = false;
+        }
+        touched2_.clear();
+
+        return stack;
+    }
+
+    [[nodiscard]] auto exploreTrgCandidates(common::NodeID node, std::size_t max_size) noexcept
+        -> std::vector<common::NodeID>
+    {
+        std::vector stack{node};
+        pathfinding::DijkstraQueue queue;
+        queue.emplace(node, common::Weight{0});
+
+        // fill the stack with at most max_size nodes which should be considered for adding
+        while(stack.size() < max_size and !queue.empty()) {
+            const auto [current_node, dist] = queue.top();
+            queue.pop();
+
+            const auto outgoing = graph_.getForwardEdgeIDsOf(current_node);
+            for(const auto& id : outgoing) {
+                const auto* edge = graph_.getEdge(id);
+                const auto trg = edge->getTrg();
+                const auto trg_idx = trg.get();
+
+                if(visited_[trg_idx]) {
+                    continue;
+                }
+
+                visited_[trg_idx] = true;
+                touched2_.emplace_back(trg_idx);
+                queue.emplace(trg, dist + common::Weight{1});
+
+                if(as_target_tested_[trg_idx]) {
+                    continue;
+                }
+
+                stack.emplace_back(trg);
+            }
+        }
+
+        for(const auto& n : touched2_) {
+            visited_[n] = false;
+        }
+        touched2_.clear();
+
+        return stack;
     }
 
     [[nodiscard]] auto quickCheckSrc(common::NodeID node) const noexcept
@@ -369,6 +392,8 @@ private:
     std::vector<common::Weight> barrier_to_all_;
 
     std::vector<common::NodeID> touched_;
+    std::vector<std::size_t> touched2_;
+    std::vector<bool> visited_;
 };
 
 } // namespace algorithms::distoracle
