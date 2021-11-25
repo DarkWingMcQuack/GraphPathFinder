@@ -11,6 +11,7 @@
 #include <concepts/Nodes.hpp>
 #include <fmt/core.h>
 #include <queue>
+#include <set>
 #include <type_traits>
 #include <utility>
 
@@ -40,31 +41,31 @@ public:
           barrier_(common::UNKNOWN_NODE_ID),
           all_to_barrier_(graph_.numberOfNodes(), common::INFINITY_WEIGHT),
           barrier_to_all_(graph_.numberOfNodes(), common::INFINITY_WEIGHT)
-    {}
+    {
+    }
 
     [[nodiscard]] auto grow(std::vector<common::NodeID> sources,
                             common::NodeID barrier,
                             std::vector<common::NodeID> targets) noexcept
         -> Patch
     {
-        setupFor(std::move(sources), barrier, std::move(targets));
+        std::optional src_opt = sources[0];
+        std::optional trg_opt = targets[0];
 
-        auto src_opt = getNextSourceUntestedNode();
-        auto trg_opt = getNextTargetUntestedNode();
+        setupFor(std::move(sources), barrier, std::move(targets));
 
         while(src_opt or trg_opt) {
             if(src_opt) {
                 const auto src = src_opt.value();
-                growSource(src);
+                growSource(src, targets_patch_.size());
             }
 
+            trg_opt = getNextTargetUntestedNode();
             if(trg_opt) {
                 const auto trg = trg_opt.value();
-                growTarget(trg);
+                growTarget(trg, sources_patch_.size());
             }
-
             src_opt = getNextSourceUntestedNode();
-            trg_opt = getNextTargetUntestedNode();
         }
 
         return createPatch();
@@ -72,104 +73,175 @@ public:
 
 
 private:
-    [[nodiscard]] auto growSource(common::NodeID node) noexcept
-        -> bool
+    auto growSource(common::NodeID node, std::size_t max_size) noexcept
+        -> void
     {
-        const auto idx = node.get();
+        std::set<common::NodeID> s;
+        std::vector stack{node};
+        pathfinding::DijkstraQueue queue;
+        queue.emplace(node, common::Weight{0});
 
-        // if the node is already a src or was already tested
-        // we do not try to add it as source
-        if(is_target_[idx]) {
-            return false;
-        }
+        // fill the stack with at most max_size nodes which should be considered for adding
+        while(stack.size() < max_size and !queue.empty()) {
+            const auto [current_node, dist] = queue.top();
+            queue.pop();
 
-        if(as_source_tested_[idx]) {
-            return is_source_[idx];
-        }
-
-        // check if all the incomming neigbours are also srcs if so
-        // the current node is also a src
-        const auto incomming = graph_.getBackwardEdgeIDsOf(node);
-        const auto easy_addable = std::any_of(
-            std::begin(incomming),
-            std::end(incomming),
-            [&](const auto id) {
+            const auto incomming = graph_.getBackwardEdgeIDsOf(current_node);
+            for(const auto& id : incomming) {
                 const auto edge = graph_.getBackwardEdge(id);
                 const auto trg = edge->getTrg();
+                const auto trg_idx = trg.get();
 
-                return growSource(trg);
-            });
+                // if we already found the node we do not need to consider or to explore it anymore
+                if(s.contains(trg)) {
+                    continue;
+                }
 
-        if(easy_addable) {
-            fmt::print("add src without calculation...\n");
+                // if it is a trg we explore further but do not reconsider the node
+                if(is_source_[trg_idx]) {
+                    queue.emplace(trg, dist + common::Weight{1});
+                    s.emplace(trg);
+                    continue;
+                }
+
+                // if it is not a trg but was already considered we do not explore
+                // and we do not consider the node again
+                if(as_source_tested_[trg_idx]) {
+                    continue;
+                }
+
+                stack.emplace_back(trg);
+                s.emplace(trg);
+                queue.emplace(trg, dist + common::Weight{1});
+            }
         }
 
-        // add node if possible and only calculate the distances if it is not easy addable
-        if(easy_addable or calculateSourceAddability(node)) {
-            is_source_[idx] = true;
-            sources_patch_.emplace_back(node);
-            all_to_barrier_[idx] = oracle_.distanceBetween(node, barrier_);
+        // iterate backwards over the explored nodes
+        for(unsigned i = stack.size(); i-- > 0;) {
+            const auto current = stack[i];
+            const auto idx = current.get();
+
+            // check if all incomming neigours are also a source
+            // if so the node current is also a source
+            // if all outgoing
+            const auto easy_addable =
+                checkEasySourceAddability(current) or !checkEasyTargetAddability(current);
+
+            // if it is easy addable or the heavy calculation is successfull
+            // then current is a target
+            if(easy_addable or calculateSourceAddability(current)) {
+                is_source_[idx] = true;
+                sources_patch_.emplace_back(node);
+                all_to_barrier_[idx] = oracle_.distanceBetween(node, barrier_);
+            }
+
+            // mark current as touched and as tested
+            as_source_tested_[idx] = true;
+            touched_.emplace_back(current);
         }
-
-        // set that this src was already checked
-        as_source_tested_[idx] = true;
-        touched_.emplace_back(node);
-
-        return is_source_[idx];
     }
 
-    [[nodiscard]] auto growTarget(common::NodeID node) noexcept
-        -> bool
+    auto growTarget(common::NodeID node, std::size_t max_size) noexcept
+        -> void
     {
-        const auto idx = node.get();
+        std::set<common::NodeID> s;
+        std::vector stack{node};
+        pathfinding::DijkstraQueue queue;
+        queue.emplace(node, common::Weight{0});
 
-        // if the node is already a src or was already tested
-        // we do not try to add it as source
-        if(is_source_[idx]) {
-            return false;
-        }
+        // fill the stack with at most max_size nodes which should be considered for adding
+        while(stack.size() < max_size and !queue.empty()) {
+            const auto [current_node, dist] = queue.top();
+            queue.pop();
 
-        if(as_target_tested_[idx]) {
-            return is_target_[idx];
-        }
-
-        // check if all the incomming neigbours are also srcs if so
-        // the current node is also a src
-        const auto incomming = graph_.getForwardEdgeIDsOf(node);
-        const auto easy_addable = std::any_of(
-            std::begin(incomming),
-            std::end(incomming),
-            [&](const auto id) {
+            const auto incomming = graph_.getForwardEdgeIDsOf(current_node);
+            for(const auto& id : incomming) {
                 const auto* edge = graph_.getEdge(id);
                 const auto trg = edge->getTrg();
+                const auto trg_idx = trg.get();
 
-                return growTarget(trg);
-            });
+                // if we already found the node we do not need to consider or to explore it anymore
+                if(s.contains(trg)) {
+                    continue;
+                }
 
-        if(easy_addable) {
-            fmt::print("add trg without calculation...\n");
+                // if it is a trg we explore further but do not reconsider the node
+                if(is_target_[trg_idx]) {
+                    queue.emplace(trg, dist + common::Weight{1});
+                    s.emplace(trg);
+                    continue;
+                }
+
+                // if it is not a trg but was already considered we do not explore
+                // and we do not consider the node again
+                if(as_target_tested_[trg_idx]) {
+                    continue;
+                }
+
+                stack.emplace_back(trg);
+                s.emplace(trg);
+                queue.emplace(trg, dist + common::Weight{1});
+            }
         }
 
-        // add node if possible and only calculate the distances if it is not easy addable
-        // if the node is added then add the distance from the barrier to the distance vector
-        if(easy_addable or calculateTargetAddability(node)) {
-            is_target_[idx] = true;
-            targets_patch_.emplace_back(node);
-            barrier_to_all_[idx] = oracle_.distanceBetween(barrier_, node);
+        // iterate backwards over the explored nodes
+        for(unsigned i = stack.size(); i-- > 0;) {
+            const auto current = stack[i];
+            const auto idx = current.get();
+            const auto easy_addable =
+                checkEasyTargetAddability(current) or !checkEasySourceAddability(current);
+
+            // if it is easy addable or the heavy calculation is successfull
+            // then current is a target
+            if(easy_addable or calculateTargetAddability(current)) {
+                is_target_[idx] = true;
+                targets_patch_.emplace_back(node);
+                barrier_to_all_[idx] = oracle_.distanceBetween(barrier_, node);
+            }
+
+            // mark current as touched and as tested
+            as_target_tested_[idx] = true;
+            touched_.emplace_back(current);
         }
+    }
 
-        // set that this src was already checked
-        as_target_tested_[idx] = true;
-        touched_.emplace_back(node);
+    [[nodiscard]] auto checkEasySourceAddability(common::NodeID node) const noexcept
+        -> bool
+    {
+        const auto incomming = graph_.getBackwardEdgeIDsOf(node);
+        return std::all_of(std::begin(incomming),
+                           std::end(incomming),
+                           [&](const auto& id) {
+                               const auto edge = graph_.getBackwardEdge(id);
+                               const auto trg = edge->getTrg();
+                               const auto trg_idx = trg.get();
+                               return is_source_[trg_idx];
+                           });
+    }
 
-        return is_target_[idx];
+    [[nodiscard]] auto checkEasyTargetAddability(common::NodeID node) const noexcept
+        -> bool
+    {
+        const auto outgoing = graph_.getForwardEdgeIDsOf(node);
+        return std::all_of(std::begin(outgoing),
+                           std::end(outgoing),
+                           [&](const auto& id) {
+                               const auto* edge = graph_.getEdge(id);
+                               const auto trg = edge->getTrg();
+                               const auto trg_idx = trg.get();
+                               return is_target_[trg_idx];
+                           });
     }
 
     [[nodiscard]] auto calculateSourceAddability(common::NodeID node) const noexcept
         -> bool
     {
-        fmt::print("check src with calculation...\n");
         const auto to_barrier = all_to_barrier_[node.get()];
+
+        if(to_barrier == common::INFINITY_WEIGHT) {
+            return false;
+        }
+
         return std::all_of(
             std::begin(targets_patch_),
             std::end(targets_patch_),
@@ -183,8 +255,12 @@ private:
     [[nodiscard]] auto calculateTargetAddability(common::NodeID node) const noexcept
         -> bool
     {
-        fmt::print("check trg with calculation...\n");
         const auto from_barrier = barrier_to_all_[node.get()];
+
+        if(from_barrier == common::INFINITY_WEIGHT) {
+            return false;
+        }
+
         return std::all_of(
             std::begin(sources_patch_),
             std::end(sources_patch_),
@@ -249,6 +325,13 @@ private:
             const auto idx = node.get();
             as_target_tested_[idx] = true;
             is_target_[idx] = true;
+        }
+
+        for(std::size_t i = 0; i < graph_.numberOfNodes(); i++) {
+            const auto to_b = oracle_.distanceBetween(common::NodeID{i}, barrier_);
+            const auto from_b = oracle_.distanceBetween(barrier_, common::NodeID{i});
+            all_to_barrier_[i] = to_b;
+            barrier_to_all_[i] = from_b;
         }
     }
 
