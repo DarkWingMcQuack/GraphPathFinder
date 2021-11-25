@@ -117,13 +117,13 @@ private:
             as_source_tested_[idx] = true;
             touched_.emplace_back(current);
 
-            if(checkEasyTargetAddability(current)) {
+            if(quickCheckTrg(current)) {
                 continue;
             }
 
             // if it is easy addable or the heavy calculation is successfull
             // then current is a target
-            if(checkEasySourceAddability(current) or calculateSourceAddability(current)) {
+            if(quickCheckSrc(current) or calculateSourceAddability(current)) {
                 is_source_[idx] = true;
                 sources_patch_.emplace_back(current);
             }
@@ -176,20 +176,20 @@ private:
             as_target_tested_[idx] = true;
             touched_.emplace_back(current);
 
-            if(checkEasySourceAddability(current)) {
+            if(quickCheckSrc(current)) {
                 continue;
             }
 
             // if it is easy addable or the heavy calculation is successfull
             // then current is a target
-            if(checkEasyTargetAddability(current) or calculateTargetAddability(current)) {
+            if(quickCheckTrg(current) or calculateTargetAddability(current)) {
                 is_target_[idx] = true;
                 targets_patch_.emplace_back(current);
             }
         }
     }
 
-    [[nodiscard]] auto checkEasySourceAddability(common::NodeID node) const noexcept
+    [[nodiscard]] auto quickCheckSrc(common::NodeID node) const noexcept
         -> bool
     {
         const auto incomming = graph_.getBackwardEdgeIDsOf(node);
@@ -205,7 +205,7 @@ private:
                            });
     }
 
-    [[nodiscard]] auto checkEasyTargetAddability(common::NodeID node) const noexcept
+    [[nodiscard]] auto quickCheckTrg(common::NodeID node) const noexcept
         -> bool
     {
         const auto outgoing = graph_.getForwardEdgeIDsOf(node);
