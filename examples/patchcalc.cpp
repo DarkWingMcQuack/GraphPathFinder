@@ -63,6 +63,61 @@ auto getMiddleNode(const graphs::Path& path) noexcept
     return path[static_cast<int>(idx)];
 }
 
+auto createHL(auto g)
+{
+    g.deleteForwardEdgesIDsIf([](const auto& graph) {
+        return [&](const auto id) {
+            const auto* edge = graph.getEdge(id);
+            const auto src = edge->getSrc();
+            const auto trg = edge->getTrg();
+            const auto src_lvl = graph.getNodeLevelUnsafe(src);
+            const auto trg_lvl = graph.getNodeLevelUnsafe(trg);
+            return src_lvl > trg_lvl;
+        };
+    });
+
+
+    g.deleteBackwardEdgesIDsIf([](const auto& graph) {
+        return [&](const auto id) {
+            const auto edge = graph.getBackwardEdge(id);
+            const auto src = edge->getSrc();
+            const auto trg = edge->getTrg();
+            const auto src_lvl = graph.getNodeLevelUnsafe(src);
+            const auto trg_lvl = graph.getNodeLevelUnsafe(trg);
+            return src_lvl > trg_lvl;
+        };
+    });
+
+    auto [perm, inv_perm] = g.sortNodesAccordingTo([](const auto& graph) {
+        return [&](const auto lhs, const auto rhs) {
+            const auto lhs_lvl = graph.getNodeLevelUnsafe(lhs);
+            const auto rhs_lvl = graph.getNodeLevelUnsafe(rhs);
+            return lhs_lvl > rhs_lvl;
+        };
+    });
+
+    algorithms::distoracle::HubLabelCalculator calculator{g};
+    auto hl_lookup = calculator.constructHubLabelLookupInParallel();
+
+    hl_lookup.applyNodePermutation(std::move(inv_perm), perm);
+
+    return hl_lookup;
+}
+
+auto oracleSanityCheck(auto& dijk, const auto& hl, const auto& graph)
+{
+    for(std::size_t i = 0; i < graph.numberOfNodes(); i++) {
+        auto dijk_d = dijk.distanceBetween(common::NodeID{0}, common::NodeID{i});
+        auto hl_d = hl.distanceBetween(common::NodeID{0}, common::NodeID{i});
+
+        if(dijk_d != hl_d) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
 
 auto main(int argc, char* argv[])
     -> int
@@ -82,14 +137,15 @@ auto main(int argc, char* argv[])
         std::exit(-1);
     }
 
-    const auto ch_graph = algorithms::distoracle::prepareGraphForHubLabelCalculator(std::move(ch_graph_opt.value()));
+    const auto hl_lookup = createHL(std::move(ch_graph_opt.value()));
     const auto graph = std::move(graph_opt.value());
-
-    algorithms::distoracle::HubLabelCalculator calculator{ch_graph};
-    auto hl_lookup = calculator.constructHubLabelLookupInParallel();
 
     algorithms::pathfinding::Dijkstra path_dijkstra{graph};
     algorithms::distoracle::PatchGrower patch_grower{graph, hl_lookup};
+
+    fmt::print("distance oracle sanity check: ");
+    auto oracle_sanity = oracleSanityCheck(path_dijkstra, hl_lookup, graph);
+    fmt::print("{}\n", oracle_sanity);
 
     while(true) {
         fmt::print("source node:");
@@ -125,5 +181,8 @@ auto main(int argc, char* argv[])
         const auto weight = patch.weight();
 
         fmt::print("weight of calculated weight: {}\n", weight);
+        fmt::print("sanity check...:");
+        const auto is_sane = patch.santityCheck(hl_lookup);
+        fmt::print(" {}\n", is_sane);
     }
 }
