@@ -40,6 +40,34 @@ public:
         return targets_.size();
     }
 
+    template<class Oracle>
+    requires concepts::DistanceOracle<Oracle>
+    [[nodiscard]] auto santityCheck(const Oracle& oracle) const noexcept
+        -> bool
+    {
+        for(const auto& [src, to_b] : sources_) {
+            for(const auto& [trg, from_b] : targets_) {
+                const auto real = oracle.distanceBetween(src, trg);
+                const auto added = to_b + from_b;
+
+                const auto over_b = oracle.distanceBetween(src, barrier_) + oracle.distanceBetween(barrier_, trg);
+
+                if(over_b != added) {
+                    fmt::print("{} to {}: overb: {}, added: {}\n", src.get(), trg.get(), over_b.get(), added.get());
+                    return false;
+                }
+
+                if(real != added) {
+                    fmt::print("{} to {}: real: {}, added: {}\n", src.get(), trg.get(), real.get(), added.get());
+                    fmt::print("{} + {} = {}\n", to_b.get(), from_b.get(), added.get());
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
 private:
     std::vector<std::pair<common::NodeID, common::Weight>> sources_;
     common::NodeID barrier_;
