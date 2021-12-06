@@ -141,7 +141,8 @@ auto main(int argc, char* argv[])
     const auto graph = std::move(graph_opt.value());
 
     algorithms::pathfinding::Dijkstra path_dijkstra{graph};
-    algorithms::distoracle::PatchGrower patch_grower{graph, hl_lookup};
+	algorithms::distoracle::PatchLookup lookup{graph.numberOfNodes()};
+    algorithms::distoracle::PatchGrower patch_grower{graph, hl_lookup, lookup};
 
     fmt::print("distance oracle sanity check: ");
     auto oracle_sanity = oracleSanityCheck(path_dijkstra, hl_lookup, graph);

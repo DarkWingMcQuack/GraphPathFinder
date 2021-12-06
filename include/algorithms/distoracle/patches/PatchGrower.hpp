@@ -1,6 +1,7 @@
 #pragma once
 
 #include <algorithms/distoracle/patches/Patch.hpp>
+#include <algorithms/distoracle/patches/PatchLookup.hpp>
 #include <algorithms/pathfinding/dijkstra/DijkstraQueue.hpp>
 #include <common/BasicGraphTypes.hpp>
 #include <common/EmptyBase.hpp>
@@ -31,9 +32,11 @@ class PatchGrower
 {
 public:
     PatchGrower(const Graph& graph,
-                const OneToOneDistanceOracle& oracle) noexcept
+                const OneToOneDistanceOracle& oracle,
+                const PatchLookup& lookup) noexcept
         : graph_(graph),
           oracle_(oracle),
+          lookup_(lookup),
           as_source_tested_(graph_.numberOfNodes(), false),
           as_target_tested_(graph_.numberOfNodes(), false),
           is_source_(graph_.numberOfNodes(), false),
@@ -97,7 +100,7 @@ private:
 
             // if it is easy addable or the heavy calculation is successfull
             // then current is a target
-            if(couldAddSrc(current)) {
+            if(couldAddSrc(current) and shouldAddSrc(current)) {
                 is_source_[idx] = true;
                 sources_patch_.emplace_back(current);
                 maybeAddToSrcFringe(current);
@@ -129,7 +132,7 @@ private:
 
             // if it is easy addable or the heavy calculation is successfull
             // then current is a target
-            if(couldAddTrg(current)) {
+            if(couldAddTrg(current) and shouldAddTrg(current)) {
                 is_target_[idx] = true;
                 targets_patch_.emplace_back(current);
                 maybeAddToTrgFringe(current);
@@ -239,6 +242,36 @@ private:
         -> bool
     {
         return quickCheckSrc(node) or calculateSourceAddability(node);
+    }
+
+    [[nodiscard]] auto shouldAddTrg(common::NodeID node) noexcept
+        -> bool
+    {
+        const auto idx = node.get();
+        if(barrier_to_all_[idx] == common::INFINITY_WEIGHT) {
+            return false;
+        }
+
+        return std::any_of(std::begin(sources_patch_),
+                           std::end(sources_patch_),
+                           [&](const auto src) {
+                               return lookup_.distanceBetween(src, node) == common::INFINITY_WEIGHT;
+                           });
+    }
+
+    [[nodiscard]] auto shouldAddSrc(common::NodeID node) noexcept
+        -> bool
+    {
+        const auto idx = node.get();
+        if(all_to_barrier_[idx] == common::INFINITY_WEIGHT) {
+            return false;
+        }
+
+        return std::any_of(std::begin(targets_patch_),
+                           std::end(targets_patch_),
+                           [&](const auto trg) {
+                               return lookup_.distanceBetween(node, trg) == common::INFINITY_WEIGHT;
+                           });
     }
 
     [[nodiscard]] auto quickCheckSrc(common::NodeID node) const noexcept
@@ -429,8 +462,9 @@ private:
         }
 
         for(std::size_t i = 0; i < graph_.numberOfNodes(); i++) {
-            const auto to_b = oracle_.distanceBetween(common::NodeID{i}, barrier_);
-            const auto from_b = oracle_.distanceBetween(barrier_, common::NodeID{i});
+            const auto node = common::NodeID{i};
+            const auto to_b = oracle_.distanceBetween(node, barrier_);
+            const auto from_b = oracle_.distanceBetween(barrier_, node);
             all_to_barrier_[i] = to_b;
             barrier_to_all_[i] = from_b;
         }
@@ -468,6 +502,7 @@ private:
 private:
     const Graph& graph_;
     const OneToOneDistanceOracle& oracle_;
+    const PatchLookup& lookup_;
 
     std::vector<bool> as_source_tested_;
     std::vector<bool> as_target_tested_;
