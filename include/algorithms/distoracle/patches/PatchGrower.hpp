@@ -100,7 +100,7 @@ private:
             if(couldAddSrc(current)) {
                 is_source_[idx] = true;
                 sources_patch_.emplace_back(current);
-				maybeAddToSrcFringe(current);
+                maybeAddToSrcFringe(current);
             }
         }
     }
@@ -132,7 +132,7 @@ private:
             if(couldAddTrg(current)) {
                 is_target_[idx] = true;
                 targets_patch_.emplace_back(current);
-				maybeAddToTrgFringe(current);
+                maybeAddToTrgFringe(current);
             }
         }
     }
@@ -399,8 +399,8 @@ private:
     {
         sources_patch_ = std::move(sources);
         targets_patch_ = std::move(targets);
-		sources_fringe_.clear();
-		targets_fringe_.clear();
+        sources_fringe_.clear();
+        targets_fringe_.clear();
         barrier_ = barrier;
 
         for(const auto& node : touched_) {
@@ -417,6 +417,7 @@ private:
             as_source_tested_[idx] = true;
             is_source_[idx] = true;
             maybeAddToSrcFringe(node);
+            touched_.emplace_back(node);
         }
 
         for(const auto& node : targets_patch_) {
@@ -424,6 +425,7 @@ private:
             as_target_tested_[idx] = true;
             is_target_[idx] = true;
             maybeAddToTrgFringe(node);
+            touched_.emplace_back(node);
         }
 
         for(std::size_t i = 0; i < graph_.numberOfNodes(); i++) {
