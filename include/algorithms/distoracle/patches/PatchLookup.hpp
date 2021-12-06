@@ -120,10 +120,9 @@ public:
                         std::begin(l),
                         [&](const auto hub) {
                             const auto [node, dist] = hub;
-                            const auto new_position = inv_perm[node.get()];
-                            const auto new_node = common::NodeID{new_position};
+                            const auto new_position = inv_perm[node];
 
-                            return std::pair{new_node, dist};
+                            return std::pair{new_position, dist};
                         });
                     std::sort(std::begin(l), std::end(l));
                 };
