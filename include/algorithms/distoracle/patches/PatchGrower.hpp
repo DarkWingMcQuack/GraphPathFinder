@@ -97,9 +97,10 @@ private:
 
             // if it is easy addable or the heavy calculation is successfull
             // then current is a target
-            if(quickCheckSrc(current) or calculateSourceAddability(current)) {
+            if(couldAddSrc(current)) {
                 is_source_[idx] = true;
                 sources_patch_.emplace_back(current);
+				maybeAddToSrcFringe(current);
             }
         }
     }
@@ -128,9 +129,10 @@ private:
 
             // if it is easy addable or the heavy calculation is successfull
             // then current is a target
-            if(quickCheckTrg(current) or calculateTargetAddability(current)) {
+            if(couldAddTrg(current)) {
                 is_target_[idx] = true;
                 targets_patch_.emplace_back(current);
+				maybeAddToTrgFringe(current);
             }
         }
     }
@@ -227,6 +229,18 @@ private:
         return stack;
     }
 
+    [[nodiscard]] auto couldAddTrg(common::NodeID node) noexcept
+        -> bool
+    {
+        return quickCheckTrg(node) or calculateTargetAddability(node);
+    }
+
+    [[nodiscard]] auto couldAddSrc(common::NodeID node) noexcept
+        -> bool
+    {
+        return quickCheckSrc(node) or calculateSourceAddability(node);
+    }
+
     [[nodiscard]] auto quickCheckSrc(common::NodeID node) const noexcept
         -> bool
     {
@@ -272,8 +286,8 @@ private:
         }
 
         return std::all_of(
-            std::begin(targets_patch_),
-            std::end(targets_patch_),
+            std::begin(targets_fringe_),
+            std::end(targets_fringe_),
             [&](const auto trg) {
                 const auto real_dist = oracle_.distanceBetween(node, trg);
                 const auto over_barrier_dist = to_barrier + barrier_to_all_[trg.get()];
@@ -291,8 +305,8 @@ private:
         }
 
         return std::all_of(
-            std::begin(sources_patch_),
-            std::end(sources_patch_),
+            std::begin(sources_fringe_),
+            std::end(sources_fringe_),
             [&](const auto src) {
                 const auto real_dist = oracle_.distanceBetween(src, node);
                 const auto over_barrier_dist = all_to_barrier_[src.get()] + from_barrier;
@@ -324,6 +338,60 @@ private:
         return std::nullopt;
     }
 
+    auto maybeAddToSrcFringe(common::NodeID node) noexcept
+        -> void
+    {
+        sources_fringe_.emplace_back(node);
+
+        std::erase_if(sources_fringe_,
+                      [&](const auto n) {
+                          const auto idx = n.get();
+                          const auto ids = graph_.getBackwardEdgeIDsOf(n);
+
+                          return std::any_of(
+                              std::begin(ids),
+                              std::end(ids),
+                              [&](const auto id) {
+                                  const auto edge = graph_.getBackwardEdge(id);
+                                  const auto src = edge->getTrg().get();
+                                  const auto cost = edge->getWeight();
+
+                                  if(!is_source_[src]) {
+                                      return false;
+                                  }
+
+                                  return all_to_barrier_[src] == all_to_barrier_[idx] + cost;
+                              });
+                      });
+    }
+
+    auto maybeAddToTrgFringe(common::NodeID node) noexcept
+        -> void
+    {
+        targets_fringe_.emplace_back(node);
+
+        std::erase_if(targets_fringe_,
+                      [&](const auto n) {
+                          const auto idx = n.get();
+                          const auto ids = graph_.getForwardEdgeIDsOf(n);
+
+                          return std::any_of(
+                              std::begin(ids),
+                              std::end(ids),
+                              [&](const auto id) {
+                                  const auto* edge = graph_.getEdge(id);
+                                  const auto trg = edge->getTrg().get();
+                                  const auto cost = edge->getWeight();
+
+                                  if(!is_target_[trg]) {
+                                      return false;
+                                  }
+
+                                  return barrier_to_all_[trg] == barrier_to_all_[idx] + cost;
+                              });
+                      });
+    }
+
     auto setupFor(std::vector<common::NodeID>&& sources,
                   common::NodeID barrier,
                   std::vector<common::NodeID>&& targets) noexcept
@@ -331,6 +399,8 @@ private:
     {
         sources_patch_ = std::move(sources);
         targets_patch_ = std::move(targets);
+		sources_fringe_.clear();
+		targets_fringe_.clear();
         barrier_ = barrier;
 
         for(const auto& node : touched_) {
@@ -346,12 +416,14 @@ private:
             const auto idx = node.get();
             as_source_tested_[idx] = true;
             is_source_[idx] = true;
+            maybeAddToSrcFringe(node);
         }
 
         for(const auto& node : targets_patch_) {
             const auto idx = node.get();
             as_target_tested_[idx] = true;
             is_target_[idx] = true;
+            maybeAddToTrgFringe(node);
         }
 
         for(std::size_t i = 0; i < graph_.numberOfNodes(); i++) {
@@ -404,6 +476,9 @@ private:
     std::vector<common::NodeID> sources_patch_;
     common::NodeID barrier_;
     std::vector<common::NodeID> targets_patch_;
+
+    std::vector<common::NodeID> sources_fringe_;
+    std::vector<common::NodeID> targets_fringe_;
 
     std::vector<common::Weight> all_to_barrier_;
     std::vector<common::Weight> barrier_to_all_;
