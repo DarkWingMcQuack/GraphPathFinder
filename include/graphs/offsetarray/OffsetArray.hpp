@@ -59,6 +59,9 @@ private:
 
         static_assert(concepts::HasNodes<OffsetArray>, "every graph should fullfill the HasNodes concept");
 
+        static_assert(!std::is_same_v<Node, common::NodeID> || concepts::HasAccessableNodes<OffsetArray>,
+                      "a graph with non-trivial nodes should have accessable nodes");
+
         static_assert(!std::is_same_v<Node, common::NodeID> || concepts::HasNontrivialNodes<OffsetArray>,
                       "a graph with non-trivial nodes should fullfill the HasNontrivialNodes concept");
 

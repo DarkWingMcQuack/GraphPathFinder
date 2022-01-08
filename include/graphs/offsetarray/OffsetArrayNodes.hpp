@@ -115,6 +115,12 @@ public:
         }
     }
 
+    constexpr auto getNodes() const noexcept
+        -> std::span<const Node>
+    {
+        return nodes_;
+    }
+
 
     // clang-format off
 private:

@@ -2,6 +2,7 @@
 
 #include <common/BasicGraphTypes.hpp>
 #include <concepts>
+#include <span>
 
 namespace concepts {
 
@@ -10,6 +11,13 @@ template<typename Node>
 concept HasLevel = requires(const Node& node, common::NodeLevel level)
 {
     {node.getLvl()} -> std::convertible_to<common::NodeLevel>;
+};
+
+template<typename Node>
+concept HasLatLng = requires(const Node& node)
+{
+    {node.getLat()} -> std::convertible_to<double>;
+    {node.getLng()} -> std::convertible_to<double>;
 };
 
 template<typename Node>
@@ -35,6 +43,17 @@ concept HasNodes = requires(const T& graph, common::NodeID id)
 	 * @return the number of nodes
 	 */
 	{graph.numberOfNodes()} noexcept -> std::same_as<std::size_t>;
+};
+
+template<typename T>
+concept HasAccessableNodes = requires(const T& graph)
+{
+    requires HasNodes<T>;
+
+	/*
+	 * @return all nodes as span
+	 */
+	{graph.getNodes()} noexcept -> std::same_as<std::span<const typename T::NodeType>>;
 };
 
 
