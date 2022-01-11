@@ -31,6 +31,21 @@ public:
         return std::array{top_left, top_right, bottom_left, bottom_right};
     }
 
+    [[nodiscard]] constexpr auto operator==(const BoundingBox& rhs) const noexcept
+        -> bool
+    {
+        return x_0_ == rhs.x_0_
+            and x_1_ == rhs.x_1_
+            and y_0_ == rhs.y_0_
+            and y_1_ == rhs.y_1_;
+    }
+
+    [[nodiscard]] constexpr auto operator<(const BoundingBox& rhs) const noexcept
+        -> bool
+    {
+        return (x_1_ - x_0_) < (rhs.x_1_ - rhs.x_0_);
+    }
+
     [[nodiscard]] constexpr auto center() const noexcept
         -> std::pair<double, double>
     {

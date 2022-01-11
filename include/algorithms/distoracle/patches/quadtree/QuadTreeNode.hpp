@@ -31,6 +31,12 @@ public:
           bottom_left_child_(std::move(bottom_left_child)),
           bottom_right_child_(std::move(bottom_right_child)) {}
 
+    [[nodiscard]] constexpr auto operator==(const QuadTreeNode& rhs) const noexcept
+        -> bool
+    {
+        return box_ == rhs.box_;
+    }
+
     [[nodiscard]] constexpr auto getElements() const noexcept
         -> std::span<const common::NodeID>
     {
