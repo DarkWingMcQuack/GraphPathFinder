@@ -31,8 +31,7 @@ struct WellSeparatedPair
     [[nodiscard]] constexpr auto operator==(const WellSeparatedPair& rhs) const noexcept
         -> bool
     {
-        return (box1_ == rhs.box1_ and box2_ == rhs.box2_)
-            or (box1_ == rhs.box2_ and box2_ == rhs.box1_);
+        return box1_ == rhs.box1_ and box2_ == rhs.box2_;
     }
 
     impl::BoundingBox box1_;
@@ -58,10 +57,6 @@ inline auto calulateWSPDRecHelper(const impl::QuadTreeNode& first,
     }
     WellSeparatedPair wsp{first, second};
 
-    if(std::find(std::begin(result), std::end(result), wsp) != std::end(result)) {
-        return;
-    }
-
     if(checkWellSeparation(first, second)) {
         result.emplace_back(wsp);
         return;
@@ -80,7 +75,7 @@ inline auto calulateWSPDRecHelper(const impl::QuadTreeNode& first,
     }
 }
 
-inline auto calulateWSPD(QuadTree& tree) noexcept
+inline auto calculateWSPD(QuadTree& tree) noexcept
     -> std::vector<WellSeparatedPair>
 {
     std::vector<WellSeparatedPair> wspd;
