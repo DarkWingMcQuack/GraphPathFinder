@@ -43,6 +43,23 @@ public:
         return elements_;
     }
 
+    [[nodiscard]] constexpr auto diam() const noexcept
+        -> double
+    {
+        if(elements_.size() <= 1) {
+            return 0.0;
+        }
+
+        return box_.diameter();
+    }
+
+    // [[nodiscard]] constexpr auto distanceTo(const QuadTreeNode& other) const noexcept
+    //     -> double
+    // {
+	  
+	//   for 
+	// }
+
     [[nodiscard]] constexpr auto empty() const noexcept
         -> bool
     {

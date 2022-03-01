@@ -31,6 +31,12 @@ public:
         return std::array{top_left, top_right, bottom_left, bottom_right};
     }
 
+    [[nodiscard]] constexpr auto diameter() const noexcept
+        -> double
+    {
+        return y_1_ - y_0_;
+    }
+
     [[nodiscard]] constexpr auto operator==(const BoundingBox& rhs) const noexcept
         -> bool
     {
