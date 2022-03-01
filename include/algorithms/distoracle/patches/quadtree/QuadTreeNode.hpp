@@ -53,12 +53,17 @@ public:
         return box_.diameter();
     }
 
-    // [[nodiscard]] constexpr auto distanceTo(const QuadTreeNode& other) const noexcept
-    //     -> double
-    // {
-	  
-	//   for 
-	// }
+    [[nodiscard]] constexpr auto distanceTo(const QuadTreeNode& other) const noexcept
+        -> double
+    {
+        const auto center_dist = box_.centerDistanceTo(other.box_);
+        const auto radius1 = box_.diameter() / 2;
+        const auto radius2 = other.box_.diameter() / 2;
+        return center_dist - radius1 - radius2;
+    }
+
+
+
 
     [[nodiscard]] constexpr auto empty() const noexcept
         -> bool

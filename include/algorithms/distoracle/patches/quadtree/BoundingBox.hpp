@@ -3,6 +3,7 @@
 #include <array>
 #include <concepts/Nodes.hpp>
 #include <optional>
+#include <cmath>
 
 namespace algorithms::impl {
 
@@ -57,6 +58,15 @@ public:
     {
         return std::pair{x_1_ / 2 + x_0_,
                          y_1_ / 2 + y_0_};
+    }
+
+    [[nodiscard]] constexpr auto centerDistanceTo(const BoundingBox& other) const noexcept
+        -> double
+    {
+        const auto [x1, y1] = center();
+        const auto [x2, y2] = other.center();
+
+        return std::sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
     }
 
 

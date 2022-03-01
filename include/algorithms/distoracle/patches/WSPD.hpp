@@ -40,47 +40,42 @@ struct WellSeparatedPair
     std::span<const common::NodeID> elements2_;
 };
 
-inline auto checkWellSeparation(const impl::QuadTreeNode& first,
-                                const impl::QuadTreeNode& second) noexcept
-    -> bool
-{
-    return true;
-}
-
 inline auto calulateWSPDRecHelper(const impl::QuadTreeNode& first,
                                   const impl::QuadTreeNode& second,
+                                  double epsilon,
                                   std::vector<WellSeparatedPair>& result) noexcept
     -> void
 {
     if(first == second) {
         return;
     }
-    WellSeparatedPair wsp{first, second};
 
-    if(checkWellSeparation(first, second)) {
-        result.emplace_back(wsp);
+	// well separation check
+    if(first.diam() <= epsilon * first.distanceTo(second)) {
+        result.emplace_back(first, second);
         return;
     }
 
     if(first.getBoundingBox() < second.getBoundingBox()) {
-        calulateWSPDRecHelper(first, *second.getTopLeftChild(), result);
-        calulateWSPDRecHelper(first, *second.getTopRightChild(), result);
-        calulateWSPDRecHelper(first, *second.getBottomLeftChild(), result);
-        calulateWSPDRecHelper(first, *second.getBottomRightChild(), result);
+        calulateWSPDRecHelper(first, *second.getTopLeftChild(), epsilon, result);
+        calulateWSPDRecHelper(first, *second.getTopRightChild(), epsilon, result);
+        calulateWSPDRecHelper(first, *second.getBottomLeftChild(), epsilon, result);
+        calulateWSPDRecHelper(first, *second.getBottomRightChild(), epsilon, result);
     } else {
-        calulateWSPDRecHelper(second, *first.getTopLeftChild(), result);
-        calulateWSPDRecHelper(second, *first.getTopRightChild(), result);
-        calulateWSPDRecHelper(second, *first.getBottomLeftChild(), result);
-        calulateWSPDRecHelper(second, *first.getBottomRightChild(), result);
+        calulateWSPDRecHelper(second, *first.getTopLeftChild(), epsilon, result);
+        calulateWSPDRecHelper(second, *first.getTopRightChild(), epsilon, result);
+        calulateWSPDRecHelper(second, *first.getBottomLeftChild(), epsilon, result);
+        calulateWSPDRecHelper(second, *first.getBottomRightChild(), epsilon, result);
     }
 }
 
-inline auto calculateWSPD(QuadTree& tree) noexcept
+inline auto calculateWSPD(QuadTree& tree, double epsilon) noexcept
     -> std::vector<WellSeparatedPair>
 {
     std::vector<WellSeparatedPair> wspd;
     calulateWSPDRecHelper(tree.getRoot(),
                           tree.getRoot(),
+                          epsilon,
                           wspd);
     return wspd;
 }

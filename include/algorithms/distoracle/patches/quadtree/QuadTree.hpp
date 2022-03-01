@@ -22,7 +22,8 @@ private:
     friend class WSPD;
 
     // a quad tree should be created by a QuadTreeConstructor
-    QuadTree(impl::QuadTreeNode root, std::vector<common::NodeID> elements) noexcept
+    QuadTree(impl::QuadTreeNode root,
+			 std::vector<common::NodeID> elements) noexcept
         : root_(std::move(root)), elements_(std::move(elements))
     {}
 
